@@ -12,7 +12,6 @@ var dbConnect = mysql.createConnection({
 
 dbConnect.connect(function (err) {
     if (err) throw err;
-    console.log("Database connected!");
 });
 
 router.get('/', async (req, res) => {
@@ -51,8 +50,11 @@ router.post('/create-save', async (req, res) => {
                 + " (" + commonResources.NEWS_CATEGORY_COLUMN_NAME + ") "
                 + "values ('" + categoryName + "');";
     dbConnect.query(sql, function (err, result) {
-        if (err) throw err;
-        console.log("1 record inserted");
+        if (err.code === commonResources.MY_SQL_ERR_DUPLICATE_CODE) {
+            res.send("Lỗi: Trùng tên thể loại")
+        } else {
+            throw err;
+        }
         res.redirect('/news-categories/');
     });
 });
