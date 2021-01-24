@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm tác giả bài viết</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container-fluid">
+    <%- include('../_share/header'); %>
+    <main class="container">
+        <h4 class="text-center">Thêm tác giả bài viết</h4>
+        <form action="/news-authors/update-save"
+              method="post"
+              onsubmit="return validateForm()">
+
+            <div class="form-group">
+                <label for="">Tên tác giả bài viết</label>
+                <input name="id"
+                       value="<%= newsAuthorObj.id %>"
+                       style="display: none">
+                <input type="text" name="name"
+                       class="form-control"
+                       placeholder="Nhập tên thể loại bài viết"
+                       value="<%= newsAuthorObj.name%>">
+                <span id="name-err"
+                      class="validate-err text-danger">
+                </span>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-primary btn-sm" type="submit">
+                    Lưu
+                </button>
+
+                &nbsp;
+
+                <a href="/news-authors" class="btn btn-sm btn-danger">
+                    Hủy
+                </a>
+            </div>
+
+        </form>
+    </main>
+</div>
+
+<%- include('../_share/script'); %>
+<script>
+    function validateForm() {
+        // Initial error message of category name is empty
+        $('.validate-err').text("");
+
+        // Get value of element has attribute "name" is "name"
+        let name = $('[name="name"]').val().trim();
+        if (name.length === 0) {
+            $('#name-err').text("Hãy nhập tên tác giả");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+</body>
+</html>

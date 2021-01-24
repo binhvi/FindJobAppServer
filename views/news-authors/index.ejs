@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thể loại bài viết</title>
+    <title>Tác giả bài viết</title>
     <%- include('../_share/style'); %>
 </head>
 <body>
@@ -11,7 +11,7 @@
 
     <main class="container">
         <%- include('../_share/header'); %>
-        <h4 class="text-center">Thể loại bài viết</h4>
+        <h4 class="text-center">Tác giả bài viết</h4>
 
         <div class="row">
             <div class="col-4">
@@ -27,33 +27,33 @@
 
         <table class="table table-striped">
             <thead>
-                <th>Tên thể loại bài viết</th>
-                <th>
-                    <a
-                            href="/news-categories/create"
-                            class="btn btn-sm btn-success">
-                        Tạo mới
-                    </a>
-                </th>
+            <th>Tên tác giả bài viết</th>
+            <th>
+                <a
+                        href="/news-authors/create"
+                        class="btn btn-sm btn-success">
+                    Tạo mới
+                </a>
+            </th>
             </thead>
 
             <tbody>
-            <% for(let i = 0; i < newsCategories.length; i++) {%>
+            <% for(let i = 0; i < newsAuthors.length; i++) {%>
                 <tr>
-                    <td><%= newsCategories[i].name %></td>
+                    <td><%= newsAuthors[i].name %></td>
                     <td>
                         <a
-                                href="/new-categories/detail/<%= newsCategories[i].id %>"
+                                href="/news-authors/detail/<%= newsAuthors[i].id %>"
                                 class="btn btn-info btn-sm">
                             Chi tiết
                         </a>
                         &nbsp;
-                        <form action="/news-categories/update" method="post"
-                            style="display: inline-block">
-                            <input name="newsCategoryId"
-                                   value="<%= newsCategories[i].id %>"
+                        <form action="/news-authors/update" method="post"
+                              style="display: inline-block">
+                            <input name="newsAuthorId"
+                                   value="<%= newsAuthors[i].id %>"
                                    style="display:none;"
-                                />
+                            />
                             <button type="submit" class="btn btn-warning btn-sm">
                                 Cập nhật
                             </button>
@@ -61,16 +61,16 @@
 
                         &nbsp;
 
-                        <form action="/news-categories/remove" method="post"
+                        <form action="/news-authors/remove" method="post"
                               style="display: inline-block">
-                            <input name="newsCategoryId"
-                                   value="<%= newsCategories[i].id %>"
+                            <input name="newsAuthorId"
+                                   value="<%= newsAuthors[i].id %>"
                                    style="display:none;" />
                             <button type="submit"
                                     onclick="return confirm('Việc xóa ' +
-                                     'thể loại bài viết sẽ xóa cả ' +
+                                     'tác giả bài viết sẽ xóa cả ' +
                                       'dữ liệu các bài viết (nếu có) ' +
-                                       'của thể loại này. Vẫn xóa?')"
+                                       'của tác giả này. Vẫn xóa?')"
                                     class="btn btn-danger btn-sm">
                                 Xóa
                             </button>
