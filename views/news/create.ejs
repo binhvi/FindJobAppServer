@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm bài viết</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container-fluid">
+    <%- include('../_share/header'); %>
+    <main class="container">
+        <h4 class="text-center">Thêm bài viết</h4>
+        <form action="/news/create-save"
+              method="post"
+              onsubmit="return validateForm()"
+              enctype="multipart/form-data">
+
+            <div class="col-md-6 offset-md-3">
+                <div class="form-group">
+                    <label for="">Tiêu đề</label>
+                    <input type="text" name="title"
+                           class="form-control"
+                           placeholder="Nhập tiêu đề bài viết">
+                    <span id="name-err"
+                          class="validate-err text-danger">
+                    </span>
+                </div>
+                <br>
+
+                <div class="form-group">
+                    <label for="">Hình ảnh</label>
+                    <input type="file" name="image"
+                           class="form-control">
+                    <span id="image-err"
+                          class="validate-err text-danger">
+                    </span>
+                </div>
+                <br>
+
+                <div class="form-group">
+                    <label for="">Mô tả tóm tắt</label>
+                    <textarea type="text" name="shortDescription"
+                           class="form-control"
+                            style="overflow-y: scroll; height: 100px;">
+                    </textarea>
+                    <span id="short-description-err"
+                          class="validate-err text-danger">
+                    </span>
+                </div>
+                <br>
+
+                <div class="form-group">
+                    <label for="">Nội dung</label>
+                    <textarea type="text" name="content"
+                              class="form-control"
+                              style="overflow-y: scroll; height: 300px;">
+                    </textarea>
+                    <span id="content-err"
+                          class="validate-err text-danger">
+                    </span>
+                </div>
+                <br>
+
+                <div class="form-group">
+                    <label for="">Thể loại</label>
+                    <select name="categoryId" class="form-control">
+                        <%for(let i = 0; i < categories.length; i++){%>
+                            <option value="<%= categories[i].id %>">
+                                <%= categories[i].name %>
+                            </option>
+                        <%}%>
+                    </select>
+                </div>
+                <br>
+
+                <div class="form-group">
+                    <label for="">Tác giả</label>
+                    <select name="authorId" class="form-control">
+                        <%for(let i = 0; i < authors.length; i++){%>
+                            <option value="<%= authors[i].id %>">
+                                <%= authors[i].name %>
+                            </option>
+                        <%}%>
+                    </select>
+                </div>
+                <br>
+
+                <div class="text-center">
+                    <button class="btn btn-primary btn-sm" type="submit">
+                        Lưu
+                    </button>
+
+                    &nbsp;
+
+                    <a href="/news" class="btn btn-sm btn-danger">
+                        Hủy
+                    </a>
+                </div>
+
+            </div>
+
+        </form>
+    </main>
+</div>
+
+<%- include('../_share/script'); %>
+<script>
+    function validateForm() {
+        // Initial error message of category name is empty
+        $('.validate-err').text("");
+
+        // Get value of element has attribute "name" is "title"
+        let name = $('[name="title"]').val().trim();
+        if (name.length === 0) {
+            $('#name-err').text("Hãy nhập tiêu đề bài viết");
+            return false;
+        }
+
+        // Image
+        // If tag has attribute "image" has no file
+        if($('[name="image"]').get(0).files.length === 0) {
+            $('#image-err').text("Hãy thêm hình ảnh");
+            return false;
+        }
+
+        if(checkFileImageType(`[name="image"]`) == false) {
+            $('#image-err')
+                .text("Hãy kiểm tra đúng định dạng ảnh webp | jpg | png");
+            return false;
+        }
+
+        let newsShortDescription =
+            $('[name="shortDescription"]').val().trim();
+        if (newsShortDescription.length === 0) {
+            $('#short-description-err')
+                .text("Hãy nhập mô tả tóm tắt bài viết");
+            return false;
+        }
+
+        let newsContent =
+            $('[name="content"]').val().trim();
+        if (newsContent.length === 0) {
+            $('#content-err')
+                .text("Hãy nhập nội dung bài viết");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+</body>
+</html>

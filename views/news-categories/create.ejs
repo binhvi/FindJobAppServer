@@ -15,26 +15,28 @@
                   method="post"
                   onsubmit="return validateForm()">
 
-                <div class="form-group">
-                    <label for="">Tên thể loại bài viết</label>
-                    <input type="text" name="name"
-                           class="form-control"
-                           placeholder="Nhập tên thể loại bài viết">
-                    <span id="name-err"
-                          class="validate-err text-danger">
+                <div class="col-md-6 offset-md-3">
+                    <div class="form-group">
+                        <label for="">Tên thể loại bài viết</label>
+                        <input type="text" name="name"
+                               class="form-control"
+                               placeholder="Nhập tên thể loại bài viết">
+                        <span id="name-err"
+                              class="validate-err text-danger">
                     </span>
-                </div>
+                    </div>
 
-                <div class="text-center">
-                    <button class="btn btn-primary btn-sm" type="submit">
-                        Lưu
-                    </button>
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-sm" type="submit">
+                            Lưu
+                        </button>
 
-                    &nbsp;
+                        &nbsp;
 
-                    <a href="/news-categories" class="btn btn-sm btn-danger">
-                        Hủy
-                    </a>
+                        <a href="/news-categories" class="btn btn-sm btn-danger">
+                            Hủy
+                        </a>
+                    </div>
                 </div>
 
             </form>

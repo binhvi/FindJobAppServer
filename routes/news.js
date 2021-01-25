@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var commonResources = require('../public/javascripts/common');
 var mysql = require('mysql');
+var uniqid = require('uniqid');
 
 var dbConnect = mysql.createConnection({
     host: commonResources.MY_SQL_HOST,
@@ -18,8 +19,9 @@ router.get('/', async (req, res) => {
     // Search
     let keyword = req.query.keyword ==
     undefined ? "" : req.query.keyword.trim();
-    // Find records in database with name contain keyword
-    // (case-insensitive)
+
+    // Find news in database with category and author,
+    // and news's title contain keyword (case-insensitive)
     let sql =
         "select "
             + commonResources.NEWS_TABLE_NAME + "."
@@ -51,6 +53,65 @@ router.get('/', async (req, res) => {
             {news, keyword}
         );
     });
+});
+
+/**
+ * Query database to get categories and authors, then send categories
+ * and authors object to view news/create.ejs
+ */
+router.get('/create', async (req, res) => {
+    let getCategoriesSql =
+        "select * " +
+        "from " + commonResources.NEWS_CATEGORIES_TABLE_NAME + ";";
+    dbConnect.query(getCategoriesSql, function (err, categoryResult, fields) {
+        if (err) throw err;
+        // Copy categoryResult array
+        let categories = categoryResult.slice();
+
+        let getAuthorsSql =
+            "select * " +
+            "from " + commonResources.NEWS_AUTHORS_TABLE_NAME + ";";
+        dbConnect.query(getAuthorsSql, function (e, authorResult, f) {
+           if (err) throw err;
+            let authors = authorResult.slice(); // Copy authorResult array
+            res.render('news/create', {categories, authors});
+        });
+    });
+});
+
+router.post('/create-save', async (req, res) => {
+    // Validate
+    // Validate empty title
+    let title = req.body.title.trim();
+    if (title.length === 0) {
+        res.send("Hãy nhập tiêu đề bài viết");
+        return;
+    }
+
+    // Validate if no file chosen
+    if(!req.files) {
+        res.send("Hãy thêm hình ảnh");
+        return;
+    }
+
+    if(!commonResources.isThisFileAnImage(req.files.image.name)) {
+        // This file doesn't have extension webp|gif|png
+        res.send("Hãy kiểm tra đúng định dạng ảnh webp|jpg|png");
+        return;
+    }
+
+    //
+    // // Pass validate
+    // let sql = "insert into " + commonResources.NEWS_AUTHORS_TABLE_NAME
+    //     + " (" + commonResources.NEWS_AUTHORS_COLUMN_NAME + ") "
+    //     + "values ('" + authorName + "');";
+    // dbConnect.query(sql, function (err, result) {
+    //     if (err) {
+    //         throw err;
+    //     }
+    //
+    //     res.redirect('/news-authors/');
+    // });
 });
 
 module.exports = router;

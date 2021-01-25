@@ -12,6 +12,11 @@ var usersRouter = require('./routes/users');
 var newsCategoriesRouter = require('./routes/news-categories');
 var newsAuthorsRouter = require('./routes/news-authors');
 var newsRouter = require('./routes/news');
+var logger = require('morgan');
+
+const _ = require('lodash');
+const fileUpload = require('express-fileupload');
+const cors = require('cors');
 
 var app = express();
 
@@ -24,6 +29,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//giúp các request truy cập được các file trong thư mục upload
+app.use(express.static(path.join(__dirname, 'uploads')));
+
+app.use(fileUpload({
+  createParentPath: true
+}));
+app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

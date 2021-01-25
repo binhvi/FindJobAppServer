@@ -1,4 +1,4 @@
-function checkfileImageType(selector) {
+function checkFileImageType(selector) {
     var val = $(selector).val();
     switch(val.substring(val.lastIndexOf('.') + 1).toLowerCase()){
         case 'webp': case 'jpg': case 'png':
@@ -10,7 +10,19 @@ function checkfileImageType(selector) {
     }
 }
 
-
+/**
+ * Check if file has extension webp|jpg|png.
+ * @param fileName
+ * @return true if file has extension webp|jpg|png, else return false.
+ */
+module.exports.isThisFileAnImage = (fileName) => {
+    let fileType =
+        fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    if(fileType === 'webp' || fileType === 'jpg' || fileType === 'png') {
+        return true;
+    }
+    return false;
+}
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
 
