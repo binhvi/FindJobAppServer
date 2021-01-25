@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= news.title %></title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container-fluid">
+    <%- include('../_share/header'); %>
+    <main class="container">
+        <p><%= news.category %></p>
+        <h2><%= news.title %></h2>
+        <img src="<%= news.imageUrl %>" class="img-fluid"/>
+        <p>By <i><%= news.author %></i></p>
+        <br>
+        <strong><%= news.shortDescription %></strong>
+        <br>
+        <br>
+        <div>
+            <%= news.content %>
+        </div>
+    </main>
+</div>
+</body>
+</html>

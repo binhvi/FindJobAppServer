@@ -1,30 +1,7 @@
-function checkFileImageType(selector) {
-    var val = $(selector).val();
-    switch(val.substring(val.lastIndexOf('.') + 1).toLowerCase()){
-        case 'webp': case 'jpg': case 'png':
-            return true;
-            break;
-        default:
-            return false;
-            break;
-    }
-}
-
-/**
- * Check if file has extension webp|jpg|png.
- * @param fileName
- * @return true if file has extension webp|jpg|png, else return false.
- */
-module.exports.isThisFileAnImage = (fileName) => {
-    let fileType =
-        fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
-    if(fileType === 'webp' || fileType === 'jpg' || fileType === 'png') {
-        return true;
-    }
-    return false;
-}
-
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
+
+const PROTOCOL = "http";
+const SERVER_HOST = "localhost:3000";
 
 const MY_SQL_HOST = "localhost";
 const MY_SQL_USER = "scott";
@@ -52,7 +29,37 @@ const NEWS_COLUMN_CONTENT = "content";
 const COLUMN_ALIAS_CATEGORY = "category";
 const COLUMN_ALIAS_AUTHOR = "author";
 
+function checkFileImageType(selector) {
+    var val = $(selector).val();
+    switch(val.substring(val.lastIndexOf('.') + 1).toLowerCase()){
+        case 'webp': case 'jpg': case 'png':
+            return true;
+            break;
+        default:
+            return false;
+            break;
+    }
+}
+
+/**
+ * Check if file has extension webp|jpg|png.
+ * @param fileName
+ * @return true if file has extension webp|jpg|png, else return false.
+ */
+module.exports.isThisFileAnImage = (fileName) => {
+    let fileType =
+        fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    if(fileType === 'webp' || fileType === 'jpg' || fileType === 'png') {
+        return true;
+    }
+    return false;
+}
+
+
 module.exports.MY_SQL_ERR_DUPLICATE_CODE = MY_SQL_ERR_DUPLICATE_CODE;
+
+module.exports.SERVER_HOST = SERVER_HOST;
+module.exports.PROTOCOL = PROTOCOL;
 
 module.exports.MY_SQL_HOST = MY_SQL_HOST;
 module.exports.MY_SQL_USER = MY_SQL_USER;

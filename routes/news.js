@@ -100,18 +100,134 @@ router.post('/create-save', async (req, res) => {
         return;
     }
 
-    //
-    // // Pass validate
-    // let sql = "insert into " + commonResources.NEWS_AUTHORS_TABLE_NAME
-    //     + " (" + commonResources.NEWS_AUTHORS_COLUMN_NAME + ") "
-    //     + "values ('" + authorName + "');";
-    // dbConnect.query(sql, function (err, result) {
-    //     if (err) {
-    //         throw err;
-    //     }
-    //
-    //     res.redirect('/news-authors/');
-    // });
+    // Validate empty short description
+    let shortDescription = req.body.shortDescription.trim();
+    if (shortDescription.length === 0) {
+        res.send("Hãy nhập mô tả tóm tắt bài viết");
+        return;
+    }
+
+    // Validate empty short description
+    let content = req.body.content.trim();
+    if (content.length === 0) {
+        res.send("Hãy nhập nội dung bài viết");
+        return;
+    }
+
+    let categoryId = req.body.categoryId;
+    let sqlSelectCategoryById =
+        "select * " +
+        "from " + commonResources.NEWS_CATEGORIES_TABLE_NAME + " " +
+        "where " + commonResources.NEWS_CATEGORIES_COLUMN_ID + "= "
+                    + categoryId;
+    dbConnect.query(sqlSelectCategoryById, function (err, result, field) {
+        if (err) throw err;
+        // result: [{"id":6,"name":"Du học"}] or []
+        if (!result.length) {
+            res.send("Thể loại không tồn tại");
+            return;
+        }
+    });
+
+    let authorId = req.body.authorId;
+    let sqlSelectAuthorById =
+        "select * " +
+        "from " + commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
+        "where " + commonResources.NEWS_AUTHORS_COLUMN_ID + " = "
+                 + authorId;
+    dbConnect.query(sqlSelectAuthorById, function (err, result, field) {
+        if (err) throw err;
+        if (!result.length) {
+            res.send("Tác giả không tồn tại");
+            return;
+        }
+    });
+
+    // Pass validate
+    // Upload file
+    var imgUrl;
+    if(req.files) { // If file is not empty, null
+        let image = req.files.image;
+        //image.name: Original name of upload file
+        const filename = uniqid() + "-" + image.name;
+        //mv: move
+        await image.mv(`./uploads/news/${filename}`);
+        //lưu đường dẫn tương đối tới ảnh lưu trong project,
+        //không lưu cả ảnh vào db
+        imgUrl = commonResources.PROTOCOL + "://"
+                + commonResources.SERVER_HOST + "/news/" + filename;
+    }
+
+    let insertNewsSql =
+        "insert into " + commonResources.NEWS_TABLE_NAME
+        + " (" + commonResources.NEWS_COLUMN_TITLE + ", " +
+                commonResources.NEWS_COLUMN_IMAGE_URL + ", " +
+                commonResources.NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
+                commonResources.NEWS_COLUMN_CONTENT + ", " +
+                commonResources.NEWS_COLUMN_CATEGORY_ID + ", " +
+                commonResources.NEWS_COLUMN_AUTHOR_ID
+        + ") " +
+        "values (" +
+            "'" + title + "', " +
+            "'" + imgUrl + "', " +
+            "'" + shortDescription + "', " +
+            "'" + content + "', " +
+            categoryId + ", " +
+            authorId +
+        ");";
+    dbConnect.query(insertNewsSql, function (err, result) {
+        if (err) {
+            throw err;
+        }
+
+        res.redirect('/news/');
+    });
 });
 
+router.post('/details', async (req, res) => {
+    var newsId = req.body.newsId;
+    let selectNewsByIdSql =
+        "select "
+            // id
+            + commonResources.NEWS_TABLE_NAME + "."
+                + commonResources.NEWS_COLUMN_ID+ ", " +
+            // title
+            commonResources.NEWS_COLUMN_TITLE + ", " +
+            // imgUrl
+            commonResources.NEWS_COLUMN_IMAGE_URL + ", " +
+            // category name
+            commonResources.NEWS_CATEGORIES_TABLE_NAME + "." +
+                commonResources.NEWS_CATEGORIES_COLUMN_NAME
+                + " as " + commonResources.COLUMN_ALIAS_CATEGORY + ", " +
+            // author name
+            commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+                + commonResources.NEWS_AUTHORS_COLUMN_NAME +
+                " as " + commonResources.COLUMN_ALIAS_AUTHOR + ", " +
+            // short description
+            commonResources.NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
+            // content
+            commonResources.NEWS_COLUMN_CONTENT +
+        " from " + commonResources.NEWS_TABLE_NAME + ", " +
+            commonResources.NEWS_CATEGORIES_TABLE_NAME + ", " +
+            commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
+        "where " + commonResources.NEWS_COLUMN_CATEGORY_ID
+            + " = " + commonResources.NEWS_CATEGORIES_TABLE_NAME
+                + "." + commonResources.NEWS_CATEGORIES_COLUMN_ID +
+            " and " + commonResources.NEWS_COLUMN_AUTHOR_ID + " = "
+                + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+                + commonResources.NEWS_AUTHORS_COLUMN_ID +
+            " and " + commonResources.NEWS_TABLE_NAME + "."
+                + commonResources.NEWS_COLUMN_ID + " = ?;";
+    dbConnect.query(
+        selectNewsByIdSql,
+        [newsId], // Escaping value to avoid sql injection
+        function (err, result, fields) {
+            if (err) throw err;
+            let news = result[0]; // result is obj array
+            console.log(news);
+            res.render('news/details', {news});
+        }
+    );
+
+});
 module.exports = router;
