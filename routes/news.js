@@ -384,4 +384,21 @@ router.post('/update-save', async (req, res) => {
     });
 });
 
+router.post('/remove', async (req, res) => {
+    let newsId = req.body.newsId;
+
+    // Delete news with id = ?
+    // Use mysql escaping value to avoid sql injection
+    let deleteNewsByIdSql =
+        "delete from " + commonResources.NEWS_TABLE_NAME + " " +
+        "where " + commonResources.NEWS_COLUMN_ID + " = ?;";
+    dbConnect.query(
+        deleteNewsByIdSql,
+        [newsId],
+        function (err, result) {
+            if (err) throw err;
+        });
+    res.redirect('/news/');
+});
+
 module.exports = router;
