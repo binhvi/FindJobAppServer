@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm bài viết</title>
+    <title>Sửa bài viết</title>
     <%- include('../_share/style'); %>
 </head>
 <body>
 <div class="container-fluid">
     <%- include('../_share/header'); %>
     <main class="container">
-        <h4 class="text-center">Thêm bài viết</h4>
-        <form action="/news/create-save"
+        <h4 class="text-center">Sửa bài viết</h4>
+        <form action="/news/update-save"
               method="post"
               onsubmit="return validateForm()"
               enctype="multipart/form-data">
 
             <div class="col-md-6 offset-md-3">
+                <input name="id"
+                       value="<%= news.id %>"
+                       style="display: none">
                 <div class="form-group">
                     <label for="">Tiêu đề</label>
                     <input type="text" name="title"
                            class="form-control"
-                           placeholder="Nhập tiêu đề bài viết">
+                           placeholder="Nhập tiêu đề bài viết"
+                            value="<%= news.title %>">
                     <span id="name-err"
                           class="validate-err text-danger">
                     </span>
@@ -40,9 +44,13 @@
 
                 <div class="form-group">
                     <label for="">Mô tả tóm tắt</label>
+                        <!-- Don't left space between open and close tag
+                        of textarea because it cause white space
+                        in text box -->
                     <textarea type="text" name="shortDescription"
-                           class="form-control"
-                            style="overflow-y: scroll; height: 100px;"></textarea>
+                              class="form-control"
+                              style="overflow-y: scroll; height: 100px;"
+                    ><%= news.shortDescription%></textarea>
                     <span id="short-description-err"
                           class="validate-err text-danger">
                     </span>
@@ -53,7 +61,8 @@
                     <label for="">Nội dung</label>
                     <textarea type="text" name="content"
                               class="form-control"
-                              style="overflow-y: scroll; height: 300px;"></textarea>
+                              style="overflow-y: scroll; height: 300px;"
+                    ><%= news.content %></textarea>
                     <span id="content-err"
                           class="validate-err text-danger">
                     </span>
@@ -64,7 +73,11 @@
                     <label for="">Thể loại</label>
                     <select name="categoryId" class="form-control">
                         <%for(let i = 0; i < categories.length; i++){%>
-                            <option value="<%= categories[i].id %>">
+                            <option
+                                <% if(categories[i].id == news.categoryId) { %>
+                                    selected
+                                <% } %>
+                                value="<%= categories[i].id %>">
                                 <%= categories[i].name %>
                             </option>
                         <%}%>
@@ -76,7 +89,11 @@
                     <label for="">Tác giả</label>
                     <select name="authorId" class="form-control">
                         <%for(let i = 0; i < authors.length; i++){%>
-                            <option value="<%= authors[i].id %>">
+                            <option
+                                <% if(authors[i].id == news. authorId) { %>
+                                    selected
+                                <% } %>
+                                value="<%= authors[i].id %>">
                                 <%= authors[i].name %>
                             </option>
                         <%}%>
@@ -105,7 +122,7 @@
 <%- include('../_share/script'); %>
 <script>
     function validateForm() {
-        // Initial error message of category name is empty
+        // Initial error messages is empty
         $('.validate-err').text("");
 
         // Get value of element has attribute "name" is "title"
@@ -116,13 +133,10 @@
         }
 
         // Image
-        // If tag has attribute "image" has no file
-        if($('[name="image"]').get(0).files.length === 0) {
-            $('#image-err').text("Hãy thêm hình ảnh");
-            return false;
-        }
-
-        if(checkFileImageType(`[name="image"]`) == false) {
+        // If user don't upload new file, don't need check
+        // If user upload new file, check if file extension is image format
+        if($('[name="image"]').get(0).files.length !== 0 &&
+            checkFileImageType(`[name="image"]`) === false) {
             $('#image-err')
                 .text("Hãy kiểm tra đúng định dạng ảnh webp | jpg | png");
             return false;

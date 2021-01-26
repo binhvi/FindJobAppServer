@@ -70,7 +70,7 @@ router.post('/update', async (req, res) => {
         + newsAuthorId;
     dbConnect.query(sql, function (err, result, field) {
         if (err) throw err;
-        // result: [{"id":1,"name":"Adimin"}]
+        // result: [{"id":1,"name":"Admin"}]
         let newsAuthorObj = result[0];
         res.render('news-authors/update',
             {newsAuthorObj}
