@@ -1,5 +1,3 @@
-const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
-
 const PROTOCOL = "http";
 const SERVER_HOST = "localhost:3000";
 
@@ -7,6 +5,8 @@ const MY_SQL_HOST = "localhost";
 const MY_SQL_USER = "scott";
 const MY_SQL_PASSWORD = "tiger";
 const MY_SQL_DATABASE_NAME = "FindJobApp";
+
+const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
 
 // Table and column names
 const NEWS_CATEGORIES_TABLE_NAME = "NewsCategories";
@@ -28,6 +28,22 @@ const NEWS_COLUMN_CONTENT = "content";
 
 const COLUMN_ALIAS_CATEGORY = "category";
 const COLUMN_ALIAS_AUTHOR = "author";
+
+// Pagination constants
+const DEFAULT_ITEM_PER_PAGE_NUM = 100;
+const MIN_ITEM_PER_PAGE_NUM = 1;
+const MAX_ITEM_PER_PAGE_NUM = 500;
+
+const DEFAULT_PAGE_INDEX = 1;
+
+const DEFAULT_MYSQL_OFFSET = 0;
+
+// Response keys
+const RESPONSE_KEY_TOTAL_ITEMS = "total";
+const RESPONSE_KEY_NUMBER_OF_ITEMS_PER_PAGE = "perpage";
+const RESPONSE_KEY_PAGE_INDEX = "page";
+const RESPONSE_KEY_NUMBER_OF_PAGES = "pages";
+const RESPONSE_KEY_RESULT_STATUS = "result";
 
 function checkFileImageType(selector) {
     var val = $(selector).val();
@@ -85,6 +101,25 @@ module.exports.NEWS_COLUMN_CONTENT = NEWS_COLUMN_CONTENT;
 
 module.exports.COLUMN_ALIAS_CATEGORY = COLUMN_ALIAS_CATEGORY;
 module.exports.COLUMN_ALIAS_AUTHOR = COLUMN_ALIAS_AUTHOR;
+
+module.exports.DEFAULT_ITEM_PER_PAGE_NUM = DEFAULT_ITEM_PER_PAGE_NUM;
+module.exports.MIN_ITEM_PER_PAGE_NUM = MIN_ITEM_PER_PAGE_NUM;
+module.exports.MAX_ITEM_PER_PAGE_NUM = MAX_ITEM_PER_PAGE_NUM;
+
+module.exports.DEFAULT_PAGE_INDEX = DEFAULT_PAGE_INDEX;
+
+module.exports.DEFAULT_MYSQL_OFFSET = DEFAULT_MYSQL_OFFSET;
+
+module.exports.RESPONSE_KEY_TOTAL_ITEMS = RESPONSE_KEY_TOTAL_ITEMS;
+module.exports.RESPONSE_KEY_NUMBER_OF_ITEMS_PER_PAGE =
+                                RESPONSE_KEY_NUMBER_OF_ITEMS_PER_PAGE;
+module.exports.RESPONSE_KEY_PAGE_INDEX = RESPONSE_KEY_PAGE_INDEX;
+module.exports.RESPONSE_KEY_NUMBER_OF_PAGES = RESPONSE_KEY_NUMBER_OF_PAGES;
+module.exports.RESPONSE_KEY_RESULT_STATUS = RESPONSE_KEY_RESULT_STATUS;
+
+
+
+
 
 
 
