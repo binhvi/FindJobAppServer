@@ -343,43 +343,69 @@ router.post('/update-save', async (req, res) => {
             });
 
             // Pass validate
-            // Upload file
-            var imgUrl;
-            if(req.files) { // If file is not empty, null
-                let image = req.files.image;
-                //image.name: Original name of upload file
-                const filename = uniqid() + "-" + image.name;
-                //mv: move
-                await image.mv(`./uploads/news/${filename}`);
-                // Save image url to database, not save file
-                imgUrl = commonResources.PROTOCOL + "://"
-                    + commonResources.SERVER_HOST + "/news/" + filename;
+            if(req.files) {
+                // Upload file
+                var imgUrl;
+                if(req.files) { // If file is not empty, null
+                    let image = req.files.image;
+                    //image.name: Original name of upload file
+                    const filename = uniqid() + "-" + image.name;
+                    //mv: move
+                    await image.mv(`./uploads/news/${filename}`);
+                    // Save image url to database, not save file
+                    imgUrl = commonResources.PROTOCOL + "://"
+                        + commonResources.SERVER_HOST + "/news/" + filename;
+                }
+
+                let updateNewsByIdSql =
+                    "update " + commonResources.NEWS_TABLE_NAME + " " +
+                    "set " + commonResources.NEWS_COLUMN_TITLE + " = '" +
+                    title + "', " +
+                    commonResources.NEWS_COLUMN_IMAGE_URL + " = '" +
+                    imgUrl + "', " +
+                    commonResources.NEWS_COLUMN_SHORT_DESCRIPTION +
+                    " = '" + shortDescription + "', " +
+                    commonResources.NEWS_COLUMN_CONTENT + " = '" +
+                    content + "', " +
+                    commonResources.NEWS_COLUMN_CATEGORY_ID + " = " +
+                    categoryId + ", " +
+                    commonResources.NEWS_COLUMN_AUTHOR_ID + " = " +
+                    authorId + " " +
+                    "where " + commonResources.NEWS_COLUMN_ID + " = ?";
+
+                dbConnect.query(
+                    updateNewsByIdSql,
+                    [newsId], // Escaping value to avoid sql injection
+                    function (err, result) {
+                        if (err) throw err;
+                        res.redirect('/news/');
+                    }
+                );
+            } else {
+                let updateNewsByIdSql =
+                    "update " + commonResources.NEWS_TABLE_NAME + " " +
+                    "set " + commonResources.NEWS_COLUMN_TITLE + " = '" +
+                    title + "', " +
+                    commonResources.NEWS_COLUMN_SHORT_DESCRIPTION +
+                    " = '" + shortDescription + "', " +
+                    commonResources.NEWS_COLUMN_CONTENT + " = '" +
+                    content + "', " +
+                    commonResources.NEWS_COLUMN_CATEGORY_ID + " = " +
+                    categoryId + ", " +
+                    commonResources.NEWS_COLUMN_AUTHOR_ID + " = " +
+                    authorId + " " +
+                    "where " + commonResources.NEWS_COLUMN_ID + " = ?";
+
+                dbConnect.query(
+                    updateNewsByIdSql,
+                    [newsId], // Escaping value to avoid sql injection
+                    function (err, result) {
+                        if (err) throw err;
+                        res.redirect('/news/');
+                    }
+                );
             }
 
-            let updateNewsByIdSql =
-                "update " + commonResources.NEWS_TABLE_NAME + " " +
-                "set " + commonResources.NEWS_COLUMN_TITLE + " = '" +
-                            title + "', " +
-                        commonResources.NEWS_COLUMN_IMAGE_URL + " = '" +
-                            imgUrl + "', " +
-                        commonResources.NEWS_COLUMN_SHORT_DESCRIPTION +
-                            " = '" + shortDescription + "', " +
-                        commonResources.NEWS_COLUMN_CONTENT + " = '" +
-                            content + "', " +
-                        commonResources.NEWS_COLUMN_CATEGORY_ID + " = " +
-                            categoryId + ", " +
-                        commonResources.NEWS_COLUMN_AUTHOR_ID + " = " +
-                            authorId + " " +
-                "where " + commonResources.NEWS_COLUMN_ID + " = ?";
-
-            dbConnect.query(
-                updateNewsByIdSql,
-                [newsId], // Escaping value to avoid sql injection
-                function (err, result) {
-                    if (err) throw err;
-                    res.redirect('/news/');
-                }
-            );
         }
     });
 });

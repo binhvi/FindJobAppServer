@@ -1,10 +1,10 @@
 const PROTOCOL = "http";
 const SERVER_HOST = "localhost:3000";
 
-const MY_SQL_HOST = "localhost";
-const MY_SQL_USER = "scott";
+const MY_SQL_HOST = "johnny.heliohost.org"; // db4free.net
+const MY_SQL_USER = "findjob_scott";
 const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "FindJobApp";
+const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
 
