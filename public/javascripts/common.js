@@ -1,7 +1,10 @@
-const PROTOCOL = "http";
-const SERVER_HOST = "localhost:3000";
+const PROTOCOL = "https";
+const SERVER_HOST = "find-job-app.herokuapp.com";
 
-const MY_SQL_HOST = "johnny.heliohost.org"; // db4free.net
+// const PROTOCOL = "http";
+// const SERVER_HOST = "localhost:3000";
+
+const MY_SQL_HOST = "johnny.heliohost.org";
 const MY_SQL_USER = "findjob_scott";
 const MY_SQL_PASSWORD = "tiger";
 const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
