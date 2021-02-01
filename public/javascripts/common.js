@@ -1,22 +1,22 @@
 // Host deploy
-const PROTOCOL = "https";
-const SERVER_HOST = "find-job-app.herokuapp.com";
+// const PROTOCOL = "https";
+// const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-// const PROTOCOL = "http";
-// const SERVER_HOST = "localhost:3000";
+const PROTOCOL = "http";
+const SERVER_HOST = "localhost:3000";
 
 // Host database deploy
-const MY_SQL_HOST = "johnny.heliohost.org";
-const MY_SQL_USER = "findjob_scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
+// const MY_SQL_HOST = "johnny.heliohost.org";
+// const MY_SQL_USER = "findjob_scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database development
-// const MY_SQL_HOST = "localhost";
-// const MY_SQL_USER = "scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "FindJobApp";
+const MY_SQL_HOST = "localhost";
+const MY_SQL_USER = "scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "FindJobApp";
 
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
@@ -49,6 +49,10 @@ const GENDERS_COLUMN_NAME = "name";
 const TYPES_OF_WORK_TABLE_NAME = "TypesOfWork";
 const TYPES_OF_WORK_COLUMN_ID = "id";
 const TYPES_OF_WORK_COLUMN_NAME = "name";
+
+const LEVELS_OF_EDUCATION_TABLE_NAME = "LevelsOfEducation";
+const LEVELS_OF_EDUCATION_COLUMN_ID = "id";
+const LEVELS_OF_EDUCATION_COLUMN_NAME = "levelOfEducationName";
 
 // Pagination constants
 const DEFAULT_ITEM_PER_PAGE_NUM = 100;
@@ -130,6 +134,10 @@ module.exports.GENDERS_COLUMN_NAME = GENDERS_COLUMN_NAME;
 module.exports.TYPES_OF_WORK_TABLE_NAME = TYPES_OF_WORK_TABLE_NAME;
 module.exports.TYPES_OF_WORK_COLUMN_ID = TYPES_OF_WORK_COLUMN_ID;
 module.exports.TYPES_OF_WORK_COLUMN_NAME = TYPES_OF_WORK_COLUMN_NAME;
+
+module.exports.LEVELS_OF_EDUCATION_TABLE_NAME = LEVELS_OF_EDUCATION_TABLE_NAME;
+module.exports.LEVELS_OF_EDUCATION_COLUMN_ID = LEVELS_OF_EDUCATION_COLUMN_ID;
+module.exports.LEVELS_OF_EDUCATION_COLUMN_NAME = LEVELS_OF_EDUCATION_COLUMN_NAME;
 
 module.exports.DEFAULT_ITEM_PER_PAGE_NUM = DEFAULT_ITEM_PER_PAGE_NUM;
 module.exports.MIN_ITEM_PER_PAGE_NUM = MIN_ITEM_PER_PAGE_NUM;

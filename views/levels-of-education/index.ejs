@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trình độ học vấn</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container-fluid">
+
+    <main class="container">
+        <%- include('../_share/header'); %>
+        <h4 class="text-center">Trình độ học vấn</h4>
+        <table class="table table-striped">
+            <thead>
+            <th>ID</th>
+            <th>Trình độ học vấn</th>
+            </thead>
+
+            <tbody>
+            <% for(let i = 0; i < levelsOfEducation.length; i++) {%>
+                <tr>
+                    <td><%= levelsOfEducation[i].id %></td>
+                    <td>
+                        <%= levelsOfEducation[i].levelOfEducationName %>
+                    </td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </main>
+</div>
+</body>
+</html>
+

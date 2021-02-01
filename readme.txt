@@ -1,4 +1,5 @@
-localhost:3000
+localhost:3000 (development)
+https://find-job-app.herokuapp.com (deploy)
 
 News
 
@@ -24,3 +25,8 @@ GET /api/genders
 TypesOfWork
 GET /api/types-of-work
 (web: /types-of-work)
+
+=========
+LevelsOfEducation
+GET /api/levels-of-education
+(web: /levels-of-education)

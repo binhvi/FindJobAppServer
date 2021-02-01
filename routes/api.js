@@ -378,8 +378,26 @@ router.get('/types-of-work', async (req, res) => {
         let typesOfWork = result;
         res.json({
             result: true,
-            genders: typesOfWork
+            typesOfWork: typesOfWork
         });
+    });
+});
+
+// Levels of education
+// Types of work
+router.get('/levels-of-education', async (req, res) => {
+    let selectAllLevelsOfEducationSql =
+        "select * " +
+        "from " + commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + ";";
+    dbConnect.query(
+        selectAllLevelsOfEducationSql,
+        function (err, result, fields) {
+            if (err) throw err;
+            let levelsOfEducation = result;
+            res.json({
+                result: true,
+                levelsOfEducation: levelsOfEducation
+            });
     });
 });
 
