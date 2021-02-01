@@ -4,9 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-
-
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var newsCategoriesRouter = require('./routes/news-categories');
@@ -14,6 +11,7 @@ var newsAuthorsRouter = require('./routes/news-authors');
 var newsRouter = require('./routes/news');
 var apiRouter = require('./routes/api');
 var gendersRouter = require('./routes/genders');
+var typesOfWorkRouter = require('./routes/types-of-work');
 
 var logger = require('morgan');
 
@@ -48,6 +46,7 @@ app.use('/news-authors', newsAuthorsRouter);
 app.use('/news', newsRouter);
 app.use('/api', apiRouter);
 app.use('/genders', gendersRouter);
+app.use('/types-of-work', typesOfWorkRouter);
 
 
 // catch 404 and forward to error handler

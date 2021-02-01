@@ -19,3 +19,8 @@ GET /api/news-categories
 Genders
 GET /api/genders
 (web: /genders)
+
+========
+TypesOfWork
+GET /api/types-of-work
+(web: /types-of-work)

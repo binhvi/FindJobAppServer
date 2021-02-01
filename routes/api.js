@@ -368,4 +368,19 @@ router.get('/genders', async (req, res) => {
     });
 });
 
+// Types of work
+router.get('/types-of-work', async (req, res) => {
+    let selectAllTypesOfWorkSql =
+        "select * " +
+        "from " + commonResources.TYPES_OF_WORK_TABLE_NAME + ";";
+    dbConnect.query(selectAllTypesOfWorkSql, function (err, result, fields) {
+        if (err) throw err;
+        let typesOfWork = result;
+        res.json({
+            result: true,
+            genders: typesOfWork
+        });
+    });
+});
+
 module.exports = router;
