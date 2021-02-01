@@ -1,19 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var commonResources = require('../public/javascripts/common');
-var mysql = require('mysql');
 var uniqid = require('uniqid');
-
-var dbConnect = mysql.createConnection({
-    host: commonResources.MY_SQL_HOST,
-    user: commonResources.MY_SQL_USER,
-    password: commonResources.MY_SQL_PASSWORD,
-    database: commonResources.MY_SQL_DATABASE_NAME
-});
-
-dbConnect.connect(function (err) {
-    if (err) throw err;
-});
+var dbConnect = require('../public/javascripts/db');
 
 router.get('/', async (req, res) => {
     // Search
