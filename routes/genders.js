@@ -1,7 +1,7 @@
-// var express = require('express');
-// var router = express.Router();
-// var commonResources = require('../public/javascripts/common');
-// var mysql = require('mysql');
+var express = require('express');
+var router = express.Router();
+var commonResources = require('../public/javascripts/common');
+var mysql = require('mysql');
 //
 // var dbConnect = mysql.createConnection({
 //     host: commonResources.MY_SQL_HOST,
@@ -25,4 +25,4 @@
 //     });
 // });
 //
-// module.exports = router;
+module.exports = router;
