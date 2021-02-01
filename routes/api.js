@@ -349,4 +349,34 @@ router.post('/news', async (req, res) =>  {
     }
 });
 
+// News categories
+router.get('/news-categories', async (req, res) => {
+    let getNewsCategorySql =
+        "select * " +
+        "from " + commonResources.NEWS_CATEGORIES_TABLE_NAME + ";";
+    dbConnect.query(getNewsCategorySql, function (err, result, fields) {
+        if (err) throw err;
+        let newsCategories = result;
+        res.json({
+            result: true,
+            newsCategories: newsCategories
+        });
+    });
+});
+
+// Genders
+router.get('/genders', async (req, res) => {
+    let getGendersSql =
+        "select * " +
+        "from " + commonResources.GENDERS_TABLE_NAME + ";";
+    dbConnect.query(getGendersSql, function (err, result, fields) {
+        if (err) throw err;
+        let genders = result;
+        res.json({
+            result: true,
+            genders: genders
+        });
+    });
+});
+
 module.exports = router;

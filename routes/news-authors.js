@@ -146,4 +146,63 @@ router.post('/remove', async (req, res) => {
     res.redirect('/news-authors/');
 });
 
+router.get('/details/:authorId', async (req, res) => {
+    let authorId = req.params.authorId;
+    let selectCategoryByIdSql =
+        "select * " +
+        "from " + commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
+        "where " + commonResources.NEWS_AUTHORS_COLUMN_ID + " = ?;";
+    dbConnect.query(
+        selectCategoryByIdSql,
+        [authorId],
+        function (err, resultAuthor) {
+            if (err) throw err;
+            let author = resultAuthor[0]; // result is obj array
+
+            // Query list of news of this category
+            let selectNewsOfThisAuthorSql =
+                "select "
+                    + commonResources.NEWS_TABLE_NAME + "."
+                    + commonResources.NEWS_COLUMN_ID+ ", " +
+                    commonResources.NEWS_COLUMN_TITLE + ", " +
+                    commonResources.NEWS_COLUMN_IMAGE_URL + ", " +
+
+                    commonResources.NEWS_CATEGORIES_TABLE_NAME + "." +
+                    commonResources.NEWS_CATEGORIES_COLUMN_NAME
+                    + " as " + commonResources.COLUMN_ALIAS_CATEGORY + ", " +
+
+                    commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+                    + commonResources.NEWS_AUTHORS_COLUMN_NAME +
+                    " as " + commonResources.COLUMN_ALIAS_AUTHOR +
+
+                " from " + commonResources.NEWS_TABLE_NAME + ", " +
+                    commonResources.NEWS_CATEGORIES_TABLE_NAME + ", " +
+                    commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
+
+                "where " + commonResources.NEWS_COLUMN_CATEGORY_ID
+                    + " = " + commonResources.NEWS_CATEGORIES_TABLE_NAME
+                    + "." + commonResources.NEWS_CATEGORIES_COLUMN_ID +
+
+                    " and " + commonResources.NEWS_COLUMN_AUTHOR_ID + " = "
+                    + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+                    + commonResources.NEWS_AUTHORS_COLUMN_ID + " " +
+
+                    " and " + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+                        + commonResources.NEWS_AUTHORS_COLUMN_ID
+                        + " = ?;";
+            dbConnect.query(
+                selectNewsOfThisAuthorSql,
+                [authorId],
+                function (err, newsResult, fields) {
+                    if (err) throw err;
+                    let news = newsResult;
+                    res.render(
+                        'news-authors/details',
+                        {author, news}
+                    );
+                }
+            );
+        });
+});
+
 module.exports = router;

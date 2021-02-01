@@ -13,6 +13,7 @@ var newsCategoriesRouter = require('./routes/news-categories');
 var newsAuthorsRouter = require('./routes/news-authors');
 var newsRouter = require('./routes/news');
 var apiRouter = require('./routes/api');
+var gendersRouter = require('./routes/genders');
 
 var logger = require('morgan');
 
@@ -46,6 +47,7 @@ app.use('/news-categories', newsCategoriesRouter);
 app.use('/news-authors', newsAuthorsRouter);
 app.use('/news', newsRouter);
 app.use('/api', apiRouter);
+app.use('/genders', gendersRouter);
 
 
 // catch 404 and forward to error handler

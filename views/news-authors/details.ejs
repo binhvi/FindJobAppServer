@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tác giả: <%= author.name %></title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container-fluid">
+    <%- include('../_share/header'); %>
+    <main class="container">
+        <div class="jumbotron text-center">
+            <h1 class="display-6"> <%= author.name  %> </h1>
+            <p>id: <%= author.id %></p>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+            <th>Tiêu đề</th>
+            <th>Hình ảnh</th>
+            <th>Thể loại</th>
+            <th>Tác giả</th>
+            </thead>
+
+            <tbody>
+            <% for(let i = 0; i < news.length; i++) {%>
+                <tr>
+                    <td><strong><%= news[i].title %></strong></td>
+                    <td>
+                        <img src="<%= news[i].imageUrl %>" width="100px"/>
+                    </td>
+                    <td><%= news[i].category %></td>
+                    <td><%= news[i].author %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+</body>
+</html>
+
