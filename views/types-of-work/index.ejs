@@ -7,28 +7,28 @@
     <%- include('../_share/style'); %>
 </head>
 <body>
-<div class="container-fluid">
-
-    <main class="container">
+    <div class="container">
         <%- include('../_share/header'); %>
-        <h4 class="text-center">Kiểu công việc</h4>
-        <table class="table table-striped">
-            <thead>
-            <th>ID</th>
-            <th>Kiểu công việc</th>
-            </thead>
+        <main class="container-fluid">
+            <h4 class="text-center">Kiểu công việc</h4>
+            <table class="table table-striped">
+                <thead>
+                <th>ID</th>
+                <th>Kiểu công việc</th>
+                </thead>
 
-            <tbody>
-            <% for(let i = 0; i < typesOfWork.length; i++) {%>
-                <tr>
-                    <td><%= typesOfWork[i].id %></td>
-                    <td><%= typesOfWork[i].name %></td>
-                </tr>
-            <% } %>
-            </tbody>
-        </table>
-    </main>
-</div>
+                <tbody>
+                <% for(let i = 0; i < typesOfWork.length; i++) {%>
+                    <tr>
+                        <td><%= typesOfWork[i].id %></td>
+                        <td><%= typesOfWork[i].name %></td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </main>
+        <%- include('../_share/footer'); %>
+    </div>
 </body>
 </html>
 

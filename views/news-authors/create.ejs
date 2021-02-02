@@ -7,55 +7,57 @@
     <%- include('../_share/style'); %>
 </head>
 <body>
-<div class="container-fluid">
-    <%- include('../_share/header'); %>
-    <main class="container">
-        <h4 class="text-center">Thêm tác giả bài viết</h4>
-        <form action="/news-authors/create-save"
-              method="post"
-              onsubmit="return validateForm()">
+    <div class="container">
+        <%- include('../_share/header'); %>
 
-            <div class="col-md-6 offset-md-3">
-                <div class="form-group">
-                    <label for="">Tên tác giả bài viết</label>
-                    <input type="text" name="name"
-                           class="form-control"
-                           placeholder="Nhập tên tác giả bài viết">
-                    <span id="name-err"
-                          class="validate-err text-danger">
-                </span>
+        <main class="container-fluid">
+            <h4 class="text-center">Thêm tác giả bài viết</h4>
+            <form action="/news-authors/create-save"
+                  method="post"
+                  onsubmit="return validateForm()">
+
+                <div class="col-md-6 offset-md-3">
+                    <div class="form-group">
+                        <label for="">Tên tác giả bài viết</label>
+                        <input type="text" name="name"
+                               class="form-control"
+                               placeholder="Nhập tên tác giả bài viết">
+                        <span id="name-err"
+                              class="validate-err text-danger">
+                    </span>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-sm" type="submit">
+                            Lưu
+                        </button>
+                        &nbsp;
+                        <a href="/news-authors" class="btn btn-sm btn-danger">
+                            Hủy
+                        </a>
+                    </div>
                 </div>
 
-                <div class="text-center">
-                    <button class="btn btn-primary btn-sm" type="submit">
-                        Lưu
-                    </button>
-                    &nbsp;
-                    <a href="/news-authors" class="btn btn-sm btn-danger">
-                        Hủy
-                    </a>
-                </div>
-            </div>
+            </form>
+        </main>
+        <%- include('../_share/footer'); %>
+    </div>
 
-        </form>
-    </main>
-</div>
+    <%- include('../_share/script'); %>
+    <script>
+        function validateForm() {
+            // Initial error message of category name is empty
+            $('.validate-err').text("");
 
-<%- include('../_share/script'); %>
-<script>
-    function validateForm() {
-        // Initial error message of category name is empty
-        $('.validate-err').text("");
+            // Get value of element has attribute "name" is "name"
+            let name = $('[name="name"]').val().trim();
+            if (name.length === 0) {
+                $('#name-err').text("Hãy nhập tên tác giả");
+                return false;
+            }
 
-        // Get value of element has attribute "name" is "name"
-        let name = $('[name="name"]').val().trim();
-        if (name.length === 0) {
-            $('#name-err').text("Hãy nhập tên tác giả");
-            return false;
+            return true;
         }
-
-        return true;
-    }
-</script>
+    </script>
 </body>
 </html>

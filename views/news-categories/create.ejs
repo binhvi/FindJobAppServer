@@ -7,9 +7,9 @@
     <%- include('../_share/style'); %>
 </head>
 <body>
-    <div class="container-fluid">
+    <div class="container">
         <%- include('../_share/header'); %>
-        <main class="container">
+        <main class="container-fluid">
             <h4 class="text-center">Thêm thể loại bài viết</h4>
             <form action="/news-categories/create-save"
                   method="post"
@@ -41,6 +41,7 @@
 
             </form>
         </main>
+        <%- include('../_share/footer'); %>
     </div>
 
     <%- include('../_share/script'); %>

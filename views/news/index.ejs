@@ -7,98 +7,97 @@
     <%- include('../_share/style'); %>
 </head>
 <body>
-<div class="container-fluid">
-
-    <main class="container">
+    <div class="container">
         <%- include('../_share/header'); %>
-        <h4 class="text-center">Bài viết</h4>
-
-        <div class="row">
-            <div class="col-4">
-                <form action="" method="GET">
-                    <div class="form-group">
-                        <label for="">Tìm kiếm</label>
-                        <input type="text" name="keyword"  class="form-control" value="<%= keyword %>">
-                    </div>
-                    <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
-                </form>
+        <main class="container-fluid">
+            <h4 class="text-center">Bài viết</h4>
+            <div class="row">
+                <div class="col-4">
+                    <form action="" method="GET">
+                        <div class="form-group">
+                            <label for="">Tìm kiếm</label>
+                            <input type="text" name="keyword"  class="form-control" value="<%= keyword %>">
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
+                    </form>
+                </div>
             </div>
-        </div>
 
-        <table class="table table-striped">
-            <thead>
-                <th>Tiêu đề</th>
-                <th>Hình ảnh</th>
-                <th>Thể loại</th>
-                <th>Tác giả</th>
+            <table class="table table-striped">
+                <thead>
+                    <th>Tiêu đề</th>
+                    <th>Hình ảnh</th>
+                    <th>Thể loại</th>
+                    <th>Tác giả</th>
 
-                <th>
-                    <a
-                            href="/news/create"
-                            class="btn btn-sm btn-success">
-                        Tạo mới
-                    </a>
-                </th>
-            </thead>
+                    <th>
+                        <a
+                                href="/news/create"
+                                class="btn btn-sm btn-success">
+                            Tạo mới
+                        </a>
+                    </th>
+                </thead>
 
-            <tbody>
-            <% for(let i = 0; i < news.length; i++) {%>
-                <tr>
-                    <td><strong><%= news[i].title %></strong></td>
-                    <td>
-                        <img src="<%= news[i].imageUrl %>" width="100px"/>
-                    </td>
-                    <td><%= news[i].category %></td>
-                    <td><%= news[i].author %></td>
-
+                <tbody>
+                <% for(let i = 0; i < news.length; i++) {%>
+                    <tr>
+                        <td><strong><%= news[i].title %></strong></td>
+                        <td>
+                            <img src="<%= news[i].imageUrl %>" width="100px"/>
+                        </td>
+                        <td><%= news[i].category %></td>
+                        <td><%= news[i].author %></td>
 
 
-                    <td>
-                        <form action="/news/details" method="post"
-                              style="display: inline-block">
-                            <input name="newsId"
-                                   value="<%= news[i].id %>"
-                                   style="display:none;"
-                            />
-                            <button type="submit"
-                                    class="btn btn-info btn-sm">
-                                Chi tiết
-                            </button>
-                        </form>
-                        &nbsp;
-                        <form action="/news/update" method="post"
-                              style="display: inline-block">
-                            <input name="newsId"
-                                   value="<%= news[i].id %>"
-                                   style="display:none;"
-                            />
-                            <button type="submit" class="btn btn-warning btn-sm">
-                                Cập nhật
-                            </button>
-                        </form>
 
-                        &nbsp;
+                        <td>
+                            <form action="/news/details" method="post"
+                                  style="display: inline-block">
+                                <input name="newsId"
+                                       value="<%= news[i].id %>"
+                                       style="display:none;"
+                                />
+                                <button type="submit"
+                                        class="btn btn-info btn-sm">
+                                    Chi tiết
+                                </button>
+                            </form>
+                            &nbsp;
+                            <form action="/news/update" method="post"
+                                  style="display: inline-block">
+                                <input name="newsId"
+                                       value="<%= news[i].id %>"
+                                       style="display:none;"
+                                />
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    Cập nhật
+                                </button>
+                            </form>
 
-                        <form action="/news/remove" method="post"
-                              style="display: inline-block">
-                            <input name="newsId"
-                                   value="<%= news[i].id %>"
-                                   style="display:none;" />
-                            <button type="submit"
-                                    onclick="return confirm('Bạn có ' +
-                                     'chắc chắn muốn xóa bài viết này?')"
-                                    class="btn btn-danger btn-sm">
-                                Xóa
-                            </button>
-                        </form>
+                            &nbsp;
 
-                    </td>
-                </tr>
-            <% } %>
-            </tbody>
-        </table>
-    </main>
-</div>
+                            <form action="/news/remove" method="post"
+                                  style="display: inline-block">
+                                <input name="newsId"
+                                       value="<%= news[i].id %>"
+                                       style="display:none;" />
+                                <button type="submit"
+                                        onclick="return confirm('Bạn có ' +
+                                         'chắc chắn muốn xóa bài viết này?')"
+                                        class="btn btn-danger btn-sm">
+                                    Xóa
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </main>
+        <%- include('../_share/footer'); %>
+    </div>
 </body>
 </html>
 

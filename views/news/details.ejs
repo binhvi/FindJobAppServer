@@ -7,22 +7,25 @@
     <%- include('../_share/style'); %>
 </head>
 <body>
-<div class="container-fluid">
-    <%- include('../_share/header'); %>
-    <main class="container">
-        <p><%= news.category %></p>
-        <h2><%= news.title %></h2>
-        <img src="<%= news.imageUrl %>" class="img-fluid"/>
-        <br>
-        <strong><%= news.shortDescription %></strong>
-        <br>
-        <br>
-        <div>
-            <%= news.content %>
-        </div>
-        <br>
-        <p><b><%= news.author %></b></p>
-    </main>
-</div>
+    <div class="container">
+        <%- include('../_share/header'); %>
+
+        <main class="container-fluid">
+            <p><%= news.category %></p>
+            <h2><%= news.title %></h2>
+            <img src="<%= news.imageUrl %>" class="img-fluid"/>
+            <br>
+            <strong><%= news.shortDescription %></strong>
+            <br>
+            <br>
+            <div>
+                <%= news.content %>
+            </div>
+            <br>
+            <p><b><%= news.author %></b></p>
+        </main>
+
+        <%- include('../_share/footer'); %>
+    </div>
 </body>
 </html>
