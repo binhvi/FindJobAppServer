@@ -1,22 +1,22 @@
 // Host deploy
-const PROTOCOL = "https";
-const SERVER_HOST = "find-job-app.herokuapp.com";
+// const PROTOCOL = "https";
+// const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-// const PROTOCOL = "http";
-// const SERVER_HOST = "localhost:3000";
+const PROTOCOL = "http";
+const SERVER_HOST = "localhost:3000";
 
 // Host database deploy
-const MY_SQL_HOST = "johnny.heliohost.org";
-const MY_SQL_USER = "findjob_scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
+// const MY_SQL_HOST = "johnny.heliohost.org";
+// const MY_SQL_USER = "findjob_scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database development
-// const MY_SQL_HOST = "localhost";
-// const MY_SQL_USER = "scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "FindJobApp";
+const MY_SQL_HOST = "localhost";
+const MY_SQL_USER = "scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "FindJobApp";
 
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
@@ -53,6 +53,27 @@ const TYPES_OF_WORK_COLUMN_NAME = "name";
 const LEVELS_OF_EDUCATION_TABLE_NAME = "LevelsOfEducation";
 const LEVELS_OF_EDUCATION_COLUMN_ID = "id";
 const LEVELS_OF_EDUCATION_COLUMN_NAME = "levelOfEducationName";
+
+const USERS_TABLE_NAME = "Users";
+const USERS_COLUMN_ID = "id";
+const USERS_COLUMN_FULL_NAME = "fullName";
+const USERS_COLUMN_PASSWORD = "password";
+const USERS_COLUMN_EMAIL = "email";
+const USERS_COLUMN_PHONE = "phone";
+const USERS_COLUMN_EXPECTED_SALARY_MIL_VND = "expectedSalaryInMilionVnd";
+const USERS_COLUMN_GRADUATED_EDUCATION_ID = "graduatedEducationId";
+const USERS_COLUMN_YEARS_OF_EXPERIENCE = "yearsOfExperience";
+const USERS_COLUMN_CAREER_OBJECTIVE = "careerObjective";
+const USERS_COLUMN_ADDRESS = "address";
+const USERS_COLUMN_DOB_MILLIS = "birthdayInMiliseconds";
+const USERS_COLUMN_GENDER_ID = "genderId";
+const USERS_COLUMN_AVATAR_URL = "avatarUrl";
+const USERS_COLUMN_TYPE_OF_WORK_ID = "typeOfWorkId";
+const USERS_COLUMN_RESUME_SUMMARY = "resumeSummary";
+
+const COLUMN_ALIAS_GENDER = "gender";
+const COLUMN_ALIAS_TYPE_OF_WORK = "typeOfWork";
+const COLUMN_ALIAS_GRADUATED_EDUCATION_LEVEL = "graduatedEducation";
 
 // Pagination constants
 const DEFAULT_ITEM_PER_PAGE_NUM = 100;
@@ -138,6 +159,33 @@ module.exports.TYPES_OF_WORK_COLUMN_NAME = TYPES_OF_WORK_COLUMN_NAME;
 module.exports.LEVELS_OF_EDUCATION_TABLE_NAME = LEVELS_OF_EDUCATION_TABLE_NAME;
 module.exports.LEVELS_OF_EDUCATION_COLUMN_ID = LEVELS_OF_EDUCATION_COLUMN_ID;
 module.exports.LEVELS_OF_EDUCATION_COLUMN_NAME = LEVELS_OF_EDUCATION_COLUMN_NAME;
+
+module.exports.USERS_TABLE_NAME = USERS_TABLE_NAME;
+module.exports.USERS_COLUMN_ID = USERS_COLUMN_ID;
+module.exports.USERS_COLUMN_FULL_NAME = USERS_COLUMN_FULL_NAME;
+module.exports.USERS_COLUMN_PASSWORD = USERS_COLUMN_PASSWORD;
+module.exports.USERS_COLUMN_EMAIL = USERS_COLUMN_EMAIL;
+module.exports.USERS_COLUMN_PHONE = USERS_COLUMN_PHONE;
+module.exports.USERS_COLUMN_EXPECTED_SALARY_MIL_VND =
+    USERS_COLUMN_EXPECTED_SALARY_MIL_VND;
+module.exports.USERS_COLUMN_GRADUATED_EDUCATION_ID =
+    USERS_COLUMN_GRADUATED_EDUCATION_ID;
+module.exports.USERS_COLUMN_YEARS_OF_EXPERIENCE =
+    USERS_COLUMN_YEARS_OF_EXPERIENCE;
+module.exports.USERS_COLUMN_CAREER_OBJECTIVE =
+    USERS_COLUMN_CAREER_OBJECTIVE;
+module.exports.USERS_COLUMN_ADDRESS = USERS_COLUMN_ADDRESS;
+module.exports.USERS_COLUMN_DOB_MILLIS = USERS_COLUMN_DOB_MILLIS;
+module.exports.USERS_COLUMN_GENDER_ID = USERS_COLUMN_GENDER_ID;
+module.exports.USERS_COLUMN_AVATAR_URL = USERS_COLUMN_AVATAR_URL;
+module.exports.USERS_COLUMN_TYPE_OF_WORK_ID =
+    USERS_COLUMN_TYPE_OF_WORK_ID;
+module.exports.USERS_COLUMN_RESUME_SUMMARY = USERS_COLUMN_RESUME_SUMMARY;
+
+module.exports.COLUMN_ALIAS_GENDER = COLUMN_ALIAS_GENDER;
+module.exports.COLUMN_ALIAS_TYPE_OF_WORK = COLUMN_ALIAS_TYPE_OF_WORK;
+module.exports.COLUMN_ALIAS_GRADUATED_EDUCATION_LEVEL =
+    COLUMN_ALIAS_GRADUATED_EDUCATION_LEVEL;
 
 module.exports.DEFAULT_ITEM_PER_PAGE_NUM = DEFAULT_ITEM_PER_PAGE_NUM;
 module.exports.MIN_ITEM_PER_PAGE_NUM = MIN_ITEM_PER_PAGE_NUM;

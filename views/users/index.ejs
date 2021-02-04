@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách người dùng</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container">
+    <%- include('../_share/header'); %>
+    <main class="container-fluid">
+        <h4 class="text-center">Danh sách người dùng</h4>
+
+        <div class="row">
+            <div class="col-4">
+                <form action="" method="GET">
+                    <div class="form-group">
+                        <label for="">Tìm kiếm</label>
+                        <input type="text" name="keyword"
+                               class="form-control"
+                               value="<%= keyword %>">
+                    </div>
+
+                    <button type="submit" class="btn btn-sm btn-primary">
+                        Tìm kiếm
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+            <th>Ảnh đại diện</th>
+            <th>Họ tên</th>
+            <th>SĐT</th>
+            <th>Email</th>
+            <th>Địa chỉ</th>
+            <th>
+                <a
+                        href="/users/create"
+                        class="btn btn-sm btn-success">
+                    Tạo mới
+                </a>
+            </th>
+            </thead>
+
+            <tbody>
+            <% for(let i = 0; i < users.length; i++) {%>
+                <tr>
+                    <td>
+                        <% if(!users[i].avatarUrl){ %>
+                            <img src="https://vectorified.com/images/no-image-icon-3.png"
+                                 width="100px"
+                                 class="userAvatar"
+                            />
+                        <% } else{ %>
+                                <img src="<%= users[i].avatarUrl %>"
+                                     width="100px"
+                                     class="userAvatar"
+                                />
+                        <% } %>
+                    </td>
+
+
+                    <td><%= users[i].fullName %></td>
+                    <td><%= users[i].phone %></td>
+                    <td><%= users[i].email %></td>
+
+                    <td>
+                        <% if(!users[i].address){ %>
+                            <span>Chưa cập nhật</span>
+                        <% } else{ %>
+                            <span><%= users[i].address %></span>
+                        <% } %>
+                    </td>
+
+                    <td>
+
+                        <form action="/users/details" method="post"
+                              style="display: inline-block">
+                            <input name="userId"
+                                   value="<%= users[i].id %>"
+                                   style="display:none;"
+                            />
+                            <button type="submit"
+                                    class="btn btn-info btn-sm">
+                                Chi tiết
+                            </button>
+                        </form>
+                        &nbsp;
+                        <form action="/users/update" method="post"
+                              style="display: inline-block">
+                            <input name="userId"
+                                   value="<%= users[i].id %>"
+                                   style="display:none;"
+                            />
+                            <button type="submit"
+                                    class="btn btn-warning btn-sm">
+                                Cập nhật
+                            </button>
+                        </form>
+
+                        &nbsp;
+
+                        <form action="/users/remove" method="post"
+                              style="display: inline-block">
+                            <input name="userId"
+                                   value="<%= users[i].id %>"
+                                   style="display:none;" />
+                            <button type="submit"
+                                    onclick="return confirm('Bạn có ' +
+                                         'chắc chắn muốn xóa ' +
+                                          'người dùng này?')"
+                                    class="btn btn-danger btn-sm">
+                                Xóa
+                            </button>
+                        </form>
+
+                    </td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </main>
+    <%- include('../_share/footer'); %>
+</div>
+</body>
+</html>
+

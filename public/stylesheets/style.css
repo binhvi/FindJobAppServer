@@ -18,3 +18,7 @@ main.container-fluid {
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.userAvatar {
+    border-radius: 50%;
+}
