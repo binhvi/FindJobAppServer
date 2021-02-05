@@ -384,7 +384,6 @@ router.get('/types-of-work', async (req, res) => {
 });
 
 // Levels of education
-// Types of work
 router.get('/levels-of-education', async (req, res) => {
     let selectAllLevelsOfEducationSql =
         "select * " +
@@ -399,6 +398,23 @@ router.get('/levels-of-education', async (req, res) => {
                 levelsOfEducation: levelsOfEducation
             });
     });
+});
+
+router.get('/academic-degree-levels', async (req, res) => {
+    let selectAllAcademicDegreeLevelsSql =
+        "select * " +
+        "from " + commonResources.ACADEMIC_DEGREE_LEVELS_TABLE_NAME + " " +
+        "order by " + commonResources.ACADEMIC_DEGREE_LEVELS_COLUMN_ID + ";";
+    dbConnect.query(
+        selectAllAcademicDegreeLevelsSql,
+        function (err, result) {
+            if (err) throw err;
+            let academicDegreeLevels = result;
+            res.json({
+                result: true,
+                academicDegreeLevels: academicDegreeLevels
+            });
+        });
 });
 
 module.exports = router;

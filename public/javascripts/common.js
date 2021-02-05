@@ -84,6 +84,10 @@ const EXPERIENCES_COLUMN_DATE_IN_MILLIS = "dateInMilliseconds";
 const EXPERIENCES_COLUMN_DATE_OUT_MILLIS = "dateOutMilliseconds";
 const EXPERIENCES_COLUMN_JOB_DETAILS = "jobDetails";
 
+const ACADEMIC_DEGREE_LEVELS_TABLE_NAME = "AcademicDegreeLevels";
+const ACADEMIC_DEGREE_LEVELS_COLUMN_ID = "id";
+const ACADEMIC_DEGREE_LEVELS_COLUMN_NAME = "name";
+
 // Pagination constants
 const DEFAULT_ITEM_PER_PAGE_NUM = 100;
 const MIN_ITEM_PER_PAGE_NUM = 1;
@@ -208,6 +212,13 @@ module.exports.EXPERIENCES_COLUMN_DATE_OUT_MILLIS =
                                     EXPERIENCES_COLUMN_DATE_OUT_MILLIS;
 module.exports.EXPERIENCES_COLUMN_JOB_DETAILS =
                                     EXPERIENCES_COLUMN_JOB_DETAILS;
+
+module.exports.ACADEMIC_DEGREE_LEVELS_TABLE_NAME =
+                                ACADEMIC_DEGREE_LEVELS_TABLE_NAME;
+module.exports.ACADEMIC_DEGREE_LEVELS_COLUMN_ID =
+                                ACADEMIC_DEGREE_LEVELS_COLUMN_ID;
+module.exports.ACADEMIC_DEGREE_LEVELS_COLUMN_NAME =
+                                ACADEMIC_DEGREE_LEVELS_COLUMN_NAME;
 
 module.exports.DEFAULT_ITEM_PER_PAGE_NUM = DEFAULT_ITEM_PER_PAGE_NUM;
 module.exports.MIN_ITEM_PER_PAGE_NUM = MIN_ITEM_PER_PAGE_NUM;

@@ -13,6 +13,7 @@ var apiRouter = require('./routes/api');
 var gendersRouter = require('./routes/genders');
 var typesOfWorkRouter = require('./routes/types-of-work');
 var levelsOfEducationRouter = require('./routes/levels-of-education');
+var academicDegreeLevels = require('./routes/academic-degree-levels');
 
 var logger = require('morgan');
 
@@ -49,6 +50,7 @@ app.use('/api', apiRouter);
 app.use('/genders', gendersRouter);
 app.use('/types-of-work', typesOfWorkRouter);
 app.use('/levels-of-education', levelsOfEducationRouter);
+app.use('/academic-degree-levels', academicDegreeLevels);
 
 
 // catch 404 and forward to error handler

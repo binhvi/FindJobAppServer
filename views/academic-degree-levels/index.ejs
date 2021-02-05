@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bằng cấp học thuật</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container">
+    <%- include('../_share/header'); %>
+    <main class="container-fluid">
+        <h4 class="text-center">Bằng cấp học thuật</h4>
+        <table class="table table-striped">
+            <thead>
+            <th>ID</th>
+            <th>Bằng cấp học thuật</th>
+            </thead>
+
+            <tbody>
+            <% for(let i = 0; i < academicDegreeLevels.length; i++) {%>
+                <tr>
+                    <td><%= academicDegreeLevels[i].id %></td>
+                    <td><%= academicDegreeLevels[i].name %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </main>
+    <%- include('../_share/footer'); %>
+</div>
+</body>
+</html>
+

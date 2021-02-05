@@ -30,3 +30,8 @@ GET /api/types-of-work
 LevelsOfEducation
 GET /api/levels-of-education
 (web: /levels-of-education)
+
+==========
+AcademicDegreeLevels
+GET /api/academic-degree-levels
+(web: /academic-degree-levels)
