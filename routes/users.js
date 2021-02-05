@@ -84,17 +84,41 @@ router.post('/details', async (req, res) => {
    dbConnect.query(
        selectUserInfoByIdSql,
        [userId],
-       function (err, userResult, fields) {
+       function (err, userResult) {
            if (err) throw err;
            let user = userResult[0]; // result is an array
-
-           if (user.birthdayInMiliseconds) {
-               var dob = moment(user.birthdayInMiliseconds)
-                            .format('DD-MMM-YYYY');
-               user.birthdayInMiliseconds = dob;
+           if (user.birthdayInMilliseconds) {
+               user.birthdayInMilliseconds =
+                               moment(user.birthdayInMilliseconds)
+                               .format('DD-MMM-YYYY');
            }
 
-           res.render('users/details', {user});
+           // Experiences
+           let selectExperiencesByUserIdSql = 
+               "select " +
+                    commonResources.EXPERIENCES_COLUMN_COMPANY_NAME + ", " +
+                    commonResources.EXPERIENCES_COLUMN_JOB_TITLE + ", " +
+                    commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS + ", " +
+                    commonResources.EXPERIENCES_COLUMN_DATE_OUT_MILLIS + ", " +
+                    commonResources.EXPERIENCES_COLUMN_JOB_DETAILS + " " +
+               "from " + commonResources.EXPERIENCES_TABLE_NAME + " " +
+               "where " + commonResources.EXPERIENCES_COLUMN_USER_ID +
+                    " = ? " +
+               "order by "
+                    + commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS + " desc;";
+
+           dbConnect.query(
+               selectExperiencesByUserIdSql,
+               [userId],
+               function (err, experiencesResult) {
+                   if (err) throw err;
+                   let experiences = experiencesResult;
+                   res.render(
+                       'users/details',
+                       {user, experiences, moment}
+                       );
+               }
+           );
        }
    );
 

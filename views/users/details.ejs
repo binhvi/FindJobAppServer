@@ -29,111 +29,155 @@
             </h4>
         </div>
 
-        <div style="margin-bottom: 25px;">
-            <p><strong>Mức lương mong muốn</strong></p>
+        <div id="userInfo">
+            <div style="margin-bottom: 25px;">
+                <p><strong>Mức lương mong muốn</strong></p>
 
-            <% if(!user.expectedSalaryInMilionVnd){ %>
-                <p>Chưa cập nhật</p>
-            <% } else{ %>
-                <p><%= user.expectedSalaryInMilionVnd %> triệu trở lên</p>
-            <% } %>
-        </div>
+                <% if(!user.expectedSalaryInMilionVnd){ %>
+                    <p>Chưa cập nhật</p>
+                <% } else{ %>
+                    <p><%= user.expectedSalaryInMilionVnd %> triệu trở lên</p>
+                <% } %>
+            </div>
 
-        <div style="margin-bottom: 25px;">
-            <p><strong>Loại hình công việc</strong></p>
+            <div style="margin-bottom: 25px;">
+                <p><strong>Loại hình công việc</strong></p>
 
-            <% if(!user.typeOfWork){ %>
-                <p>Chưa cập nhật</p>
-            <% } else{ %>
-                <p><%= user.typeOfWork %></p>
-            <% } %>
-        </div>
+                <% if(!user.typeOfWork){ %>
+                    <p>Chưa cập nhật</p>
+                <% } else{ %>
+                    <p><%= user.typeOfWork %></p>
+                <% } %>
+            </div>
 
-        <div style="margin-bottom: 25px;">
-            <p><strong>Trình độ học vấn</strong></p>
+            <div style="margin-bottom: 25px;">
+                <p><strong>Trình độ học vấn</strong></p>
 
-            <% if(!user.graduatedEducation){ %>
-                <p>Chưa cập nhật</p>
-            <% } else{ %>
-                <p><%= user.graduatedEducation %></p>
-            <% } %>
-        </div>
+                <% if(!user.graduatedEducation){ %>
+                    <p>Chưa cập nhật</p>
+                <% } else{ %>
+                    <p><%= user.graduatedEducation %></p>
+                <% } %>
+            </div>
 
-        <div style="margin-bottom: 25px;">
-            <p><strong>Kinh nghiệm làm việc</strong></p>
+            <div style="margin-bottom: 25px;">
+                <p><strong>Kinh nghiệm làm việc</strong></p>
 
-            <% if(!user.yearsOfExperience){ %>
-                <p>Chưa cập nhật</p>
-            <% } else{ %>
-                <p><%= user.yearsOfExperience %> năm</p>
-            <% } %>
-        </div>
+                <% if(!user.yearsOfExperience){ %>
+                    <p>Chưa cập nhật</p>
+                <% } else{ %>
+                    <p><%= user.yearsOfExperience %> năm</p>
+                <% } %>
+            </div>
 
-        <div style="margin-bottom: 25px;">
-            <p style="text-transform: uppercase">
-                <strong>MÔ TẢ BẢN THÂN</strong>
-            </p>
+            <div style="margin-bottom: 25px;">
+                <p style="text-transform: uppercase">
+                    <strong>MÔ TẢ BẢN THÂN</strong>
+                </p>
 
-            <% if(!user.resumeSummary) { %>
-                <p>Chưa cập nhật</p>
-            <% } else{ %>
-                <p><%= user.resumeSummary %></p>
-            <% } %>
-        </div>
+                <% if(!user.resumeSummary) { %>
+                    <p>Chưa cập nhật</p>
+                <% } else{ %>
+                    <p><%= user.resumeSummary %></p>
+                <% } %>
+            </div>
 
-        <div style="margin-bottom: 25px;">
-            <p style="text-transform: uppercase">
-                <strong>MỤC TIÊU NGHỀ NGHIỆP</strong>
-            </p>
+            <div style="margin-bottom: 25px;">
+                <p style="text-transform: uppercase">
+                    <strong>MỤC TIÊU NGHỀ NGHIỆP</strong>
+                </p>
 
-            <p><%= user.careerObjective %></p>
+                <% if(!user.careerObjective) { %>
+                    <p>Chưa cập nhật</p>
+                <% } else{ %>
+                    <p><%= user.careerObjective %></p>
+                <% } %>
+            </div>
 
-            <% if(!user.careerObjective) { %>
-                <p>Chưa cập nhật</p>
-            <% } else{ %>
-                <p><%= user.careerObjective %></p>
-            <% } %>
-        </div>
-
-        <div style="margin-bottom: 25px;">
-            <p style="text-transform: uppercase">
-                <strong>LIÊN HỆ</strong>
-            </p>
-            <table>
-                <tr>
-                    <td width="100px"><strong>Ngày sinh</strong></td>
-                    <td>
-                        <% if(!user.birthdayInMiliseconds){ %>
-                            <span>Chưa cập nhật</span>
-                        <% } else{ %>
-                            <span>
-                                <%= user.birthdayInMiliseconds %>
+            <div style="margin-bottom: 25px;">
+                <p style="text-transform: uppercase">
+                    <strong>LIÊN HỆ</strong>
+                </p>
+                <table>
+                    <tr>
+                        <td width="100px"><strong>Ngày sinh</strong></td>
+                        <td>
+                            <% if(!user.birthdayInMilliseconds){ %>
+                                <span>Chưa cập nhật</span>
+                            <% } else{ %>
+                                <span>
+                                <%= user.birthdayInMilliseconds %>
                             </span>
+                            <% } %>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Địa chỉ</strong></td>
+
+                        <% if(!user.address){ %>
+                            <td>Chưa cập nhật</td>
+                        <% } else{ %>
+                            <td><%= user.address %></td>
                         <% } %>
-                    </td>
-                </tr>
+                    </tr>
 
-                <tr>
-                    <td><strong>Địa chỉ</strong></td>
+                    <tr>
+                        <td><strong>SĐT</strong></td>
+                        <td><%= user.phone %></td>
+                    </tr>
 
-                    <% if(!user.address){ %>
-                        <td>Chưa cập nhật</td>
-                    <% } else{ %>
-                        <td><%= user.address %></td>
-                    <% } %>
-                </tr>
-
-                <tr>
-                    <td><strong>SĐT</strong></td>
-                    <td><%= user.phone %></td>
-                </tr>
-
-                <tr>
-                    <td><strong>Email</strong></td>
-                    <td><%= user.email %></td>
-                </tr>
-            </table>
+                    <tr>
+                        <td><strong>Email</strong></td>
+                        <td><%= user.email %></td>
+                    </tr>
+                </table>
+            </div>
         </div>
+
+        <% if (experiences.length) { %>
+            <div id="experiences">
+                <div style="margin-bottom: 25px;">
+                    <p style="text-transform: uppercase">
+                        <strong>KINH NGHIỆM LÀM VIỆC</strong>
+                    </p>
+
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Thời gian</th>
+                            <th>Chi tiết</th>
+                        </thead>
+                        <tbody>
+                            <% for (let i = 0; i < experiences.length; i++) { %>
+                                <tr>
+                                    <td style="width: 25%;">
+                                        Từ
+                                        <%=
+                                            moment(experiences[i].dateInMilliseconds)
+                                            .format('MM-YYYY')
+                                        %>
+
+                                        <% if(experiences[i].dateOutMilliseconds){ %>
+                                                 đến
+                                                <%=
+                                                    moment(experiences[i].dateOutMilliseconds)
+                                                            .format('MM-YYYY')
+                                                %>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <p><strong><%= experiences[i].companyName %></strong></p>
+                                        <p><%= experiences[i].jobTitle%></p>
+                                        <p><%= experiences[i].jobDetails %></p>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% } %>
+
 
     </main>
 
