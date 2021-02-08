@@ -178,6 +178,52 @@
             </div>
         <% } %>
 
+        <% if (educationResult.length) { %>
+            <div id="education">
+                <p style="text-transform: uppercase">
+                    <strong>TRÌNH ĐỘ HỌC VẤN</strong>
+                </p>
+
+                <table class="table table-striped">
+                    <thead>
+                        <th>Thời gian</th>
+                        <th>Chi tiết</th>
+                    </thead>
+                    <% for (let i = 0; i < educationResult.length; i++) { %>
+                        <tr>
+                            <td style="width: 25%;">
+                                Từ
+                                <%=
+                                    moment(educationResult[i].startDateInMilliseconds)
+                                            .format('MM-YYYY')
+                                %>
+
+                                <% if(educationResult[i].endDateInMilliseconds){ %>
+                                    đến
+                                    <%=
+                                        moment(educationResult[i].endDateInMilliseconds)
+                                                .format('MM-YYYY')
+                                    %>
+                                <% } %>
+                            </td>
+                            <td>
+                                <p><strong>Trường</strong></p>
+                                <p><%= educationResult[i].schoolName %></p>
+
+                                <p><strong>Chuyên ngành</strong></p>
+                                <p><%= educationResult[i].major%></p>
+
+                                <p><strong>Bằng cấp</strong></p>
+                                <p><%= educationResult[i].academicDegreeLevel%></p>
+
+                                <p><%= educationResult[i].achievements%></p>
+                            </td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
 
     </main>
 

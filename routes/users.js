@@ -113,10 +113,55 @@ router.post('/details', async (req, res) => {
                function (err, experiencesResult) {
                    if (err) throw err;
                    let experiences = experiencesResult;
-                   res.render(
-                       'users/details',
-                       {user, experiences, moment}
-                       );
+
+                   let selectEducationByUserIdSql = 
+                       "select " +
+                            commonResources.EDUCATION_COLUMN_SCHOOL_NAME + ", " +
+                            commonResources.EDUCATION_COLUMN_MAJOR + ", " +
+                            commonResources
+                                .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + "."
+                                + commonResources
+                                .ACADEMIC_DEGREE_LEVELS_COLUMN_NAME
+                                + " as "
+                                + commonResources
+                                    .COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL
+                                    + ", " +
+                            commonResources
+                                .EDUCATION_COLUMN_START_DATE_MILLIS + ", " +
+                            commonResources
+                                .EDUCATION_COLUMN_END_DATE_MILLIS + ", " +
+                            commonResources.EDUCATION_COLUMN_ACHIEVEMENTS + " " +
+                       "from " +
+                            commonResources.EDUCATION_TABLE_NAME + ", " +
+                            commonResources
+                                .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + " " +
+                       "where " +
+                            commonResources.EDUCATION_TABLE_NAME + "." +
+                                commonResources
+                                    .EDUCATION_COLUMN_ACADEMIC_DEGREE_LEVEL_ID
+                                + " = " +
+                                commonResources
+                                    .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + "." +
+                                commonResources
+                                    .ACADEMIC_DEGREE_LEVELS_COLUMN_ID + " "
+                            + "and " +
+                                    commonResources
+                                        .EDUCATION_COLUMN_USER_ID
+                            + " = ?";
+                   dbConnect.query(
+                       selectEducationByUserIdSql,
+                       [userId],
+                       function (err, educationResult) {
+                           if (err) throw err;
+                           res.render(
+                               'users/details',
+                               {
+                                        user, experiences,
+                                       educationResult, moment
+                                    }
+                               );
+                       }
+                   );
                }
            );
        }

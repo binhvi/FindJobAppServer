@@ -1,22 +1,22 @@
 // Host deploy
-const PROTOCOL = "https";
-const SERVER_HOST = "find-job-app.herokuapp.com";
+// const PROTOCOL = "https";
+// const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-// const PROTOCOL = "http";
-// const SERVER_HOST = "localhost:3000";
+const PROTOCOL = "http";
+const SERVER_HOST = "localhost:3000";
 
 // Host database deploy
-const MY_SQL_HOST = "johnny.heliohost.org";
-const MY_SQL_USER = "findjob_scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
+// const MY_SQL_HOST = "johnny.heliohost.org";
+// const MY_SQL_USER = "findjob_scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database development
-// const MY_SQL_HOST = "localhost";
-// const MY_SQL_USER = "scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "FindJobApp";
+const MY_SQL_HOST = "localhost";
+const MY_SQL_USER = "scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "FindJobApp";
 
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
@@ -87,6 +87,18 @@ const EXPERIENCES_COLUMN_JOB_DETAILS = "jobDetails";
 const ACADEMIC_DEGREE_LEVELS_TABLE_NAME = "AcademicDegreeLevels";
 const ACADEMIC_DEGREE_LEVELS_COLUMN_ID = "id";
 const ACADEMIC_DEGREE_LEVELS_COLUMN_NAME = "name";
+
+const EDUCATION_TABLE_NAME = "Education";
+const EDUCATION_COLUMN_ID = "id";
+const EDUCATION_COLUMN_USER_ID = "userId";
+const EDUCATION_COLUMN_MAJOR = "major";
+const EDUCATION_COLUMN_SCHOOL_NAME = "schoolName";
+const EDUCATION_COLUMN_ACADEMIC_DEGREE_LEVEL_ID = "academicDegreeLevelId";
+const EDUCATION_COLUMN_START_DATE_MILLIS = "startDateInMilliseconds";
+const EDUCATION_COLUMN_END_DATE_MILLIS = "endDateInMilliseconds";
+const EDUCATION_COLUMN_ACHIEVEMENTS = "achievements";
+
+const COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL = "academicDegreeLevel";
 
 // Pagination constants
 const DEFAULT_ITEM_PER_PAGE_NUM = 100;
@@ -219,6 +231,23 @@ module.exports.ACADEMIC_DEGREE_LEVELS_COLUMN_ID =
                                 ACADEMIC_DEGREE_LEVELS_COLUMN_ID;
 module.exports.ACADEMIC_DEGREE_LEVELS_COLUMN_NAME =
                                 ACADEMIC_DEGREE_LEVELS_COLUMN_NAME;
+
+module.exports.EDUCATION_TABLE_NAME = EDUCATION_TABLE_NAME;
+module.exports.EDUCATION_COLUMN_ID = EDUCATION_COLUMN_ID;
+module.exports.EDUCATION_COLUMN_USER_ID = EDUCATION_COLUMN_USER_ID;
+module.exports.EDUCATION_COLUMN_MAJOR = EDUCATION_COLUMN_MAJOR;
+module.exports.EDUCATION_COLUMN_SCHOOL_NAME =
+                                    EDUCATION_COLUMN_SCHOOL_NAME;
+module.exports.EDUCATION_COLUMN_ACADEMIC_DEGREE_LEVEL_ID =
+                        EDUCATION_COLUMN_ACADEMIC_DEGREE_LEVEL_ID;
+module.exports.EDUCATION_COLUMN_START_DATE_MILLIS =
+                        EDUCATION_COLUMN_START_DATE_MILLIS;
+module.exports.EDUCATION_COLUMN_END_DATE_MILLIS =
+                        EDUCATION_COLUMN_END_DATE_MILLIS;
+module.exports.EDUCATION_COLUMN_ACHIEVEMENTS =
+                        EDUCATION_COLUMN_ACHIEVEMENTS;
+module.exports.COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL =
+                        COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL;
 
 module.exports.DEFAULT_ITEM_PER_PAGE_NUM = DEFAULT_ITEM_PER_PAGE_NUM;
 module.exports.MIN_ITEM_PER_PAGE_NUM = MIN_ITEM_PER_PAGE_NUM;
