@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm người dùng / Đăng ký</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container">
+    <%- include('../_share/header'); %>
+
+    <main class="container-fluid">
+        <h4 class="text-center">Thêm người dùng / Đăng ký</h4>
+        <form action="/users/create-save"
+              method="post"
+              onsubmit="return validateForm()">
+
+            <div class="col-md-6 offset-md-3">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="">Họ và tên</label>
+                    <input type="text" name="fullName"
+                           class="form-control"
+                           placeholder="Nhập họ và tên">
+                    <span id="full-name-err"
+                          class="validate-err text-danger">
+                    </span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="">Số điện thoại</label>
+                    <input type="text" name="phone"
+                           class="form-control"
+                           placeholder="Nhập số điện thoại">
+                    <span id="phone-err"
+                          class="validate-err text-danger">
+                    </span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="">Email</label>
+                    <input type="text" name="email"
+                           class="form-control"
+                           placeholder="Nhập email">
+                    <span id="email-err"
+                          class="validate-err text-danger">
+                    </span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="">Password</label>
+                    <input type="text" name="password"
+                           class="form-control"
+                           placeholder="Nhập password">
+                    <span id="password-err"
+                          class="validate-err text-danger">
+                    </span>
+                </div>
+
+                <div class="text-center">
+                    <button class="btn btn-primary btn-sm" type="submit">
+                        Lưu
+                    </button>
+                    &nbsp;
+                    <a href="/users" class="btn btn-sm btn-danger">
+                        Hủy
+                    </a>
+                </div>
+            </div>
+
+        </form>
+    </main>
+    <%- include('../_share/footer'); %>
+</div>
+
+<%- include('../_share/script'); %>
+<script>
+    function validateForm() {
+        // Initial error message of category name is empty
+        $('.validate-err').text("");
+
+        // Get value of element has attribute "name" is "fullName"
+        let fullName = $('[name="fullName"]').val().trim();
+        if (fullName.length === 0) {
+            $('#full-name-err').text("Hãy nhập họ và tên");
+            return false;
+        }
+
+        if (fullName.length < 2) {
+            $('#full-name-err').text("Nhập họ tên từ hai ký tự trở lên.");
+            return false;
+        }
+
+        let phoneText = $('[name="phone"]').val().trim();
+        if (phoneText.length === 0) {
+            $('#phone-err').text("Hãy nhập số điện thoại");
+            return false;
+        }
+
+        let regexPhone = /\d{9,10}/; // 9-10 digits
+        if (!phoneText.match(regexPhone)) {
+            $('#phone-err').text("Nhập số điện thoại 9 - 10 chữ số.");
+            return false;
+        }
+
+        let emailText = $('[name="email"]').val().trim();
+        if (emailText.length === 0) {
+            $('#email-err').text("Hãy nhập email.");
+            return false;
+        }
+
+        let regexEmail = /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
+        if (!emailText.match(regexEmail)) {
+            $('#email-err').text("Hãy nhập email đúng định dạng.");
+            return false;
+        }
+
+        let passwordText = $('[name="password"]').val().trim();
+        if (passwordText.length === 0) {
+            $('#password-err').text("Hãy nhập password.");
+            return false;
+        }
+
+        if (passwordText.length < 6) {
+            $('#password-err').text("Nhập mật khẩu từ 6 ký tự trở lên.");
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

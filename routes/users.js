@@ -169,4 +169,175 @@ router.post('/details', async (req, res) => {
 
 });
 
+router.get('/create', async (req, res) => {
+    res.render('users/create');
+});
+
+/**
+ * Query database to get list of genders, types of work,
+ * levels of education, then send these list to view users/update.ejs
+ */
+router.get('/update', async (req, res) => {
+    let selectAllGendersSql =
+        "select * " +
+        "from " + commonResources.GENDERS_TABLE_NAME + ";";
+    dbConnect.query(selectAllGendersSql, function (err, gendersResult) {
+        if (err) throw err;
+
+        let selectAllLevelsOfEducationSql =
+            "select * " +
+            "from " + commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + ";";
+        dbConnect.query(
+            selectAllLevelsOfEducationSql,
+            function (err, levelsOfEducationResult) {
+                if (err) throw err;
+
+                let selectAllTypesOfWorkSql =
+                    "select * " +
+                    "from " + commonResources.TYPES_OF_WORK_TABLE_NAME + ";";
+                dbConnect.query(
+                    selectAllTypesOfWorkSql,
+                    function (err, typesOfWorkResult) {
+                        if (err) throw err;
+
+
+                        res.render(
+                            "users/update",
+                            {
+                                    gendersResult,
+                                    levelsOfEducationResult,
+                                    typesOfWorkResult
+                                }
+                            );
+                });
+            });
+    });
+});
+
+router.post('/create-save', async (req, res) => {
+    var fullName = req.body.fullName.trim();
+    var phone = req.body.phone.trim();
+    var email = req.body.email.trim();
+    var password = req.body.password.trim();
+    var isPassValidate = false;
+
+    // Validate
+    if (fullName.length === 0) {
+        res.send("Hãy nhập họ và tên");
+        return;
+    }
+
+    if (fullName.length < 2) {
+        res.send("Nhập họ tên từ hai ký tự trở lên.");
+        return;
+    }
+
+    if (phone.length === 0) {
+        res.send("Hãy nhập số điện thoại");
+        return;
+    }
+
+    let regexPhone = /\d{9,10}/; // 9-10 digits
+    if (!phone.match(regexPhone)) {
+        res.send("Nhập số điện thoại 9 - 10 chữ số.");
+        return;
+    }
+
+    isPhoneExists(phone, function (isPhoneExistsResult) {
+        if (isPhoneExistsResult) {
+            res.send("Trùng số điện thoại.");
+        }
+    });
+
+    if (email.length === 0) {
+        res.send("Hãy nhập email.");
+        return;
+    }
+
+    let regexEmail = /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
+    if (!email.match(regexEmail)) {
+        res.send("Hãy nhập email đúng định dạng.");
+        return;
+    }
+
+    isEmailExitst(email, function (isEmailExistsResult) {
+        if (isEmailExistsResult) {
+            res.send("Trùng email.");
+        }
+    });
+
+    if (password.length === 0) {
+        res.send("Hãy nhập password.");
+        return;
+    }
+
+    if (password.length < 6) {
+        res.send("Nhập mật khẩu từ 6 ký tự trở lên.");
+        return;
+    }
+
+    // Pass validate, save to database
+    let saveUserToDbSql = 
+        "insert into " + commonResources.USERS_TABLE_NAME + "(" +
+            commonResources.USERS_COLUMN_FULL_NAME + ", " +
+            commonResources.USERS_COLUMN_PASSWORD + ", " +
+            commonResources.USERS_COLUMN_EMAIL + ", " +
+            commonResources.USERS_COLUMN_PHONE + ") " +
+        "values(" +
+            "'" + fullName + "', " +
+            "'" + password + "', " +
+            "'" + email + "', " +
+            "'" + phone + "');"
+    dbConnect.query(saveUserToDbSql, function (err, result) {
+       if (err) throw err;
+       res.redirect('/users/');
+    });
+});
+
+function isPhoneExists(phone, callback) {
+    var selectNumberOfRecordHasThisPhoneNumberSql =
+        "select count(" + commonResources.USERS_COLUMN_PHONE + ") " +
+            " as countPhone " +
+        "from " + commonResources.USERS_TABLE_NAME + " " +
+        "where " + commonResources.USERS_COLUMN_PHONE + " " +
+            "like '" + phone + "';";
+    dbConnect.query(
+        selectNumberOfRecordHasThisPhoneNumberSql,
+        function (err, results) {
+            if (err) throw err;
+
+            // [{"countPhone":1}]
+            var numberOfPhoneExists = results[0].countPhone;
+            if (numberOfPhoneExists) {
+                return callback(true);
+            } else {
+                return callback(false);
+            }
+        }
+    );
+}
+
+function isEmailExitst(email, callback) {
+    var selectNumberOfRecordsHasThisEmailSql =
+        "select count(" + commonResources.USERS_COLUMN_EMAIL + ") " +
+        "as numbersOfEmailExists " +
+        "from " + commonResources.USERS_TABLE_NAME + " " +
+        "where " + commonResources.USERS_COLUMN_EMAIL + " " +
+        "like '" + email + "';"
+    dbConnect.query(
+        selectNumberOfRecordsHasThisEmailSql,
+        function (err, results) {
+            if (err) throw err;
+
+            // [ { numbersOfEmailExists: 0 } ]
+            let numsOfEmailExists = results[0].numbersOfEmailExists;
+            if (numsOfEmailExists) {
+                return callback(true);
+            } else {
+                return callback(false);
+            }
+        }
+    );
+}
+
 module.exports = router;
