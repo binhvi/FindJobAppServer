@@ -574,4 +574,97 @@ router.post('/users/create', async (req, res) => {
     });
 });
 
+router.post('/users/login', async (req, res) => {
+    // Validate email
+    if (req.body.email === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường email."
+        });
+        return;
+    }
+
+    let email = req.body.email.trim();
+    if (email.length === 0) {
+        res.json({
+            result: false,
+            message: "Hãy nhập email."
+        });
+        return;
+    }
+
+    if (!email.match(commonResources.REGEX_EMAIL)) {
+        res.json({
+            result: false,
+            message: "Hãy nhập email đúng định dạng."
+        });
+        return;
+    }
+
+    // Validate password
+    if (req.body.password === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường password."
+        });
+        return;
+    }
+
+    let password = req.body.password.trim();
+    if (password.length === 0) {
+        res.json({
+            result: false,
+            message: "Hãy nhập password."
+        });
+        return;
+    }
+
+    if (password.length < 6) {
+        res.json({
+            result: false,
+            message: "Nhập mật khẩu từ 6 ký tự trở lên."
+        });
+        return;
+    }
+
+    // Pass validate
+    let getUserInfoByEmailAndPasswordSql =
+        "select " +
+            commonResources.USERS_COLUMN_ID + ", " +
+            commonResources.USERS_COLUMN_FULL_NAME + ", " +
+            commonResources.USERS_COLUMN_PASSWORD + ", " +
+            commonResources.USERS_COLUMN_EMAIL + ", " +
+            commonResources.USERS_COLUMN_PHONE + " " +
+        "from " + commonResources.USERS_TABLE_NAME + " " +
+        "where " +
+            commonResources.USERS_COLUMN_EMAIL + " = ? and " +
+            commonResources.USERS_COLUMN_PASSWORD + " = ?;";
+    dbConnect.query(
+        getUserInfoByEmailAndPasswordSql,
+        [email, password],
+        function (err, result) {
+            if (err) {
+                res.json({
+                    result: false,
+                    err
+                });
+            } else {
+                if (result.length === 0) {
+                    res.json({
+                        result: false,
+                        message: "Email hoặc mật khẩu không đúng"
+                    });
+                } else {
+                    res.json({
+                        result: true,
+                        userInfo: result
+                    });
+                }
+            }
+
+        }
+    );
+
+});
+
 module.exports = router;

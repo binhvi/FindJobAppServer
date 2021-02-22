@@ -54,11 +54,23 @@ Tham số:
     + Email không trống
     + Email đúng định dạng a@b.c
         /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
+    + Email không trùng với người khác
 -	password
     + String
     + Mật khẩu không trống
     + Mật khẩu tối thiểu 6 ký tự
 
 ----
+POST /api/users/login
+Tham số:
+- email
+    + String
+    + Email không trống
+    + Email đúng định dạng a@b.c
+        /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
+- password
+      + String
+      + Mật khẩu không trống
+      + Mật khẩu tối thiểu 6 ký tự
 
 
