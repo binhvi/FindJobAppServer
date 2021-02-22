@@ -60,7 +60,7 @@ const USERS_COLUMN_FULL_NAME = "fullName";
 const USERS_COLUMN_PASSWORD = "password";
 const USERS_COLUMN_EMAIL = "email";
 const USERS_COLUMN_PHONE = "phone";
-const USERS_COLUMN_EXPECTED_SALARY_MIL_VND = "expectedSalaryInMilionVnd";
+const USERS_COLUMN_EXPECTED_SALARY_MIL_VND = "expectedSalaryInMillionVnd";
 const USERS_COLUMN_GRADUATED_EDUCATION_ID = "graduatedEducationId";
 const USERS_COLUMN_YEARS_OF_EXPERIENCE = "yearsOfExperience";
 const USERS_COLUMN_CAREER_OBJECTIVE = "careerObjective";
@@ -115,6 +115,11 @@ const RESPONSE_KEY_NUMBER_OF_ITEMS_PER_PAGE = "perpage";
 const RESPONSE_KEY_PAGE_INDEX = "page";
 const RESPONSE_KEY_NUMBER_OF_PAGES = "pages";
 const RESPONSE_KEY_RESULT_STATUS = "result";
+
+const REGEX_PHONE = /^\d{9,10}$/; // 9-10 digits
+const REGEX_EMAIL = /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
+
+const USER_BIRTHDAY_DATE_FORMAT = "YYYY-MM-DD";
 
 function checkFileImageType(selector) {
     var val = $(selector).val();
@@ -263,6 +268,11 @@ module.exports.RESPONSE_KEY_NUMBER_OF_ITEMS_PER_PAGE =
 module.exports.RESPONSE_KEY_PAGE_INDEX = RESPONSE_KEY_PAGE_INDEX;
 module.exports.RESPONSE_KEY_NUMBER_OF_PAGES = RESPONSE_KEY_NUMBER_OF_PAGES;
 module.exports.RESPONSE_KEY_RESULT_STATUS = RESPONSE_KEY_RESULT_STATUS;
+
+module.exports.REGEX_PHONE = REGEX_PHONE;
+module.exports.REGEX_EMAIL = REGEX_EMAIL;
+
+module.exports.USER_BIRTHDAY_DATE_FORMAT = USER_BIRTHDAY_DATE_FORMAT;
 
 
 

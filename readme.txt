@@ -35,3 +35,30 @@ GET /api/levels-of-education
 AcademicDegreeLevels
 GET /api/academic-degree-levels
 (web: /academic-degree-levels)
+
+==============
+Users
+POST /api/users/create (đăng ký)
+Tham số:
+- fullName
+    + String
+    + Tên không được để trống
+    + Tên từ 2 ký tự trở lên
+- phone
+    + String
+    + Phone không trống
+    + Phone đúng định dạng (9-10 ký tự số):  /^\d{9,10}$/
+    + Phone không trùng với người khác
+- email
+    + String
+    + Email không trống
+    + Email đúng định dạng a@b.c
+        /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
+-	password
+    + String
+    + Mật khẩu không trống
+    + Mật khẩu tối thiểu 6 ký tự
+
+----
+
+

@@ -3,6 +3,7 @@ var router = express.Router();
 var commonResources = require('../public/javascripts/common');
 var uniqid = require('uniqid');
 var dbConnect = require('../public/javascripts/db');
+var userModule = require('./users');
 
 router.post('/news', async (req, res) =>  {
     // Set number items per page
@@ -415,6 +416,162 @@ router.get('/academic-degree-levels', async (req, res) => {
                 academicDegreeLevels: academicDegreeLevels
             });
         });
+});
+
+router.post('/users/create', async (req, res) => {
+    // Validate
+    // fullName
+    if (req.body.fullName === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường fullName."
+        });
+        return;
+    }
+
+    let fullName = req.body.fullName.trim();
+    if (fullName.length === 0) {
+        res.json({
+            result: false,
+            message: "Hãy nhập họ và tên (fullName)."
+        });
+        return;
+    }
+
+    if (fullName.length < 2) {
+        res.json({
+            result: false,
+            message: "Nhập họ tên từ hai ký tự trở lên."
+        });
+        return;
+    }
+
+    if (req.body.phone === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường phone."
+        });
+        return;
+    }
+
+    let phone = req.body.phone.trim();
+    if (phone.length === 0) {
+        res.json({
+            result: false,
+            message: "Hãy nhập số điện thoại."
+        });
+        return;
+    }
+
+    if (!phone.match(commonResources.REGEX_PHONE)) {
+        res.json({
+            result: false,
+            message: "Nhập số điện thoại 9 - 10 chữ số."
+        });
+        return;
+    }
+
+    userModule.checkIfPhoneExistsWhenCreateUser(phone, function (isPhoneExists) {
+        if (isPhoneExists) {
+            res.json({
+                result: false,
+                message: "Trùng số điện thoại."
+            });
+        } else {
+            // Pass validate phone
+            // -> Then validate Email
+            if (req.body.email === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường email."
+                });
+                return;
+            }
+
+            let email = req.body.email.trim();
+            if (email.length === 0) {
+                res.json({
+                    result: false,
+                    message: "Hãy nhập email."
+                });
+                return;
+            }
+
+            if (!email.match(commonResources.REGEX_EMAIL)) {
+                res.json({
+                    result: false,
+                    message: "Hãy nhập email đúng định dạng."
+                });
+                return;
+            }
+
+            userModule.checkIfEmailExistsWhenCreateUser(email, function (isEmailExists) {
+                if (isEmailExists) {
+                    res.json({
+                        result: false,
+                        message: "Trùng email."
+                    });
+                } else {
+                    // Pass validate email
+                    // -> Go to validate password
+                    if (req.body.password === undefined) {
+                        res.json({
+                            result: false,
+                            message: "Thiếu trường password."
+                        });
+                        return;
+                    }
+
+                    let password = req.body.password.trim();
+                    if (password.length === 0) {
+                        res.json({
+                            result: false,
+                            message: "Hãy nhập password."
+                        });
+                        return;
+                    }
+
+                    if (password.length < 6) {
+                        res.json({
+                            result: false,
+                            message: "Nhập mật khẩu từ 6 ký tự trở lên."
+                        });
+                        return;
+                    }
+
+                    // Pass validate, save to database
+                    let saveUserToDbSql =
+                        "insert into " + commonResources.USERS_TABLE_NAME + "(" +
+                            commonResources.USERS_COLUMN_FULL_NAME + ", " +
+                            commonResources.USERS_COLUMN_PASSWORD + ", " +
+                            commonResources.USERS_COLUMN_EMAIL + ", " +
+                            commonResources.USERS_COLUMN_PHONE + ") " +
+                        "values(" +
+                            "'" + fullName + "', " +
+                            "'" + password + "', " +
+                            "'" + email + "', " +
+                            "'" + phone + "');"
+                    dbConnect.query(
+                        saveUserToDbSql,
+                        function (err, result) {
+                            if (err) {
+                                res.json({
+                                    result: false,
+                                    message: "Tạo mới thất bại.",
+                                    err
+                                });
+                            } else {
+                                res.json({
+                                    result: true,
+                                    message: "Tạo mới thành công"
+                                });
+                            }
+                        }
+                    );
+                }
+            });
+        }
+    });
 });
 
 module.exports = router;
