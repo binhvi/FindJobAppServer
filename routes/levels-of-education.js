@@ -32,24 +32,5 @@ function getLevelsOfEducation(callback) {
     );
 }
 
-function checkIfLevelOfEducationIdExists(levelOfEducationId, callback) {
-    let selectNumbersLevelEducationHaveThisIdSql =
-        "select count(" +
-            commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + ") " +
-            "as numbersOfLevelEducationHasThisId" + " " +
-        "from " + commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + " " +
-        "where " + commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + " = ?;";
-    dbConnect.query(
-        selectNumbersLevelEducationHaveThisIdSql,
-        [levelOfEducationId],
-        function (err, result) {
-            if (err) throw err;
-            return callback(result);
-        }
-    );
-}
-
 module.exports = router;
 module.exports.getLevelsOfEducation = getLevelsOfEducation;
-module.exports.checkIfLevelOfEducationIdExists =
-                                        checkIfLevelOfEducationIdExists;

@@ -433,7 +433,7 @@ router.post('/users/create', async (req, res) => {
     if (fullName.length === 0) {
         res.json({
             result: false,
-            message: "Hãy nhập họ và tên (fullName)."
+            message: "Hãy nhập họ và tên."
         });
         return;
     }

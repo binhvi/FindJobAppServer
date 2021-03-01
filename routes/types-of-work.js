@@ -24,22 +24,5 @@ function getTypesOfWork(callback) {
     });
 }
 
-function checkIfTypeOfWorkIdExists(typeOfWorkId, callback) {
-    let selectNumberTypeOfWorkHaveThisIdSql =
-        "select count(" + commonResources.TYPES_OF_WORK_COLUMN_ID + ") " +
-            "as numbersOfTypeOfWorkHaveThisId" + " " +
-        "from " + commonResources.TYPES_OF_WORK_TABLE_NAME + " " +
-        "where " + commonResources.TYPES_OF_WORK_COLUMN_ID + " = ?;";
-    dbConnect.query(
-        selectNumberTypeOfWorkHaveThisIdSql,
-        [typeOfWorkId],
-        function (err, result) {
-            if (err) throw err;
-            return callback(result);
-        }
-    );
-}
-
 module.exports = router;
 module.exports.getTypesOfWork = getTypesOfWork;
-module.exports.checkIfTypeOfWorkIdExists = checkIfTypeOfWorkIdExists;
