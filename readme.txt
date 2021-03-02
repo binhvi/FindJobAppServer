@@ -3,11 +3,19 @@ https://find-job-app.herokuapp.com (deploy)
 
 News
 
+Lấy danh sách bài viết:
 POST /api/news
 Tham số: 
     page (int), 
     perpage (là limit) (int), 
     categoryId (int)
+
+---
+
+Lấy tất cả thông tin của một bài viết:
+POST /api/news/details
+Tham số: newsId (int)
+
 
 ===============
 

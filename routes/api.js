@@ -339,6 +339,77 @@ router.post('/news', async (req, res) =>  {
     }
 });
 
+router.post('/news/details', (req, res) => {
+    if (req.body.newsId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường newsId"
+        });
+        return;
+    }
+
+    if (!req.body.newsId.trim()) {
+        res.json({
+            result: false,
+            message: "Trường newsId không được để trống"
+        });
+        return;
+    }
+
+    let newsId = req.body.newsId;
+    let selectNewsByIdSql =
+        "select "
+        // id
+        + commonResources.NEWS_TABLE_NAME + "."
+        + commonResources.NEWS_COLUMN_ID+ ", " +
+        // title
+        commonResources.NEWS_COLUMN_TITLE + ", " +
+        // imgUrl
+        commonResources.NEWS_COLUMN_IMAGE_URL + ", " +
+        // category name
+        commonResources.NEWS_CATEGORIES_TABLE_NAME + "." +
+        commonResources.NEWS_CATEGORIES_COLUMN_NAME
+        + " as " + commonResources.COLUMN_ALIAS_CATEGORY + ", " +
+        // author name
+        commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+        + commonResources.NEWS_AUTHORS_COLUMN_NAME +
+        " as " + commonResources.COLUMN_ALIAS_AUTHOR + ", " +
+        // short description
+        commonResources.NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
+        // content
+        commonResources.NEWS_COLUMN_CONTENT +
+        " from " + commonResources.NEWS_TABLE_NAME + ", " +
+        commonResources.NEWS_CATEGORIES_TABLE_NAME + ", " +
+        commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
+        "where " + commonResources.NEWS_COLUMN_CATEGORY_ID
+        + " = " + commonResources.NEWS_CATEGORIES_TABLE_NAME
+        + "." + commonResources.NEWS_CATEGORIES_COLUMN_ID +
+        " and " + commonResources.NEWS_COLUMN_AUTHOR_ID + " = "
+        + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+        + commonResources.NEWS_AUTHORS_COLUMN_ID +
+        " and " + commonResources.NEWS_TABLE_NAME + "."
+        + commonResources.NEWS_COLUMN_ID + " = ?;";
+    dbConnect.query(
+        selectNewsByIdSql,
+        [newsId], // Escaping value to avoid sql injection
+        function (err, result, fields) {
+            if (err) throw err;
+            let news = result[0]; // result is obj array
+            if(result.length > 0) {
+                res.json({
+                    result: true,
+                    news
+                });
+            } else {
+                res.json({
+                    result: false,
+                    message: "Không tìm thấy thông tin bài viết."
+                });
+            }
+        }
+    );
+});
+
 // News categories
 router.get('/news-categories', async (req, res) => {
     let getNewsCategorySql =
