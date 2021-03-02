@@ -964,3 +964,7 @@ router.post('/remove', async (req, res) => {
 module.exports = router;
 module.exports.checkIfPhoneExistsWhenCreateUser = checkIfPhoneExistsWhenCreateUser;
 module.exports.checkIfEmailExistsWhenCreateUser = checkIfEmailExistsWhenCreateUser;
+module.exports.checkIfPhoneExistsWhenUpdateUser =
+                                        checkIfPhoneExistsWhenUpdateUser;
+module.exports.checkIfEmailExistsWhenUpdateUser =
+                                        checkIfEmailExistsWhenUpdateUser;
