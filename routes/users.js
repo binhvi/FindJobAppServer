@@ -946,6 +946,21 @@ function checkIfEmailExistsWhenUpdateUser(email, userId, callback) {
     );
 }
 
+router.post('/remove', async (req, res) => {
+   let userId = req.body.userId;
+   let deleteUserByIdSql =
+       "delete from " + commonResources.USERS_TABLE_NAME + " " +
+       "where " + commonResources.USERS_COLUMN_ID + " = ?;";
+   dbConnect.query(
+       deleteUserByIdSql,
+       [userId],
+       function (err, result) {
+           if (err) throw err;
+           res.redirect('/users/');
+       }
+   );
+});
+
 module.exports = router;
 module.exports.checkIfPhoneExistsWhenCreateUser = checkIfPhoneExistsWhenCreateUser;
 module.exports.checkIfEmailExistsWhenCreateUser = checkIfEmailExistsWhenCreateUser;
