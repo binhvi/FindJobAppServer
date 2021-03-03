@@ -1662,7 +1662,7 @@ router.post('/users/change-password', (req, res) => {
                     message: "Lỗi truy vấn id người dùng",
                     err: selectUserByIdErr
                 });
-                return;
+                throw selectUserByIdErr;
             }
 
             if (selectUserByIdResult.length === 0) {
@@ -1701,6 +1701,14 @@ router.post('/users/change-password', (req, res) => {
                 selectPasswordByUserId,
                 [userId],
                 function(selectPasswordErr, selectPasswordQueryResult) {
+                    if (selectPasswordErr) {
+                        res.json({
+                            result: false,
+                            message: 'Lỗi truy vấn password',
+                            selectPasswordErr
+                        });
+                        throw selectPasswordErr;
+                    }
                     // [{"password":"000000"}]
                     let password = selectPasswordQueryResult[0].password;
                     // To compare two strings in JavaScript,
@@ -1760,6 +1768,7 @@ router.post('/users/change-password', (req, res) => {
                                     message: "Có lỗi xảy ra khi lưu mật khẩu mới",
                                     updatePasswordErr
                                 });
+                                throw updatePasswordErr;
                             } else {
                                 res.json({
                                     result: true,
