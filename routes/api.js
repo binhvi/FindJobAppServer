@@ -1612,4 +1612,166 @@ router.post('/users/update', (req, res) => {
 
 });
 
+router.post('/users/change-password', (req, res) => {
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "Trường userId phải là số."
+        });
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    let userId = userIdNumber;
+    let selectUserByIdSql =
+        "select " + commonResources.USERS_COLUMN_ID + " " +
+        "from " + commonResources.USERS_TABLE_NAME + " " +
+        "where " + commonResources.USERS_COLUMN_ID + " = ?";
+    dbConnect.query(
+        selectUserByIdSql,
+        [userId],
+        function (selectUserByIdErr, selectUserByIdResult) {
+            if (selectUserByIdErr) {
+                res.json({
+                    result: false,
+                    message: "Lỗi truy vấn id người dùng",
+                    err: selectUserByIdErr
+                });
+                return;
+            }
+
+            if (selectUserByIdResult.length === 0) {
+                // selectUserByIdResult is an array
+                res.json({
+                    result: false,
+                    message: "ID người dùng không tồn tại"
+                });
+                return;
+            }
+
+            // userId exists
+            // Validate other fields
+            if (req.body.oldPassword === undefined) {
+                res.json({
+                   result: false,
+                   message: "Thiếu trường oldPassword"
+                });
+                return;
+            }
+
+            let oldPasswordText = req.body.oldPassword.trim();
+            if (oldPasswordText.length === 0) {
+                res.json({
+                    result: false,
+                    message: "Mật khẩu cũ không được để trống."
+                });
+                return;
+            }
+
+            let selectPasswordByUserId =
+                "select " + commonResources.USERS_COLUMN_PASSWORD + " " +
+                "from " + commonResources.USERS_TABLE_NAME + " " +
+                "where " + commonResources.USERS_COLUMN_ID + " = ?";
+            dbConnect.query(
+                selectPasswordByUserId,
+                [userId],
+                function(selectPasswordErr, selectPasswordQueryResult) {
+                    // [{"password":"000000"}]
+                    let password = selectPasswordQueryResult[0].password;
+                    // To compare two strings in JavaScript,
+                    // use the localeCompare() method.
+                    // The method returns 0 if both the strings
+                    // are equal, -1 if string 1 is sorted before
+                    // string 2 and 1 if string 2 is sorted before
+                    // string 1.
+                    if (oldPasswordText.localeCompare(password) !== 0) {
+                        res.json({
+                            result: false,
+                            message: "Mật khẩu bạn đã nhập không chính xác."
+                        });
+                        return;
+                    }
+
+                    if (req.body.newPassword === undefined) {
+                        res.json({
+                            result: false,
+                            message: "Thiếu trường newPassword."
+                        });
+                        return;
+                    }
+
+                    let newPasswordText = req.body.newPassword.trim();
+                    if (newPasswordText.length === 0) {
+                        res.json({
+                            result: false,
+                            message: "Mật khẩu mới không được để trống."
+                        });
+                        return;
+                    }
+
+                    if (newPasswordText.length < 6) {
+                        res.json({
+                            result: false,
+                            message: "Nhập mật khẩu mới từ 6 ký tự trở lên."
+                        });
+                        return;
+                    }
+
+                    let updatePasswordByUserId =
+                        "update " +
+                            commonResources.USERS_TABLE_NAME + " " +
+                        "set " +
+                            commonResources.USERS_COLUMN_PASSWORD +
+                            " = '" + newPasswordText + "'" +
+                        "where " +
+                            commonResources.USERS_COLUMN_ID + " = ?;";
+                    dbConnect.query(
+                        updatePasswordByUserId,
+                        [userId], // Escaping value to avoid sql injection
+                        function (updatePasswordErr, updatePasswordResult) {
+                            if (updatePasswordErr) {
+                                res.json({
+                                    result: false,
+                                    message: "Có lỗi xảy ra khi lưu mật khẩu mới",
+                                    updatePasswordErr
+                                });
+                            } else {
+                                res.json({
+                                    result: true,
+                                    message: "Đổi mật khẩu thành công."
+                                });
+                            }
+                        }
+                    );
+                }
+            );
+        }
+    );
+});
+
 module.exports = router;

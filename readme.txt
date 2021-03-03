@@ -135,3 +135,13 @@ thiếu trường hoặc có trường nhưng nội dung rỗng thì dữ liệu
     - Trường avatar khi request thiếu trường, hoặc có trường
 nhưng giá trị rỗng sau khi request không bị xóa.
 ------------------------------------------------------
+Đổi mật khẩu
+POST /api/users/change-password
+Tham số:
+- userId (int, bắt buộc, không trống, id phải tồn tại)
+- oldPassword
+    + String, bắt buộc, không trống
+    + Phải đúng với mật khẩu người dùng đã lưu trong database
+- newPassword
+    + String, bắt buộc, không trống
+    + Mật khẩu phải >= 6 ký tự
