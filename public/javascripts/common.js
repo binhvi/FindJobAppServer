@@ -1,10 +1,10 @@
 // Host deploy
-// const PROTOCOL = "https";
-// const SERVER_HOST = "find-job-app.herokuapp.com";
+const PROTOCOL = "https";
+const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-const PROTOCOL = "http";
-const SERVER_HOST = "localhost:3000";
+// const PROTOCOL = "http";
+// const SERVER_HOST = "localhost:3000";
 
 // Host database deploy (Main)
 // const MY_SQL_HOST = "johnny.heliohost.org";
