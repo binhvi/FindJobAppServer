@@ -20,4 +20,31 @@ router.get('/', async (req, res) => {
     });
 });
 
+function checkIfAcademicDegreeLevelIdExists(id, callback) {
+    let selectNumberOfAcademyDegreeLevelsHaveThisIdSql =
+        "select count(" +
+            commonResources.ACADEMIC_DEGREE_LEVELS_COLUMN_ID
+            + ") as numberOfAcademicDegreeLevelsHaveThisId " +
+        "from " + commonResources.ACADEMIC_DEGREE_LEVELS_TABLE_NAME + " " +
+        "where " +
+            commonResources.ACADEMIC_DEGREE_LEVELS_COLUMN_ID + " = ?;";
+    dbConnect.query(
+        selectNumberOfAcademyDegreeLevelsHaveThisIdSql,
+        [id],
+        function (err, result) {
+            if (err) throw err;
+            // [{"numberOfAcademicDegreeLevelsHaveThisId" : 0}]
+            let numberOfAcademicDegreeLevelsHaveThisId =
+                result[0].numberOfAcademicDegreeLevelsHaveThisId;
+            if (numberOfAcademicDegreeLevelsHaveThisId > 0) {
+                return callback(true);
+            } else {
+                return callback(false);
+            }
+        }
+    );
+}
+
 module.exports = router;
+module.exports.checkIfAcademicDegreeLevelIdExists =
+                                    checkIfAcademicDegreeLevelIdExists;
