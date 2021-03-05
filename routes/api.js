@@ -1860,7 +1860,10 @@ router.post('/education', (req, res) => {
                     + "and " +
                     commonResources
                         .EDUCATION_COLUMN_USER_ID
-                    + " = ?";
+                    + " = ? " +
+                "order by " +
+                    commonResources.EDUCATION_COLUMN_START_DATE_MILLIS
+                    + " desc;";
             dbConnect.query(
                 selectEducationByUserIdSql,
                 [userId],
