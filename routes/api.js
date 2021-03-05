@@ -5,23 +5,19 @@ var uniqid = require('uniqid');
 var dbConnect = require('../public/javascripts/db');
 var userModule = require('./users');
 
-router.post('/news', async (req, res) =>  {
+router.post('/news', async (req, res) => {
     // Set number items per page
     const perPageRequest = req.body.perpage;
     var numberItemsPerPage;
     if (perPageRequest === undefined) {
-        numberItemsPerPage = commonResources.
-            DEFAULT_ITEM_PER_PAGE_NUM;
+        numberItemsPerPage = commonResources.DEFAULT_ITEM_PER_PAGE_NUM;
     } else if (perPageRequest === '') {
-        numberItemsPerPage = commonResources.
-            DEFAULT_ITEM_PER_PAGE_NUM;
+        numberItemsPerPage = commonResources.DEFAULT_ITEM_PER_PAGE_NUM;
     } else if (isNaN(perPageRequest)) {
         // Request per page is text
-        numberItemsPerPage = commonResources.
-            DEFAULT_ITEM_PER_PAGE_NUM;
+        numberItemsPerPage = commonResources.DEFAULT_ITEM_PER_PAGE_NUM;
     } else if (Math.floor(perPageRequest) < 1) {
-        numberItemsPerPage = commonResources.
-            MIN_ITEM_PER_PAGE_NUM;
+        numberItemsPerPage = commonResources.MIN_ITEM_PER_PAGE_NUM;
     } else if (Math.floor(perPageRequest) <= 500) {
         numberItemsPerPage = Math.floor(perPageRequest);
     } else if (Math.floor(perPageRequest) > 500) {
@@ -30,35 +26,35 @@ router.post('/news', async (req, res) =>  {
 
     var selectFromClauseTableNewsSql =
         "select "
-            // id
-            + commonResources.NEWS_TABLE_NAME + "."
-                + commonResources.NEWS_COLUMN_ID+ ", " +
-            // title
-            commonResources.NEWS_COLUMN_TITLE + ", " +
-            // imgUrl
-            commonResources.NEWS_COLUMN_IMAGE_URL + ", " +
-            // category name
-            commonResources.NEWS_CATEGORIES_TABLE_NAME + "." +
-                commonResources.NEWS_CATEGORIES_COLUMN_NAME
-               + " as " + commonResources.COLUMN_ALIAS_CATEGORY + ", " +
-            // author name
-            commonResources.NEWS_AUTHORS_TABLE_NAME + "."
-                + commonResources.NEWS_AUTHORS_COLUMN_NAME +
-            " as " + commonResources.COLUMN_ALIAS_AUTHOR + ", " +
-            // short description
-            commonResources.NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
-            // content
-            commonResources.NEWS_COLUMN_CONTENT +
+        // id
+        + commonResources.NEWS_TABLE_NAME + "."
+        + commonResources.NEWS_COLUMN_ID + ", " +
+        // title
+        commonResources.NEWS_COLUMN_TITLE + ", " +
+        // imgUrl
+        commonResources.NEWS_COLUMN_IMAGE_URL + ", " +
+        // category name
+        commonResources.NEWS_CATEGORIES_TABLE_NAME + "." +
+        commonResources.NEWS_CATEGORIES_COLUMN_NAME
+        + " as " + commonResources.COLUMN_ALIAS_CATEGORY + ", " +
+        // author name
+        commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+        + commonResources.NEWS_AUTHORS_COLUMN_NAME +
+        " as " + commonResources.COLUMN_ALIAS_AUTHOR + ", " +
+        // short description
+        commonResources.NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
+        // content
+        commonResources.NEWS_COLUMN_CONTENT +
         " from " + commonResources.NEWS_TABLE_NAME + ", " +
-            commonResources.NEWS_CATEGORIES_TABLE_NAME + ", " +
-            commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
+        commonResources.NEWS_CATEGORIES_TABLE_NAME + ", " +
+        commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
         "where "
-            + commonResources.NEWS_COLUMN_CATEGORY_ID
-                + " = " + commonResources.NEWS_CATEGORIES_TABLE_NAME
-                + "." + commonResources.NEWS_CATEGORIES_COLUMN_ID +
-            " and " + commonResources.NEWS_COLUMN_AUTHOR_ID + " = "
-                + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
-                + commonResources.NEWS_AUTHORS_COLUMN_ID + " ";
+        + commonResources.NEWS_COLUMN_CATEGORY_ID
+        + " = " + commonResources.NEWS_CATEGORIES_TABLE_NAME
+        + "." + commonResources.NEWS_CATEGORIES_COLUMN_ID +
+        " and " + commonResources.NEWS_COLUMN_AUTHOR_ID + " = "
+        + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
+        + commonResources.NEWS_AUTHORS_COLUMN_ID + " ";
 
     const pageIndexRequest = req.body.page;
 
@@ -114,8 +110,8 @@ router.post('/news', async (req, res) =>  {
                             pageIndex = commonResources.DEFAULT_PAGE_INDEX;
                         } else if (isNaN(pageIndexRequest)) {
                             pageIndex = commonResources.DEFAULT_PAGE_INDEX;
-                        } else if(pageIndexRequest <= 1 ||
-                                    pageIndexRequest > numbersOfPage) {
+                        } else if (pageIndexRequest <= 1 ||
+                            pageIndexRequest > numbersOfPage) {
                             pageIndex = commonResources.DEFAULT_PAGE_INDEX;
                         } else {
                             pageIndex = Math.floor(pageIndexRequest);
@@ -169,7 +165,7 @@ router.post('/news', async (req, res) =>  {
                         "select count(*) as total " +
                         "from " + commonResources.NEWS_TABLE_NAME + " " +
                         "where " + commonResources.NEWS_COLUMN_CATEGORY_ID
-                                + " = " + categoryId;
+                        + " = " + categoryId;
                     dbConnect.query(
                         getNewsOfThisCategoryNumberSql,
                         function (err, resultNumberOfNews, fields) {
@@ -217,7 +213,7 @@ router.post('/news', async (req, res) =>  {
                                         pageIndex = commonResources.DEFAULT_PAGE_INDEX;
                                     } else if (isNaN(pageIndexRequest)) {
                                         pageIndex = commonResources.DEFAULT_PAGE_INDEX;
-                                    } else if(pageIndexRequest <= 1 ||
+                                    } else if (pageIndexRequest <= 1 ||
                                         pageIndexRequest > numbersOfPage) {
                                         pageIndex = commonResources.DEFAULT_PAGE_INDEX;
                                     } else {
@@ -300,7 +296,7 @@ router.post('/news', async (req, res) =>  {
                                         pageIndex = commonResources.DEFAULT_PAGE_INDEX;
                                     } else if (isNaN(pageIndexRequest)) {
                                         pageIndex = commonResources.DEFAULT_PAGE_INDEX;
-                                    } else if(pageIndexRequest <= 1 ||
+                                    } else if (pageIndexRequest <= 1 ||
                                         pageIndexRequest > numbersOfPage) {
                                         pageIndex = commonResources.DEFAULT_PAGE_INDEX;
                                     } else {
@@ -361,7 +357,7 @@ router.post('/news/details', (req, res) => {
         "select "
         // id
         + commonResources.NEWS_TABLE_NAME + "."
-        + commonResources.NEWS_COLUMN_ID+ ", " +
+        + commonResources.NEWS_COLUMN_ID + ", " +
         // title
         commonResources.NEWS_COLUMN_TITLE + ", " +
         // imgUrl
@@ -395,7 +391,7 @@ router.post('/news/details', (req, res) => {
         function (err, result, fields) {
             if (err) throw err;
             let news = result[0]; // result is obj array
-            if(result.length > 0) {
+            if (result.length > 0) {
                 res.json({
                     result: true,
                     news
@@ -469,7 +465,7 @@ router.get('/levels-of-education', async (req, res) => {
                 result: true,
                 levelsOfEducation: levelsOfEducation
             });
-    });
+        });
 });
 
 router.get('/academic-degree-levels', async (req, res) => {
@@ -489,6 +485,7 @@ router.get('/academic-degree-levels', async (req, res) => {
         });
 });
 
+// Users
 router.post('/users/create', async (req, res) => {
     // Validate
     // fullName
@@ -613,15 +610,15 @@ router.post('/users/create', async (req, res) => {
                     // Pass validate, save to database
                     let saveUserToDbSql =
                         "insert into " + commonResources.USERS_TABLE_NAME + "(" +
-                            commonResources.USERS_COLUMN_FULL_NAME + ", " +
-                            commonResources.USERS_COLUMN_PASSWORD + ", " +
-                            commonResources.USERS_COLUMN_EMAIL + ", " +
-                            commonResources.USERS_COLUMN_PHONE + ") " +
+                        commonResources.USERS_COLUMN_FULL_NAME + ", " +
+                        commonResources.USERS_COLUMN_PASSWORD + ", " +
+                        commonResources.USERS_COLUMN_EMAIL + ", " +
+                        commonResources.USERS_COLUMN_PHONE + ") " +
                         "values(" +
-                            "'" + fullName + "', " +
-                            "'" + password + "', " +
-                            "'" + email + "', " +
-                            "'" + phone + "');"
+                        "'" + fullName + "', " +
+                        "'" + password + "', " +
+                        "'" + email + "', " +
+                        "'" + phone + "');"
                     dbConnect.query(
                         saveUserToDbSql,
                         function (err, result) {
@@ -701,15 +698,15 @@ router.post('/users/login', async (req, res) => {
     // Pass validate
     let getUserInfoByEmailAndPasswordSql =
         "select " +
-            commonResources.USERS_COLUMN_ID + ", " +
-            commonResources.USERS_COLUMN_FULL_NAME + ", " +
-            commonResources.USERS_COLUMN_PASSWORD + ", " +
-            commonResources.USERS_COLUMN_EMAIL + ", " +
-            commonResources.USERS_COLUMN_PHONE + " " +
+        commonResources.USERS_COLUMN_ID + ", " +
+        commonResources.USERS_COLUMN_FULL_NAME + ", " +
+        commonResources.USERS_COLUMN_PASSWORD + ", " +
+        commonResources.USERS_COLUMN_EMAIL + ", " +
+        commonResources.USERS_COLUMN_PHONE + " " +
         "from " + commonResources.USERS_TABLE_NAME + " " +
         "where " +
-            commonResources.USERS_COLUMN_EMAIL + " = ? and " +
-            commonResources.USERS_COLUMN_PASSWORD + " = ?;";
+        commonResources.USERS_COLUMN_EMAIL + " = ? and " +
+        commonResources.USERS_COLUMN_PASSWORD + " = ?;";
     dbConnect.query(
         getUserInfoByEmailAndPasswordSql,
         [email, password],
@@ -777,48 +774,48 @@ router.post('/users/details', (req, res) => {
     let userId = userIdNumber;
     let selectUserInfoByIdSql =
         "select " +
-            commonResources.USERS_COLUMN_FULL_NAME + ", " +
+        commonResources.USERS_COLUMN_FULL_NAME + ", " +
 
-            // Genders.name as gender
-            commonResources.GENDERS_TABLE_NAME + "."
-            + commonResources.GENDERS_COLUMN_NAME + " as " +
-            commonResources.COLUMN_ALIAS_GENDER + ", " +
+        // Genders.name as gender
+        commonResources.GENDERS_TABLE_NAME + "."
+        + commonResources.GENDERS_COLUMN_NAME + " as " +
+        commonResources.COLUMN_ALIAS_GENDER + ", " +
 
-            commonResources.USERS_COLUMN_EXPECTED_SALARY_MIL_VND + ", " +
+        commonResources.USERS_COLUMN_EXPECTED_SALARY_MIL_VND + ", " +
 
-            // TypesOfWork.name as typeOfWork
-            commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
-            commonResources.TYPES_OF_WORK_COLUMN_NAME + " as " +
-            commonResources.COLUMN_ALIAS_TYPE_OF_WORK + ", " +
+        // TypesOfWork.name as typeOfWork
+        commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+        commonResources.TYPES_OF_WORK_COLUMN_NAME + " as " +
+        commonResources.COLUMN_ALIAS_TYPE_OF_WORK + ", " +
 
-            commonResources.LEVELS_OF_EDUCATION_COLUMN_NAME + " as " +
-            commonResources.COLUMN_ALIAS_GRADUATED_EDUCATION_LEVEL + ", " +
+        commonResources.LEVELS_OF_EDUCATION_COLUMN_NAME + " as " +
+        commonResources.COLUMN_ALIAS_GRADUATED_EDUCATION_LEVEL + ", " +
 
-            commonResources.USERS_COLUMN_YEARS_OF_EXPERIENCE + ", " +
-            commonResources.USERS_COLUMN_RESUME_SUMMARY + ", " +
-            commonResources.USERS_COLUMN_DOB_MILLIS + ", " +
-            commonResources.USERS_COLUMN_ADDRESS + ", " +
-            commonResources.USERS_COLUMN_PHONE + ", " +
-            commonResources.USERS_COLUMN_EMAIL + ", " +
-            commonResources.USERS_COLUMN_AVATAR_URL + ", " +
-            commonResources.USERS_COLUMN_CAREER_OBJECTIVE + " " +
+        commonResources.USERS_COLUMN_YEARS_OF_EXPERIENCE + ", " +
+        commonResources.USERS_COLUMN_RESUME_SUMMARY + ", " +
+        commonResources.USERS_COLUMN_DOB_MILLIS + ", " +
+        commonResources.USERS_COLUMN_ADDRESS + ", " +
+        commonResources.USERS_COLUMN_PHONE + ", " +
+        commonResources.USERS_COLUMN_EMAIL + ", " +
+        commonResources.USERS_COLUMN_AVATAR_URL + ", " +
+        commonResources.USERS_COLUMN_CAREER_OBJECTIVE + " " +
         "from " +
-            commonResources.USERS_TABLE_NAME + " " +
-            "left join " +
-                commonResources.TYPES_OF_WORK_TABLE_NAME + " on " +
-                commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
-                commonResources.TYPES_OF_WORK_COLUMN_ID + " = " +
-                commonResources.USERS_COLUMN_TYPE_OF_WORK_ID + " " +
-            "left join " +
-                commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + " on " +
-                commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + "." +
-                commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + " = " +
-                commonResources.USERS_COLUMN_GRADUATED_EDUCATION_ID + " " +
-            "left join " +
-                commonResources.GENDERS_TABLE_NAME + " on " +
-                commonResources.GENDERS_TABLE_NAME + "." +
-                commonResources.GENDERS_COLUMN_ID + " = " +
-                commonResources.USERS_COLUMN_GENDER_ID + " " +
+        commonResources.USERS_TABLE_NAME + " " +
+        "left join " +
+        commonResources.TYPES_OF_WORK_TABLE_NAME + " on " +
+        commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+        commonResources.TYPES_OF_WORK_COLUMN_ID + " = " +
+        commonResources.USERS_COLUMN_TYPE_OF_WORK_ID + " " +
+        "left join " +
+        commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + " on " +
+        commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + "." +
+        commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + " = " +
+        commonResources.USERS_COLUMN_GRADUATED_EDUCATION_ID + " " +
+        "left join " +
+        commonResources.GENDERS_TABLE_NAME + " on " +
+        commonResources.GENDERS_TABLE_NAME + "." +
+        commonResources.GENDERS_COLUMN_ID + " = " +
+        commonResources.USERS_COLUMN_GENDER_ID + " " +
         "where Users.id = ?;";
 
     dbConnect.query(
@@ -938,7 +935,7 @@ router.post('/users/details', (req, res) => {
 });
 
 router.post('/users/update', (req, res) => {
-    if(req.body.id === undefined) {
+    if (req.body.id === undefined) {
         res.json({
             result: false,
             message: "Thiếu trường id."
@@ -1000,8 +997,8 @@ router.post('/users/update', (req, res) => {
                 // fullName
                 if (req.body.fullName === undefined) {
                     res.json({
-                       result: false,
-                       message:  "Thiếu trường fullName."
+                        result: false,
+                        message: "Thiếu trường fullName."
                     });
                     return;
                 }
@@ -1082,7 +1079,7 @@ router.post('/users/update', (req, res) => {
                                 res.json({
                                     result: false,
                                     message: "Hãy nhập email " +
-                                                "đúng định dạng."
+                                        "đúng định dạng."
                                 });
                                 return;
                             }
@@ -1103,7 +1100,7 @@ router.post('/users/update', (req, res) => {
                                         // If user don't upload new avatar file, don't need check
                                         // If user upload new file, check if file extension
                                         // is image format
-                                        if(req.files &&
+                                        if (req.files &&
                                             !commonResources.isThisFileAnImage(
                                                 req.files.avatar.name)) {
                                             // This file doesn't have extension webp|gif|png
@@ -1312,7 +1309,7 @@ router.post('/users/update', (req, res) => {
                                                 res.json({
                                                     result: false,
                                                     message: "Id hình thức làm việc" +
-                                                                " phải là số nguyên."
+                                                        " phải là số nguyên."
                                                 });
                                                 return;
                                             }
@@ -1353,7 +1350,7 @@ router.post('/users/update', (req, res) => {
                                                 res.json({
                                                     resutl: false,
                                                     message: "Id hình thức làm việc" +
-                                                                 " không tồn tại."
+                                                        " không tồn tại."
                                                 });
                                                 return;
                                             }
@@ -1390,7 +1387,7 @@ router.post('/users/update', (req, res) => {
                                                 res.json({
                                                     result: false,
                                                     message: "Nhập mức lương mong muốn " +
-                                                                "là số nguyên lớn hơn hoặc bằng 0."
+                                                        "là số nguyên lớn hơn hoặc bằng 0."
                                                 });
                                                 return;
                                             }
@@ -1425,8 +1422,8 @@ router.post('/users/update', (req, res) => {
                                             if (yearsOfExperience < 0) {
                                                 res.json({
                                                     result: false,
-                                                    message:  "Nhập số năm kinh nghiệm " +
-                                                            "là số nguyên lớn hơn hoặc bằng 0."
+                                                    message: "Nhập số năm kinh nghiệm " +
+                                                        "là số nguyên lớn hơn hoặc bằng 0."
                                                 });
                                                 return;
                                             }
@@ -1678,8 +1675,8 @@ router.post('/users/change-password', (req, res) => {
             // Validate other fields
             if (req.body.oldPassword === undefined) {
                 res.json({
-                   result: false,
-                   message: "Thiếu trường oldPassword"
+                    result: false,
+                    message: "Thiếu trường oldPassword"
                 });
                 return;
             }
@@ -1700,7 +1697,7 @@ router.post('/users/change-password', (req, res) => {
             dbConnect.query(
                 selectPasswordByUserId,
                 [userId],
-                function(selectPasswordErr, selectPasswordQueryResult) {
+                function (selectPasswordErr, selectPasswordQueryResult) {
                     if (selectPasswordErr) {
                         res.json({
                             result: false,
@@ -1752,12 +1749,12 @@ router.post('/users/change-password', (req, res) => {
 
                     let updatePasswordByUserId =
                         "update " +
-                            commonResources.USERS_TABLE_NAME + " " +
+                        commonResources.USERS_TABLE_NAME + " " +
                         "set " +
-                            commonResources.USERS_COLUMN_PASSWORD +
-                            " = '" + newPasswordText + "'" +
+                        commonResources.USERS_COLUMN_PASSWORD +
+                        " = '" + newPasswordText + "'" +
                         "where " +
-                            commonResources.USERS_COLUMN_ID + " = ?;";
+                        commonResources.USERS_COLUMN_ID + " = ?;";
                     dbConnect.query(
                         updatePasswordByUserId,
                         [userId], // Escaping value to avoid sql injection
@@ -1782,5 +1779,208 @@ router.post('/users/change-password', (req, res) => {
         }
     );
 });
+
+router.get('/users', (req, res) => {
+    let selectAllUsersSql =
+        "select " +
+        commonResources.USERS_TABLE_NAME + "." +
+        commonResources.USERS_COLUMN_ID + ", " +
+
+        commonResources.USERS_COLUMN_FULL_NAME + ", " +
+
+        // Genders.name as gender
+        commonResources.GENDERS_TABLE_NAME + "."
+        + commonResources.GENDERS_COLUMN_NAME + " as " +
+        commonResources.COLUMN_ALIAS_GENDER + ", " +
+
+        commonResources.USERS_COLUMN_EXPECTED_SALARY_MIL_VND + ", " +
+
+        // TypesOfWork.name as typeOfWork
+        commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+        commonResources.TYPES_OF_WORK_COLUMN_NAME + " as " +
+        commonResources.COLUMN_ALIAS_TYPE_OF_WORK + ", " +
+
+        commonResources.LEVELS_OF_EDUCATION_COLUMN_NAME + " as " +
+        commonResources.COLUMN_ALIAS_GRADUATED_EDUCATION_LEVEL + ", " +
+
+        commonResources.USERS_COLUMN_YEARS_OF_EXPERIENCE + ", " +
+        commonResources.USERS_COLUMN_RESUME_SUMMARY + ", " +
+        commonResources.USERS_COLUMN_DOB_MILLIS + ", " +
+        commonResources.USERS_COLUMN_ADDRESS + ", " +
+        commonResources.USERS_COLUMN_PHONE + ", " +
+        commonResources.USERS_COLUMN_EMAIL + ", " +
+        commonResources.USERS_COLUMN_AVATAR_URL + ", " +
+        commonResources.USERS_COLUMN_CAREER_OBJECTIVE + " " +
+        "from " +
+        commonResources.USERS_TABLE_NAME + " " +
+        "left join " +
+        commonResources.TYPES_OF_WORK_TABLE_NAME + " on " +
+        commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+        commonResources.TYPES_OF_WORK_COLUMN_ID + " = " +
+        commonResources.USERS_COLUMN_TYPE_OF_WORK_ID + " " +
+        "left join " +
+        commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + " on " +
+        commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + "." +
+        commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + " = " +
+        commonResources.USERS_COLUMN_GRADUATED_EDUCATION_ID + " " +
+        "left join " +
+        commonResources.GENDERS_TABLE_NAME + " on " +
+        commonResources.GENDERS_TABLE_NAME + "." +
+        commonResources.GENDERS_COLUMN_ID + " = " +
+        commonResources.USERS_COLUMN_GENDER_ID + " " +
+        "order by " +
+        commonResources.USERS_TABLE_NAME + "." +
+        commonResources.USERS_COLUMN_ID + " desc";
+
+
+    dbConnect.query(
+        selectAllUsersSql,
+        function (err, result) {
+            if (err) {
+                res.json({
+                    result: false,
+                    message: 'Lỗi truy vấn danh sách Users',
+                    err
+                });
+            } else {
+                res.json({
+                    result: true,
+                    users: result
+                });
+            }
+        }
+    )
+});
+
+// Education
+/**
+ * API read education info of one user.
+ * Param: userId (int)
+ */
+router.post('/education', (req, res) => {
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "Trường userId phải là số."
+        });
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    let userId = userIdNumber;
+    let selectUserByIdSql =
+        "select " + commonResources.USERS_COLUMN_ID + " " +
+        "from " + commonResources.USERS_TABLE_NAME + " " +
+        "where " + commonResources.USERS_COLUMN_ID + " = ?";
+    dbConnect.query(
+        selectUserByIdSql,
+        [userId],
+        function (selectUserByIdErr, selectUserByIdResult) {
+            if (selectUserByIdErr) {
+                res.json({
+                    result: false,
+                    message: "Lỗi truy vấn id người dùng",
+                    err: selectUserByIdErr
+                });
+                throw selectUserByIdErr;
+            }
+
+            if (selectUserByIdResult.length === 0) {
+                // selectUserByIdResult is an array
+                res.json({
+                    result: false,
+                    message: "ID người dùng không tồn tại"
+                });
+                return;
+            }
+
+            let selectEducationByUserIdSql =
+                "select " +
+                    commonResources.EDUCATION_COLUMN_SCHOOL_NAME + ", " +
+                    commonResources.EDUCATION_COLUMN_MAJOR + ", " +
+
+                    commonResources
+                        .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + "."
+                    + commonResources
+                        .ACADEMIC_DEGREE_LEVELS_COLUMN_NAME
+                    + " as "
+                    + commonResources
+                        .COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL
+                    + ", " +
+
+                    commonResources
+                        .EDUCATION_COLUMN_START_DATE_MILLIS + ", " +
+                    commonResources
+                        .EDUCATION_COLUMN_END_DATE_MILLIS + ", " +
+                    commonResources.EDUCATION_COLUMN_ACHIEVEMENTS + " " +
+
+                "from " +
+                    commonResources.EDUCATION_TABLE_NAME + ", " +
+                    commonResources
+                        .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + " " +
+                "where " +
+                    commonResources.EDUCATION_TABLE_NAME + "." +
+                    commonResources
+                        .EDUCATION_COLUMN_ACADEMIC_DEGREE_LEVEL_ID
+                    + " = " +
+                    commonResources
+                        .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + "." +
+                    commonResources
+                        .ACADEMIC_DEGREE_LEVELS_COLUMN_ID + " "
+
+                    + "and " +
+                    commonResources
+                        .EDUCATION_COLUMN_USER_ID
+                    + " = ?";
+            dbConnect.query(
+                selectEducationByUserIdSql,
+                [userId],
+                function(selectEducationErr, selectEducationResult) {
+                    if (selectEducationErr) {
+                        res.json({
+                            result: false,
+                            message: 'Lỗi truy vấn Education',
+                            selectEducationErr
+                        });
+                    } else {
+                        res.json({
+                            result: true,
+                            data: {
+                                userId,
+                                education: selectEducationResult
+                            }
+                        });
+                    }
+                }
+            );
+        }
+    );
+});
+
 
 module.exports = router;

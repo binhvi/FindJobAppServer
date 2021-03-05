@@ -145,3 +145,43 @@ Tham số:
 - newPassword
     + String, bắt buộc, không trống
     + Mật khẩu phải >= 6 ký tự
+----------------------------------
+Lấy danh sách người dùng (ứng viên)
+GET /api/users
+(Truy vấn sắp xếp id giảm dần (hay ứng viên đăng ký mới nhất cho lên đầu.)).
+============================
+Education
+
+Lấy danh sách thông tin học vấn của ứng viên (người dùng)
+POST /api/education
+Tham số:
+- userId (int, bắt buộc, không trống, id phải tồn tại)
+------------------------
+Tạo thông tin học vấn của ứng viên (người dùng)
+POST /api/education/create
+---------------
+Cập nhật thông tin học vấn của ứng viên (người dùng)
+POST /api/education/update
+----------
+Xóa thông tin học vấn của ứng viên (người dùng)
+POST /api/education/remove
+Tham số:
+- userId (int, bắt buộc, không trống, id phải tồn tại)
+=====================
+Experiences
+
+Lấy danh sách thông tin kinh nghiệm làm việc của ứng viên (người dùng)
+POST /api/experiences
+Tham số:
+- userId (int, bắt buộc, không trống, id phải tồn tại)
+------------------
+Tạo thông tin kinh nghiệm làm việc của ứng viên (người dùng)
+POST /api/experiences/create
+--------------
+Cập nhật thông tin kinh nghiệm làm việc của ứng viên (người dùng)
+POST /api/experiences/update
+--------------
+Xóa thông tin kinh nghiệm làm việc của ứng viên (người dùng)
+POST /api/experiences/remove
+Tham số:
+- userId (int, bắt buộc, không trống, id phải tồn tại)
