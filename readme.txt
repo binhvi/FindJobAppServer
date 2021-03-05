@@ -9,14 +9,6 @@ Tham số:
     page (int), 
     perpage (là limit) (int), 
     categoryId (int)
-
----
-
-Lấy tất cả thông tin của một bài viết:
-POST /api/news/details
-Tham số: newsId (int)
-
-
 ===============
 
 NewsCategories
@@ -159,6 +151,27 @@ Tham số:
 ------------------------
 Tạo thông tin học vấn của ứng viên (người dùng)
 POST /api/education/create
+Tham số:
+- userId (id người dùng, int, bắt buộc, phải tồn tại)
+- major (chuyên ngành) (String, bắt buộc, không rỗng)
+- schoolName (String, bắt buộc, không rỗng)
+- academicDegreeLevelId (id bằng cấp học thuật)
+(lấy json của AcademicDegreeLevels tại api GET /api/academic-degree-levels
+ hoặc xem danh sách trên web tại
+ https://find-job-app.herokuapp.com/academic-degree-levels)
+    + Bắt buộc
+    + int
+    + Phải tồn tại
+
+- startDateInMilliseconds (ngày bắt đầu, tính bằng milliseconds)
+    + Bắt buộc, int
+- endDateInMilliseconds (ngày kết thúc, tính bằng milliseconds)
+    + Tùy chọn (= optional/không bắt buộc/Có thể rỗng hoặc null)
+    + int
+    + Nếu khác rỗng thì phải > startDateInMilliseconds
+- achievements (thành tích)
+    + Tùy chọn
+    + String
 ---------------
 Cập nhật thông tin học vấn của ứng viên (người dùng)
 POST /api/education/update
