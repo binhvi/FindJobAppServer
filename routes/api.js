@@ -2198,4 +2198,397 @@ router.post('/education/create', (req, res) => {
         }
     );
 });
+
+router.post('/education/update', (req, res) => {
+    // Validate education id
+    if (req.body.educationId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường educationId."
+        });
+        return;
+    }
+
+    let educationIdText = req.body.educationId.trim();
+    if (educationIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường educationId không được bỏ trống."
+        });
+        return;
+    }
+
+    if (isNaN(educationIdText)) {
+        res.json({
+            result: false,
+            message: "educationId phải là số."
+        });
+        return;
+    }
+
+    let educationIdNumber = Number(educationIdText);
+    if (!Number.isInteger(educationIdNumber)) {
+        res.json({
+            result: false,
+            message: "educationId phải là số nguyên."
+        });
+        return;
+    }
+
+    let educationId = educationIdNumber;
+    let selectEducationRecordById =
+        "select " + commonResources.EDUCATION_COLUMN_ID + " " +
+        "from " + commonResources.EDUCATION_TABLE_NAME + " " +
+        "where " + commonResources.EDUCATION_COLUMN_ID + " = ?";
+    dbConnect.query(
+        selectEducationRecordById,
+        [educationId],
+        function(selectEduByIdErr, selectEduByIdResult) {
+            if (selectEduByIdErr) {
+                res.json({
+                    result: false,
+                    message: "Lỗi truy vấn id bản ghi học vấn.",
+                    err: selectUserByIdErr
+                });
+                return;
+            }
+
+            if (selectEduByIdResult.length === 0) {
+                // selectEduByIdResult is an array
+                res.json({
+                    result: false,
+                    message: "educationId không tồn tại"
+                });
+                return;
+            }
+
+            // Pass validate education id, go to validate
+            // other fields
+            // Validate userId
+            if (req.body.userId === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường userId."
+                });
+                return;
+            }
+
+            let userIdText = req.body.userId.trim();
+            if (userIdText.length === 0) {
+                res.json({
+                    result: false,
+                    message: "Trường userId không được để trống."
+                });
+                return;
+            }
+
+            if (isNaN(userIdText)) {
+                res.json({
+                    result: false,
+                    message: "Trường userId phải là số."
+                });
+                return;
+            }
+
+            let userIdNumber = Number(userIdText);
+            if (!Number.isInteger(userIdNumber)) {
+                res.json({
+                    result: false,
+                    message: "userId phải là số nguyên."
+                });
+                return;
+            }
+
+            let userId = userIdNumber;
+            let selectUserByIdSql =
+                "select " + commonResources.USERS_COLUMN_ID + " " +
+                "from " + commonResources.USERS_TABLE_NAME + " " +
+                "where " + commonResources.USERS_COLUMN_ID + " = ?";
+            dbConnect.query(
+                selectUserByIdSql,
+                [userId],
+                function (selectUserByIdErr, selectUserByIdResult) {
+                    if (selectUserByIdErr) {
+                        res.json({
+                            result: false,
+                            message: "Lỗi truy vấn id người dùng",
+                            err: selectUserByIdErr
+                        });
+                        return;
+                    }
+
+                    if (selectUserByIdResult.length === 0) {
+                        // selectUserByIdResult is an array
+                        res.json({
+                            result: false,
+                            message: "ID người dùng không tồn tại"
+                        });
+                        return;
+                    }
+
+                    // Pass validate userId, go to validate other fields
+                    // Validate major
+                    if (req.body.major === undefined) {
+                        res.json({
+                            result: false,
+                            message: "Thiếu trường major (chuyên ngành)."
+                        });
+                        return;
+                    }
+
+                    let majorText = req.body.major.trim();
+                    if (majorText.length === 0) {
+                        res.json({
+                            result: false,
+                            message: "Chuyên ngành không được để trống."
+                        });
+                        return;
+                    }
+
+                    // Validate schoolName
+                    if (req.body.schoolName === undefined) {
+                        res.json({
+                            result: false,
+                            message: "Thiếu trường schoolName."
+                        });
+                        return;
+                    }
+
+                    let schoolName = req.body.schoolName.trim();
+                    if (schoolName.length === 0) {
+                        res.json({
+                            result: false,
+                            message: "Tên trường học không được để trống."
+                        });
+                        return;
+                    }
+
+                    // Validate academicDegreeLevelId
+                    if (req.body.academicDegreeLevelId === undefined) {
+                        res.json({
+                            result: false,
+                            message: "Thiếu trường academicDegreeLevelId."
+                        });
+                        return;
+                    }
+
+                    let academicDegreeLevelIdText =
+                        req.body.academicDegreeLevelId.trim();
+                    if (academicDegreeLevelIdText.length === 0) {
+                        res.json({
+                            result: false,
+                            message: "academicDegreeLevelId không được để trống."
+                        });
+                        return;
+                    }
+
+                    if (isNaN(academicDegreeLevelIdText)) {
+                        res.json({
+                            result: false,
+                            message: "academicDegreeLevelId phải là một số."
+                        });
+                        return;
+                    }
+
+                    let academicDegreeLevelIdNumber =
+                        Number(academicDegreeLevelIdText);
+                    if (!Number.isInteger(academicDegreeLevelIdNumber)) {
+                        res.json({
+                            result: false,
+                            message: "academicDegreeLevelId phải là số nguyên."
+                        });
+                        return;
+                    }
+
+                    let academicDegreeLevelId = academicDegreeLevelIdNumber;
+                    academicDegreeLevelsModule.checkIfAcademicDegreeLevelIdExists(
+                        academicDegreeLevelId,
+                        function(isAcademicDegreeLevelIdExists) {
+                            if (!isAcademicDegreeLevelIdExists) {
+                                res.json({
+                                    result: false,
+                                    message: "academicDegreeLevelId " +
+                                        "không tồn tại."
+                                });
+                                return;
+                            }
+
+                            // Pass validate academicDegreeLevelId.
+                            // Go to validate other fields
+                            // Validate startDateInMilliseconds
+                            if (req.body.startDateInMilliseconds === undefined) {
+                                res.json({
+                                    result: false,
+                                    message:  "Thiếu trường " +
+                                        "startDateInMilliseconds."
+                                });
+                                return;
+                            }
+
+                            let startDateInMillisecondsText =
+                                req.body.startDateInMilliseconds.trim();
+                            if (startDateInMillisecondsText.length === 0) {
+                                res.json({
+                                    result: false,
+                                    message: "startDateInMilliseconds " +
+                                        "không được để trống"
+                                });
+                                return;
+                            }
+
+                            if (isNaN(startDateInMillisecondsText)) {
+                                res.json({
+                                    result: false,
+                                    message: "startDateInMilliseconds phải là " +
+                                        "một số."
+                                });
+                                return;
+                            }
+
+                            let startDateInMillisecondsNumber =
+                                Number(startDateInMillisecondsText);
+                            if (!Number.isInteger(startDateInMillisecondsNumber)) {
+                                res.json({
+                                    result: false,
+                                    message: "startDateInMilliseconds " +
+                                        "phải là số nguyên."
+                                });
+                                return;
+                            }
+                            let startDateInMilliseconds =
+                                startDateInMillisecondsNumber;
+
+                            // Validate endDateInMilliseconds
+                            let endDateInMilliseconds;
+                            if (req.body.endDateInMilliseconds &&
+                                req.body.endDateInMilliseconds.trim()) {
+                                let endDateInMillisecondsText =
+                                    req.body.endDateInMilliseconds.trim();
+
+                                if (isNaN(endDateInMillisecondsText)) {
+                                    res.json({
+                                        result: false,
+                                        message: "endDateInMilliseconds " +
+                                            "phải là một số."
+                                    });
+                                    return;
+                                }
+
+                                let endDateInMillisecondsNumber =
+                                    Number(endDateInMillisecondsText);
+                                if (!Number.isInteger(
+                                    endDateInMillisecondsNumber)) {
+                                    res.json({
+                                        result: false,
+                                        message: "endDateInMilliseconds " +
+                                            "phải là số nguyên."
+                                    });
+                                    return;
+                                }
+
+                                endDateInMilliseconds =
+                                    endDateInMillisecondsNumber;
+                                if (endDateInMilliseconds <
+                                    startDateInMilliseconds) {
+                                    res.json({
+                                        result: false,
+                                        message: "endDateInMilliseconds " +
+                                            "phải lớn hơn " +
+                                            "startDateInMilliseconds"
+                                    });
+                                    return;
+                                }
+                            }
+
+                            // Validate achievements
+                            let achievementsText;
+                            // If req.body.achievements != undefined
+                            // and != empty and != white space
+                            if (req.body.achievements &&
+                                req.body.achievements.trim()) {
+                                achievementsText =
+                                    req.body.achievements.trim();
+                            }
+
+                            // Make SQL string to query update
+                            let updateEducationSetSubStringSql =
+                                "update " + commonResources
+                                    .EDUCATION_TABLE_NAME + " set ";
+                            let userIdKeyValueSubStringSql =
+                                commonResources
+                                    .EDUCATION_COLUMN_USER_ID + " = " +
+                                    userId;
+                            let majorKeyValueSubStringSql =
+                                commonResources.EDUCATION_COLUMN_MAJOR +
+                                " = '" + majorText + "'";
+                            let schoolNameKeyValueSubStringSql =
+                                commonResources
+                                    .EDUCATION_COLUMN_SCHOOL_NAME
+                                + " = '" + schoolName + "'";
+                            let academicDegreeLevelIdKeyValueSubStringSql =
+                                commonResources
+                                    .EDUCATION_COLUMN_ACADEMIC_DEGREE_LEVEL_ID
+                                + " = " + academicDegreeLevelId;
+                            let startDateMillisKeyValueSubStringSql =
+                                commonResources
+                                    .EDUCATION_COLUMN_START_DATE_MILLIS
+                                + " = " + startDateInMilliseconds;
+                            let endDateMillisKeyValueSubStringSql =
+                                commonResources
+                                    .EDUCATION_COLUMN_END_DATE_MILLIS +
+                                " = " +
+                                (endDateInMilliseconds ?
+                                    endDateInMilliseconds : "null");
+                            let achievementsKeyValueSubStringSql =
+                                commonResources.EDUCATION_COLUMN_ACHIEVEMENTS +
+                                " = " +
+                                    (
+                                        achievementsText ?
+                                        ("'" + achievementsText + "'")
+                                        : "null"
+                                    );
+
+                            let updateEduSql =
+                                updateEducationSetSubStringSql +
+                                userIdKeyValueSubStringSql + ", " +
+                                majorKeyValueSubStringSql + ", " +
+                                schoolNameKeyValueSubStringSql + ", " +
+                                academicDegreeLevelIdKeyValueSubStringSql
+                                + ", " +
+                                startDateMillisKeyValueSubStringSql
+                                + ", " +
+                                endDateMillisKeyValueSubStringSql + ", " +
+                                achievementsKeyValueSubStringSql + " " +
+                                "where " +
+                                    commonResources.EDUCATION_COLUMN_ID
+                                    + " = ?";
+                            dbConnect.query(
+                                updateEduSql,
+                                [educationId], // Escaping value
+                                            // to avoid sql injection
+                                function (updateEduErr, updateEduResult) {
+                                    if (updateEduErr) {
+                                        res.json({
+                                           result: false,
+                                           message: "Có lỗi xảy ra " +
+                                               "khi lưu."
+                                        });
+                                        throw updateEduErr;
+                                    }
+                                    res.json({
+                                        result: true,
+                                        message: "Update thành công " +
+                                            updateEduResult.affectedRows
+                                            + " bản ghi."
+                                    });
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+    );
+});
+
 module.exports = router;

@@ -152,7 +152,11 @@ router.post('/details', async (req, res) => {
                             + "and " +
                                     commonResources
                                         .EDUCATION_COLUMN_USER_ID
-                            + " = ?";
+                            + " = ? " +
+                       "order by " +
+                            commonResources
+                                .EDUCATION_COLUMN_START_DATE_MILLIS + " desc;"
+
                    dbConnect.query(
                        selectEducationByUserIdSql,
                        [userId],
