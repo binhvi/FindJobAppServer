@@ -176,6 +176,7 @@ Tham số:
 Cập nhật thông tin học vấn của ứng viên (người dùng)
 POST /api/education/update
 Tham số:
+- educationId (id bản ghi thông tin học vấn, int, bắt buộc, phải tồn tại)
 - userId (id người dùng, int, bắt buộc, phải tồn tại)
 - major (chuyên ngành) (String, bắt buộc, không rỗng)
 - schoolName (String, bắt buộc, không rỗng)
@@ -196,11 +197,13 @@ Tham số:
 - achievements (thành tích)
     + Tùy chọn
     + String
+CHÚ Ý: Các trường tùy chọn khi update mà null hay rỗng thì dữ liệu
+trường đó sẽ bị xóa.
 ----------
 Xóa thông tin học vấn của ứng viên (người dùng)
 POST /api/education/remove
 Tham số:
-- userId (int, bắt buộc, không trống, id phải tồn tại)
+- educationId (int, bắt buộc, không trống, id phải tồn tại)
 =====================
 Experiences
 

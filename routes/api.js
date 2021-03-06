@@ -2591,4 +2591,96 @@ router.post('/education/update', (req, res) => {
     );
 });
 
+router.post('/education/remove', (req, res) => {
+    // Validate education id
+    if (req.body.educationId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường educationId."
+        });
+        return;
+    }
+
+    let educationIdText = req.body.educationId.trim();
+    if (educationIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường educationId không được bỏ trống."
+        });
+        return;
+    }
+
+    if (isNaN(educationIdText)) {
+        res.json({
+            result: false,
+            message: "educationId phải là số."
+        });
+        return;
+    }
+
+    let educationIdNumber = Number(educationIdText);
+    if (!Number.isInteger(educationIdNumber)) {
+        res.json({
+            result: false,
+            message: "educationId phải là số nguyên."
+        });
+        return;
+    }
+
+    let educationId = educationIdNumber;
+    let selectEducationRecordById =
+        "select " + commonResources.EDUCATION_COLUMN_ID + " " +
+        "from " + commonResources.EDUCATION_TABLE_NAME + " " +
+        "where " + commonResources.EDUCATION_COLUMN_ID + " = ?";
+    dbConnect.query(
+        selectEducationRecordById,
+        [educationId],
+        function (selectEduByIdErr, selectEduByIdResult) {
+            if (selectEduByIdErr) {
+                res.json({
+                    result: false,
+                    message: "Lỗi truy vấn id bản ghi học vấn.",
+                    err: selectUserByIdErr
+                });
+                return;
+            }
+
+            if (selectEduByIdResult.length === 0) {
+                // selectEduByIdResult is an array
+                res.json({
+                    result: false,
+                    message: "educationId không tồn tại"
+                });
+                return;
+            }
+
+            let deleteEduRecordByIdSql =
+                "delete from " +
+                    commonResources.EDUCATION_TABLE_NAME + " " +
+                "where " + commonResources.EDUCATION_COLUMN_ID +
+                    " = ?;";
+            dbConnect.query(
+                deleteEduRecordByIdSql,
+                [educationId],
+                function(deleteEduErr, deleteEduResult) {
+                    if (deleteEduErr) {
+                        res.json({
+                            result: false,
+                            message: 'Có lỗi xảy ra khi xóa bản ghi.',
+                            deleteEduErr
+                        });
+                        return;
+                    }
+                    res.json({
+                        result: true,
+                        message: "Đã xóa " +
+                                deleteEduResult.affectedRows +
+                                " bản ghi."
+                    });
+                }
+            );
+        }
+    );
+});
+
 module.exports = router;
