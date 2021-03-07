@@ -2778,4 +2778,238 @@ router.post('/experiences', (req, res) => {
         }
     )
 });
+
+router.post('/experiences/create', (req, res) => {
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "Trường userId phải là số."
+        });
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    let userId = userIdNumber;
+    let selectUserByIdSql =
+        "select " + commonResources.USERS_COLUMN_ID + " " +
+        "from " + commonResources.USERS_TABLE_NAME + " " +
+        "where " + commonResources.USERS_COLUMN_ID + " = ?";
+    dbConnect.query(
+        selectUserByIdSql,
+        [userId],
+        function (selectUserByIdErr, selectUserByIdResult) {
+            if (selectUserByIdErr) {
+                res.json({
+                    result: false,
+                    message: "Lỗi truy vấn id người dùng",
+                    err: selectUserByIdErr
+                });
+                throw selectUserByIdErr;
+            }
+
+            if (selectUserByIdResult.length === 0) {
+                // selectUserByIdResult is an array
+                res.json({
+                    result: false,
+                    message: "ID người dùng không tồn tại"
+                });
+                return;
+            }
+
+            // Pass validate userId
+            // Validate companyName
+            if (req.body.companyName === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường companyName."
+                });
+                return;
+            }
+
+            let companyName = req.body.companyName.trim();
+            if (companyName.length === 0) {
+                res.json({
+                    result: false,
+                    message: "Tên công ty không được để trống."
+                });
+                return;
+            }
+
+            // Validate jobTitle
+            if (req.body.jobTitle === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường jobTitle."
+                });
+                return;
+            }
+
+            let jobTitleText = req.body.jobTitle.trim();
+            if (jobTitleText.length === 0) {
+                res.json({
+                    result: false,
+                    message: "Chức danh công việc không được để trống."
+                });
+                return;
+            }
+
+            // Validate dateInMilliseconds
+            if (req.body.dateInMilliseconds === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường dateInMilliseconds."
+                });
+                return;
+            }
+
+            let dateInMillisecondsText =
+                                    req.body.dateInMilliseconds.trim();
+            if (dateInMillisecondsText.length === 0) {
+                res.json({
+                   result: false,
+                    message: "Ngày bắt đầu công việc không được để trống."
+                });
+                return;
+            }
+
+            if (isNaN(dateInMillisecondsText)) {
+                res.json({
+                   result: false,
+                   message: "dateInMilliseconds phải là một số."
+                });
+                return;
+            }
+
+            let dateInMillisecondsNumber =
+                                    Number(dateInMillisecondsText);
+            if (!Number.isInteger(dateInMillisecondsNumber)) {
+                res.json({
+                    result: false,
+                    message: "dateInMilliseconds phải là số nguyên."
+                });
+                return;
+            }
+
+            // Validate dateOutMilliseconds
+            let dateOutMilliseconds;
+            if (req.body.dateOutMilliseconds &&
+                req.body.dateOutMilliseconds.trim()) {
+                // If dateOutMilliseconds is not undefined, empty, '  '
+                let dateOutMillisecondsText =
+                    req.body.dateOutMilliseconds.trim();
+
+                if (isNaN(dateOutMillisecondsText)) {
+                    res.json({
+                        result: false,
+                        message: "dateOutMilliseconds " +
+                            "phải là một số."
+                    });
+                    return;
+                }
+
+                let dateOutMillisecondsNumber =
+                    Number(dateOutMillisecondsText);
+                if (!Number.isInteger(
+                    dateOutMillisecondsNumber)) {
+                    res.json({
+                        result: false,
+                        message: "dateOutMilliseconds " +
+                            "phải là số nguyên."
+                    });
+                    return;
+                }
+
+                dateOutMilliseconds = dateOutMillisecondsNumber;
+                if (dateOutMilliseconds < dateInMillisecondsNumber) {
+                    res.json({
+                        result: false,
+                        message: "Ngày kết thúc công việc phải sau " +
+                            "ngày bắt bắt đầu công việc."
+                    });
+                    return;
+                }
+            }
+
+            // Validate jobDetails
+            let jobDetailsText;
+            if (req.body.jobDetails &&
+                req.body.jobDetails.trim()) {
+                // If jobDetails != undefined, empty, '   '
+                jobDetailsText = req.body.jobDetails.trim();
+            }
+
+            let insertIntoExperiencesTableSql =
+                "insert into " +
+                    commonResources.EXPERIENCES_TABLE_NAME + " (" +
+                        commonResources.EXPERIENCES_COLUMN_USER_ID + ", "
+                        + commonResources.EXPERIENCES_COLUMN_COMPANY_NAME
+                        + ", " +
+                        commonResources.EXPERIENCES_COLUMN_JOB_TITLE
+                        + ", " +
+                        commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS
+                        + ", " +
+                        commonResources.EXPERIENCES_COLUMN_DATE_OUT_MILLIS
+                        + ", " +
+                        commonResources.EXPERIENCES_COLUMN_JOB_DETAILS
+                    + ") " +
+                "values (" +
+                    userId + ", " +
+                    "'" + companyName + "', " +
+                    "'" + jobTitleText + "', " +
+                    dateInMillisecondsNumber + ", " +
+                    (dateOutMilliseconds ?
+                        dateOutMilliseconds : "null") + ", " +
+                    (jobDetailsText ?
+                        ("'" + jobDetailsText + "'") : "null") +
+                ");";
+
+            dbConnect.query(
+                insertIntoExperiencesTableSql,
+                function (createExperienceErr, createExperienceResult) {
+                    if (createExperienceErr) {
+                        res.json({
+                            result: false,
+                            message: "Thêm thông tin " +
+                                    "kinh nghiệm làm việc " +
+                                    "thất bại.",
+                            err: createExperienceErr
+                        });
+                    } else {
+                        res.json({
+                            result: true,
+                            message: "Thêm thông tin " +
+                                    "kinh nghiệm làm việc " +
+                                    "thành công.",
+                        });
+                    }
+                }
+            );
+        }
+    );
+});
 module.exports = router;
