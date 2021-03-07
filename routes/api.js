@@ -1825,6 +1825,9 @@ router.post('/education', (req, res) => {
 
             let selectEducationByUserIdSql =
                 "select " +
+                    commonResources.EDUCATION_TABLE_NAME + "." +
+                        commonResources.EDUCATION_COLUMN_ID + ", " +
+
                     commonResources.EDUCATION_COLUMN_SCHOOL_NAME + ", " +
                     commonResources.EDUCATION_COLUMN_MAJOR + ", " +
 
@@ -2683,4 +2686,96 @@ router.post('/education/remove', (req, res) => {
     );
 });
 
+router.post('/experiences', (req, res) => {
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "Trường userId phải là số."
+        });
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    let userId = userIdNumber;
+    let selectUserByIdSql =
+        "select " + commonResources.USERS_COLUMN_ID + " " +
+        "from " + commonResources.USERS_TABLE_NAME + " " +
+        "where " + commonResources.USERS_COLUMN_ID + " = ?";
+    dbConnect.query(
+        selectUserByIdSql,
+        [userId],
+        function (selectUserByIdErr, selectUserByIdResult) {
+            if (selectUserByIdErr) {
+                res.json({
+                    result: false,
+                    message: "Lỗi truy vấn id người dùng",
+                    err: selectUserByIdErr
+                });
+                throw selectUserByIdErr;
+            }
+
+            if (selectUserByIdResult.length === 0) {
+                // selectUserByIdResult is an array
+                res.json({
+                    result: false,
+                    message: "ID người dùng không tồn tại"
+                });
+                return;
+            }
+
+            let selectExperiencesByUserIdSql =
+                "select * " +
+                "from " + commonResources.EXPERIENCES_TABLE_NAME + " " +
+                "where " + commonResources.EXPERIENCES_COLUMN_USER_ID +
+                    " = ? " +
+                "order by " +
+                    commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS +
+                    " desc;";
+            dbConnect.query(
+                selectExperiencesByUserIdSql,
+                [userId], // Escaping value to avoid SQL injection
+                function (selectExperiencesErr, selectExperiencesResult) {
+                    if (selectExperiencesErr) {
+                        res.json({
+                            result: false,
+                            message: 'Lỗi truy vấn Expriences',
+                            selectExperiencesErr
+                        });
+                    } else {
+                        res.json({
+                           result: true,
+                           experiences:  selectExperiencesResult
+                        });
+                    }
+                }
+            );
+
+        }
+    )
+});
 module.exports = router;
