@@ -952,17 +952,45 @@ function checkIfEmailExistsWhenUpdateUser(email, userId, callback) {
 
 router.post('/remove', async (req, res) => {
    let userId = req.body.userId;
-   let deleteUserByIdSql =
-       "delete from " + commonResources.USERS_TABLE_NAME + " " +
-       "where " + commonResources.USERS_COLUMN_ID + " = ?;";
-   dbConnect.query(
-       deleteUserByIdSql,
-       [userId],
-       function (err, result) {
-           if (err) throw err;
-           res.redirect('/users/');
-       }
-   );
+    let deleteEduRecordByIdSql =
+        "delete from " +
+            commonResources.EDUCATION_TABLE_NAME + " " +
+        "where " + commonResources.EDUCATION_COLUMN_USER_ID +
+            " = ?;";
+    dbConnect.query(
+        deleteEduRecordByIdSql,
+        [userId],
+        function (deleteEduByUserIdErr, deleteEduByUserIdResult) {
+            if (deleteEduByUserIdErr) throw deleteEduByUserIdErr;
+
+            let deleteExperienceByUserIdSql =
+                "delete from " +
+                    commonResources.EXPERIENCES_TABLE_NAME + " " +
+                "where " +
+                    commonResources.EXPERIENCES_COLUMN_USER_ID + " = ?";
+            dbConnect.query(
+                deleteExperienceByUserIdSql,
+                [userId],
+                function (deleteExperienceErr, deleteExperienceResult) {
+                    if (deleteExperienceErr) {
+                        throw deleteExperienceErr;
+                    }
+
+                    let deleteUserByIdSql =
+                        "delete from " + commonResources.USERS_TABLE_NAME + " " +
+                        "where " + commonResources.USERS_COLUMN_ID + " = ?;";
+                    dbConnect.query(
+                        deleteUserByIdSql,
+                        [userId],
+                        function (err, result) {
+                            if (err) throw err;
+                            res.redirect('/users/');
+                        }
+                    );
+                }
+            );
+        }
+    );
 });
 
 function checkIfUserIdExists(userId, callback) {
