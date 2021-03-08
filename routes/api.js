@@ -56,6 +56,10 @@ router.post('/news', async (req, res) => {
         " and " + commonResources.NEWS_COLUMN_AUTHOR_ID + " = "
         + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
         + commonResources.NEWS_AUTHORS_COLUMN_ID + " ";
+    let orderByNewsIdDescClauseSql =
+        " order by " +
+            commonResources.NEWS_TABLE_NAME + "." +
+            commonResources.NEWS_COLUMN_ID + " desc ";
 
     const pageIndexRequest = req.body.page;
 
@@ -88,7 +92,7 @@ router.post('/news', async (req, res) => {
                     if (numbersOfPage > 0 && numbersOfPage <= 1) {
                         // 1 page
                         dbConnect.query(
-                            selectFromClauseTableNewsSql,
+                            selectFromClauseTableNewsSql + orderByNewsIdDescClauseSql,
                             function (err, resultAllNewsOnePage, fields) {
                                 if (err) throw err;
                                 res.json({
@@ -125,7 +129,9 @@ router.post('/news', async (req, res) => {
                             Math.round(totalItemsNumber / numberItemsPerPage);
 
                         dbConnect.query(
-                            selectFromClauseTableNewsSql + limitOffsetClause,
+                            selectFromClauseTableNewsSql +
+                            orderByNewsIdDescClauseSql +
+                            limitOffsetClause,
                             function (err, allNewsResult, fields) {
                                 if (err) throw err;
                                 res.json({
@@ -138,12 +144,10 @@ router.post('/news', async (req, res) => {
                                 });
                             }
                         );
-
                     }
                 }
             }
         );
-
     } else {
         // Check if category id exists
         let sqlSelectCategoryById =
@@ -191,7 +195,8 @@ router.post('/news', async (req, res) => {
                                     // 1 page
                                     dbConnect.query(
                                         selectFromClauseTableNewsSql +
-                                        whereCategoryIdEqualsClauseSql,
+                                        whereCategoryIdEqualsClauseSql +
+                                        orderByNewsIdDescClauseSql,
                                         function (err, resultAllNewsOnePage, fields) {
                                             if (err) throw err;
                                             res.json({
@@ -231,6 +236,7 @@ router.post('/news', async (req, res) => {
                                     dbConnect.query(
                                         selectFromClauseTableNewsSql
                                         + whereCategoryIdEqualsClauseSql
+                                        + orderByNewsIdDescClauseSql
                                         + limitOffsetClause,
                                         function (err, allNewsResult, fields) {
                                             if (err) throw err;
@@ -248,7 +254,6 @@ router.post('/news', async (req, res) => {
                             }
                         }
                     );
-
                 } else {
                     // Category id is not exists. Get all news.
                     // Get total items
@@ -274,7 +279,8 @@ router.post('/news', async (req, res) => {
                                 if (numbersOfPage > 0 && numbersOfPage <= 1) {
                                     // 1 page
                                     dbConnect.query(
-                                        selectFromClauseTableNewsSql,
+                                        selectFromClauseTableNewsSql +
+                                        orderByNewsIdDescClauseSql,
                                         function (err, resultAllNewsOnePage, fields) {
                                             if (err) throw err;
                                             res.json({
@@ -312,7 +318,9 @@ router.post('/news', async (req, res) => {
                                         Math.round(totalItemsNumber / numberItemsPerPage);
 
                                     dbConnect.query(
-                                        selectFromClauseTableNewsSql + limitOffsetClause,
+                                        selectFromClauseTableNewsSql +
+                                        orderByNewsIdDescClauseSql +
+                                        limitOffsetClause,
                                         function (err, allNewsResult, fields) {
                                             if (err) throw err;
                                             res.json({
@@ -325,7 +333,6 @@ router.post('/news', async (req, res) => {
                                             });
                                         }
                                     );
-
                                 }
                             }
                         }
