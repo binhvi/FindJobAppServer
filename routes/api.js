@@ -3320,4 +3320,98 @@ router.post('/experiences/update', (req, res) => {
        }
    );
 });
+
+router.post('/experiences/remove', (req, res) => {
+    if (req.body.experienceId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường experienceId."
+        });
+        return;
+    }
+
+    let experienceIdText = req.body.experienceId.trim();
+    if (experienceIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "experienceId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(experienceIdText)) {
+        res.json({
+            result: false,
+            message: "experienceId phải là một số."
+        });
+        return;
+    }
+
+    let experienceIdNumber = Number(experienceIdText);
+    if (!Number.isInteger(experienceIdNumber)) {
+        res.json({
+            result: false,
+            message: "experienceId phải là số nguyên."
+        });
+        return;
+    }
+
+    let experienceId = experienceIdNumber;
+    let selectExperienceRecordByIdSql =
+        "select count(" + commonResources.EXPERIENCES_COLUMN_ID + ") " +
+        "as numberOfExperienceRecordsHaveThisId " +
+        "from " + commonResources.EXPERIENCES_TABLE_NAME + " " +
+        "where " + commonResources.EXPERIENCES_COLUMN_ID + " = ?";
+    dbConnect.query(
+        selectExperienceRecordByIdSql,
+        [experienceId],
+        function (selectExperienceErr, selectExperienceResult) {
+            if (selectExperienceErr) {
+                res.json({
+                    result: false,
+                    message: "Tìm bản ghi lỗi.",
+                    err: selectExperienceErr
+                });
+                return;
+            }
+
+            // [{"numberOfExperienceRecordsHaveThisId":0}]
+            let numberOfExperienceRecordsHaveThisId =
+                selectExperienceResult[0]
+                    .numberOfExperienceRecordsHaveThisId;
+            if (numberOfExperienceRecordsHaveThisId === 0) {
+                res.json({
+                    result: false,
+                    message: "experienceId không tồn tại."
+                });
+                return;
+            }
+
+            let deleteExperienceSql =
+                "delete from " +
+                    commonResources.EXPERIENCES_TABLE_NAME + " " +
+                "where " + commonResources.EXPERIENCES_COLUMN_ID + " = ?";
+            dbConnect.query(
+                deleteExperienceSql,
+                [experienceId],
+                function(deleteExperienceErr, deleteExperienceResult) {
+                    if (deleteExperienceErr) {
+                        res.json({
+                            result: false,
+                            message: 'Có lỗi xảy ra khi xóa bản ghi.',
+                            err: deleteExperienceErr
+                        });
+                        return;
+                    }
+                    res.json({
+                        result: true,
+                        message: "Đã xóa " +
+                            deleteExperienceResult.affectedRows +
+                            " bản ghi."
+                    });
+                }
+            );
+        }
+    );
+});
 module.exports = router;
