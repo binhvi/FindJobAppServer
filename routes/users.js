@@ -965,6 +965,35 @@ router.post('/remove', async (req, res) => {
    );
 });
 
+function checkIfUserIdExists(userId, callback) {
+    let selectNumberOfUserRecordsHaveThisIdSql =
+        "select count(" +
+            commonResources.USERS_COLUMN_ID + ") " +
+            "as numberOfUsersHaveThisId " +
+        "from " + commonResources.USERS_TABLE_NAME + " " +
+        "where " + commonResources.USERS_COLUMN_ID + " = ?;"
+    dbConnect.query(
+        selectNumberOfUserRecordsHaveThisIdSql,
+        [userId],
+        function (err, result) {
+            if (err) throw err;
+
+            // [
+            //     {
+            //         "numberOfUsersHaveThisId" : 1
+            //     }
+            // ]
+            let numberOfUsersHaveThisId =
+                result[0].numberOfUsersHaveThisId;
+            if (numberOfUsersHaveThisId > 0) {
+                return callback(true);
+            } else {
+                return callback(false);
+            }
+        }
+    );
+}
+
 module.exports = router;
 module.exports.checkIfPhoneExistsWhenCreateUser = checkIfPhoneExistsWhenCreateUser;
 module.exports.checkIfEmailExistsWhenCreateUser = checkIfEmailExistsWhenCreateUser;
@@ -972,3 +1001,4 @@ module.exports.checkIfPhoneExistsWhenUpdateUser =
                                         checkIfPhoneExistsWhenUpdateUser;
 module.exports.checkIfEmailExistsWhenUpdateUser =
                                         checkIfEmailExistsWhenUpdateUser;
+module.exports.checkIfUserIdExists = checkIfUserIdExists;

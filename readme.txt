@@ -222,9 +222,16 @@ Tham số:
 - dateOutMilliseconds (optional, int, > dateInMilliseconds)
 - jobDetails (optional, String)
 --------------
-
 Cập nhật thông tin kinh nghiệm làm việc của ứng viên (người dùng)
 POST /api/experiences/update
+Tham số:
+- experienceId (required, int, phải tồn tại)
+- userId (required, int, phải tồn tại)
+- companyName (required, String, không trống)
+- jobTitle (required, String, không trống)
+- dateInMilliseconds (required, int)
+- dateOutMilliseconds (optional, int, > dateInMilliseconds)
+- jobDetails (optional, String)
 --------------
 Xóa thông tin kinh nghiệm làm việc của ứng viên (người dùng)
 POST /api/experiences/remove
