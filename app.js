@@ -14,6 +14,7 @@ var gendersRouter = require('./routes/genders');
 var typesOfWorkRouter = require('./routes/types-of-work');
 var levelsOfEducationRouter = require('./routes/levels-of-education');
 var academicDegreeLevels = require('./routes/academic-degree-levels');
+const jobNewsStatus = require('./routes/job-news-status');
 
 var logger = require('morgan');
 
@@ -51,7 +52,7 @@ app.use('/genders', gendersRouter);
 app.use('/types-of-work', typesOfWorkRouter);
 app.use('/levels-of-education', levelsOfEducationRouter);
 app.use('/academic-degree-levels', academicDegreeLevels);
-
+app.use('/job-news-status', jobNewsStatus);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

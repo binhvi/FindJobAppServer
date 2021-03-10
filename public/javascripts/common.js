@@ -1,16 +1,16 @@
 // Host deploy
-const PROTOCOL = "https";
-const SERVER_HOST = "find-job-app.herokuapp.com";
+// const PROTOCOL = "https";
+// const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-// const PROTOCOL = "http";
-// const SERVER_HOST = "localhost:3000";
+const PROTOCOL = "http";
+const SERVER_HOST = "localhost:3000";
 
 // Host database deploy (Main)
-const MY_SQL_HOST = "johnny.heliohost.org";
-const MY_SQL_USER = "findjob_scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
+// const MY_SQL_HOST = "johnny.heliohost.org";
+// const MY_SQL_USER = "findjob_scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database deploy alternative 1 if main host got error
 // const MY_SQL_HOST = "freedb.tech"; // db4free.net
@@ -25,10 +25,10 @@ const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 // const MY_SQL_DATABASE_NAME = "findjobapp";
 
 // Host database development
-// const MY_SQL_HOST = "localhost";
-// const MY_SQL_USER = "scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "FindJobApp";
+const MY_SQL_HOST = "localhost";
+const MY_SQL_USER = "scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "FindJobApp";
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
 
@@ -110,6 +110,10 @@ const EDUCATION_COLUMN_END_DATE_MILLIS = "endDateInMilliseconds";
 const EDUCATION_COLUMN_ACHIEVEMENTS = "achievements";
 
 const COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL = "academicDegreeLevel";
+
+const JOB_NEWS_STATUS_TABLE_NAME = "JobNewsStatus";
+const JOB_NEWS_STATUS_COLUMN_ID = "id";
+const JOB_NEWS_STATUS_COLUMN_NAME = "statusName";
 
 // Pagination constants
 const DEFAULT_ITEM_PER_PAGE_NUM = 100;
@@ -264,6 +268,10 @@ module.exports.EDUCATION_COLUMN_ACHIEVEMENTS =
                         EDUCATION_COLUMN_ACHIEVEMENTS;
 module.exports.COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL =
                         COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL;
+
+module.exports.JOB_NEWS_STATUS_TABLE_NAME = JOB_NEWS_STATUS_TABLE_NAME;
+module.exports.JOB_NEWS_STATUS_COLUMN_ID = JOB_NEWS_STATUS_COLUMN_ID;
+module.exports.JOB_NEWS_STATUS_COLUMN_NAME = JOB_NEWS_STATUS_COLUMN_NAME;
 
 module.exports.DEFAULT_ITEM_PER_PAGE_NUM = DEFAULT_ITEM_PER_PAGE_NUM;
 module.exports.MIN_ITEM_PER_PAGE_NUM = MIN_ITEM_PER_PAGE_NUM;

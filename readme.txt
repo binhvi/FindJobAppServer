@@ -237,3 +237,6 @@ Xóa thông tin kinh nghiệm làm việc của ứng viên (người dùng)
 POST /api/experiences/remove
 Tham số:
 - experienceId (int, bắt buộc, không trống, id phải tồn tại)
+====================
+JobNewsStatus
+Web: /job-news-status
