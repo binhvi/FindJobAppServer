@@ -239,4 +239,5 @@ Tham số:
 - experienceId (int, bắt buộc, không trống, id phải tồn tại)
 ====================
 JobNewsStatus
+GET /api/job-news-status
 Web: /job-news-status

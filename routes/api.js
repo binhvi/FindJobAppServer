@@ -5,6 +5,7 @@ var uniqid = require('uniqid');
 var dbConnect = require('../public/javascripts/db');
 var userModule = require('./users');
 const academicDegreeLevelsModule = require('./academic-degree-levels');
+const jobNewsStatusModule = require('./job-news-status');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -3414,4 +3415,30 @@ router.post('/experiences/remove', (req, res) => {
         }
     );
 });
+
+// JobNewsStatus
+router.get('/job-news-status', (req, res) => {
+    let selectAllJobNewsStatusSql =
+        "select * from " + commonResources.JOB_NEWS_STATUS_TABLE_NAME + ";";
+    dbConnect.query(
+        selectAllJobNewsStatusSql,
+        function (err, result) {
+            if (err) {
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi truy vấn JobNewsStatus.",
+                    err
+                });
+                return;
+            }
+
+            let jobNewsStatus = result;
+            res.json({
+                result: true,
+                jobNewsStatus
+            });
+        }
+    );
+});
+
 module.exports = router;
