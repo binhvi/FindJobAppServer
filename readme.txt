@@ -137,6 +137,7 @@ Tham số:
 - newPassword
     + String, bắt buộc, không trống
     + Mật khẩu phải >= 6 ký tự
+    + Không được chứa khoảng trắng
 ----------------------------------
 Lấy danh sách người dùng (ứng viên)
 GET /api/users
