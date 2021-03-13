@@ -59,7 +59,7 @@ Tham số:
     + String
     + Mật khẩu không trống
     + Mật khẩu tối thiểu 6 ký tự
-
+    + Mật khẩu không chứa khoảng trắng
 ----
 POST /api/users/login
 Tham số:

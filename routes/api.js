@@ -545,6 +545,15 @@ router.post('/users/create', async (req, res) => {
                         return;
                     }
 
+                    if (!password.match(commonResources.REGEX_PASSWORD)) {
+                        res.json({
+                            result: false,
+                            message: commonResources
+                                        .ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX
+                        });
+                        return;
+                    }
+
                     // Pass validate, save to database
                     let saveUserToDbSql =
                         "insert into " + commonResources.USERS_TABLE_NAME + "(" +
@@ -1681,6 +1690,16 @@ router.post('/users/change-password', (req, res) => {
                         res.json({
                             result: false,
                             message: "Nhập mật khẩu mới từ 6 ký tự trở lên."
+                        });
+                        return;
+                    }
+
+                    if (!newPasswordText.match(
+                            commonResources.REGEX_PASSWORD)) {
+                        res.json({
+                            result: false,
+                            message: commonResources
+                                .ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX
                         });
                         return;
                     }

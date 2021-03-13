@@ -1,7 +1,6 @@
 var commonResources = require('./common');
 var mysql = require('mysql');
 var express = require('express');
-var router = express.Router();
 
 var dbConnect = mysql.createConnection({
     host: commonResources.MY_SQL_HOST,

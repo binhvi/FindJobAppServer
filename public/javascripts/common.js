@@ -1,19 +1,19 @@
 // Host deploy
-const PROTOCOL = "https";
-const SERVER_HOST = "find-job-app.herokuapp.com";
+// const PROTOCOL = "https";
+// const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-// const PROTOCOL = "http";
-// const SERVER_HOST = "localhost:3000";
+const PROTOCOL = "http";
+const SERVER_HOST = "localhost:3000";
 
 // Host database deploy (Main)
-const MY_SQL_HOST = "johnny.heliohost.org";
-const MY_SQL_USER = "findjob_scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
+// const MY_SQL_HOST = "johnny.heliohost.org";
+// const MY_SQL_USER = "findjob_scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database deploy alternative 1 if main host got error
-// const MY_SQL_HOST = "freedb.tech"; // db4free.net
+// const MY_SQL_HOST = "freedb.tech";
 // const MY_SQL_USER = "freedbtech_scott";
 // const MY_SQL_PASSWORD = "tiger";
 // const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
@@ -25,10 +25,10 @@ const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 // const MY_SQL_DATABASE_NAME = "findjobapp";
 
 // Host database development
-// const MY_SQL_HOST = "localhost";
-// const MY_SQL_USER = "scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "FindJobApp";
+const MY_SQL_HOST = "localhost";
+const MY_SQL_USER = "scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "FindJobApp";
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
 
@@ -133,6 +133,10 @@ const RESPONSE_KEY_RESULT_STATUS = "result";
 
 const REGEX_PHONE = /^\d{9,10}$/; // 9-10 digits
 const REGEX_EMAIL = /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
+const REGEX_PASSWORD = /^\S*$/; // Not contains white space
+
+const ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
+                                "Mật khẩu không được chứa khoảng trắng.";
 
 const USER_BIRTHDAY_DATE_FORMAT = "YYYY-MM-DD";
 
@@ -290,6 +294,10 @@ module.exports.RESPONSE_KEY_RESULT_STATUS = RESPONSE_KEY_RESULT_STATUS;
 
 module.exports.REGEX_PHONE = REGEX_PHONE;
 module.exports.REGEX_EMAIL = REGEX_EMAIL;
+module.exports.REGEX_PASSWORD = REGEX_PASSWORD;
+
+module.exports.ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
+                            ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX;
 
 module.exports.USER_BIRTHDAY_DATE_FORMAT = USER_BIRTHDAY_DATE_FORMAT;
 
