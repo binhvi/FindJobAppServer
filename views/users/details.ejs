@@ -33,10 +33,10 @@
             <div style="margin-bottom: 25px;">
                 <p><strong>Mức lương mong muốn</strong></p>
 
-                <% if(!user.expectedSalaryInMillionVnd){ %>
+                <% if(!user.expectedSalaryInVnd){ %>
                     <p>Chưa cập nhật</p>
                 <% } else{ %>
-                    <p><%= user.expectedSalaryInMillionVnd %> triệu trở lên</p>
+                    <p><%= user.expectedSalaryInVnd %> đồng trở lên</p>
                 <% } %>
             </div>
 
@@ -63,10 +63,10 @@
             <div style="margin-bottom: 25px;">
                 <p><strong>Kinh nghiệm làm việc</strong></p>
 
-                <% if(!user.yearsOfExperience){ %>
+                <% if(!user.yearsOfExperiences){ %>
                     <p>Chưa cập nhật</p>
                 <% } else{ %>
-                    <p><%= user.yearsOfExperience %> năm</p>
+                    <p><%= user.yearsOfExperiences %> năm</p>
                 <% } %>
             </div>
 
@@ -104,9 +104,12 @@
                         <td>
                             <% if(!user.birthdayInMilliseconds){ %>
                                 <span>Chưa cập nhật</span>
-                            <% } else{ %>
+                            <% } else { %>
                                 <span>
-                                <%= user.birthdayInMilliseconds %>
+                                <%=
+                                    moment(user.birthdayInMilliseconds)
+                                    .format('DD-MMM-YYYY')
+                                %>
                             </span>
                             <% } %>
                         </td>
@@ -115,10 +118,14 @@
                     <tr>
                         <td><strong>Địa chỉ</strong></td>
 
-                        <% if(!user.address){ %>
+                        <% if(!user.subdistrictName){ %>
                             <td>Chưa cập nhật</td>
-                        <% } else{ %>
-                            <td><%= user.address %></td>
+                        <% } else { %>
+                            <td>
+                                <%= user.subdistrictName %>,
+                                <%= user.districtName%>,
+                                <%= user.stateProvinceName %>
+                            </td>
                         <% } %>
                     </tr>
 
@@ -221,6 +228,24 @@
                         </tr>
                     <% } %>
                     </tbody>
+                </table>
+            </div>
+        <% } %>
+
+        <% if (jobSkills.length) { %>
+            <div id="jobSkills">
+                <p style="text-transform: uppercase">
+                    <strong>Các kỹ năng</strong>
+                </p>
+
+                <table class="table table-striped">
+                    <% for (let i = 0; i < jobSkills.length; i++) { %>
+                        <tr>
+                            <td>
+                                <%= jobSkills[i].skillName %>
+                            </td>
+                        </tr>
+                    <% } %>
                 </table>
             </div>
         <% } %>

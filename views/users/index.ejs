@@ -47,7 +47,7 @@
                                  width="100px"
                                  class="userAvatar"
                             />
-                        <% } else{ %>
+                        <% } else { %>
                                 <img src="<%= users[i].avatarUrl %>"
                                      width="100px"
                                      class="userAvatar"
@@ -67,7 +67,7 @@
                             <span>
                                 <%= users[i].subdistrictName %>,
                                 <%= users[i].districtName%>,
-                                <%= users[i].subdistrictName %>
+                                <%= users[i].stateProvinceName %>
                             </span>
                         <% } %>
                     </td>
@@ -93,7 +93,8 @@
                                    style="display:none;" />
                             <button type="submit"
                                     onclick="return confirm('Bạn có ' +
-                                         'chắc chắn muốn xóa tất cả thông tin của ' +
+                                         'chắc chắn muốn xóa tất cả ' +
+                                          'thông tin của ' +
                                           'người dùng này?')"
                                     class="btn btn-danger btn-sm">
                                 Xóa

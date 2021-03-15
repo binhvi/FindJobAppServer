@@ -1,10 +1,10 @@
 // Host deploy
-// const PROTOCOL = "https";
-// const SERVER_HOST = "find-job-app.herokuapp.com";
+const PROTOCOL = "https";
+const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-const PROTOCOL = "http";
-const SERVER_HOST = "localhost:3000";
+// const PROTOCOL = "http";
+// const SERVER_HOST = "localhost:3000";
 
 // Host database deploy (Main)
 // const MY_SQL_HOST = "johnny.heliohost.org";
@@ -13,10 +13,10 @@ const SERVER_HOST = "localhost:3000";
 // const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database deploy alternative 1 if main host got error
-// const MY_SQL_HOST = "freedb.tech";
-// const MY_SQL_USER = "freedbtech_scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
+const MY_SQL_HOST = "freedb.tech";
+const MY_SQL_USER = "freedbtech_scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
 
 // Host database deploy alternative 2 if main host got error
 // const MY_SQL_HOST = "85.10.205.173"; // db4free.net
@@ -25,10 +25,10 @@ const SERVER_HOST = "localhost:3000";
 // const MY_SQL_DATABASE_NAME = "findjobapp";
 
 // Host database development
-const MY_SQL_HOST = "localhost";
-const MY_SQL_USER = "scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "FindJobApp";
+// const MY_SQL_HOST = "localhost";
+// const MY_SQL_USER = "scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "FindJobApp";
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
 
@@ -127,6 +127,14 @@ const EDUCATION_COLUMN_END_DATE_MILLIS = "endDateInMilliseconds";
 const EDUCATION_COLUMN_ACHIEVEMENTS = "achievements";
 
 const COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL = "academicDegreeLevel";
+
+const JOB_SKILLS_OF_CANDIDATE_TABLE_NAME = "JobSkillsOfCandidate";
+const JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID = "userId";
+const JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID = "jobSkillId";
+
+const JOB_SKILLS_TABLE_NAME = "JobSkills";
+const JOB_SKILLS_COLUMN_ID = "id";
+const JOB_SKILLS_COLUMN_NAME = "skillName";
 
 const JOB_NEWS_STATUS_TABLE_NAME = "JobNewsStatus";
 const JOB_NEWS_STATUS_COLUMN_ID = "id";
@@ -311,6 +319,17 @@ module.exports.EDUCATION_COLUMN_ACHIEVEMENTS =
                         EDUCATION_COLUMN_ACHIEVEMENTS;
 module.exports.COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL =
                         COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL;
+
+module.exports.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME =
+                                    JOB_SKILLS_OF_CANDIDATE_TABLE_NAME;
+module.exports.JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID =
+                                    JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID;
+module.exports.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID =
+                            JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID;
+
+module.exports.JOB_SKILLS_TABLE_NAME = JOB_SKILLS_TABLE_NAME;
+module.exports.JOB_SKILLS_COLUMN_ID = JOB_SKILLS_COLUMN_ID;
+module.exports.JOB_SKILLS_COLUMN_NAME = JOB_SKILLS_COLUMN_NAME;
 
 module.exports.JOB_NEWS_STATUS_TABLE_NAME = JOB_NEWS_STATUS_TABLE_NAME;
 module.exports.JOB_NEWS_STATUS_COLUMN_ID = JOB_NEWS_STATUS_COLUMN_ID;
