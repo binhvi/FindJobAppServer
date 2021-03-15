@@ -74,7 +74,13 @@ Tham số:
       + Mật khẩu tối thiểu 6 ký tự
 
 --
-Xem thông tin người dùng
+Xem thông tin người dùng - truy vấn tất cả thông tin từ các bảng khác
+POST /api/users/details-query-all-info
+Tham số:
+userId (int)
+--
+Xem thông tin người dùng - chỉ lấy id ở trường liên kết với các bảng khác
+
 ------------------------------------
 
 Cập nhật thông tin người dùng

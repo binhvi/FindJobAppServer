@@ -3,11 +3,6 @@ var router = express.Router();
 var commonResources = require('../public/javascripts/common');
 var dbConnect = require('../public/javascripts/db');
 const moment = require('moment');
-const genderModule = require('./genders');
-const levelsOfEducationModule = require('./levels-of-education');
-const typesOfWorkModule = require('./types-of-work');
-var uniqid = require('uniqid');
-
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -258,11 +253,6 @@ router.post('/details', async (req, res) => {
                                        throw selectJobSkillsErr;
                                    }
                                    let jobSkills = selectJobSkillResult;
-                                   console.log({
-                                       user, experiences,
-                                       educationResult,
-                                       jobSkills
-                                   });
                                    res.render(
                                        'users/details',
                                        {
