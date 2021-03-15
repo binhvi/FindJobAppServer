@@ -79,6 +79,9 @@ const SUBDISTRICTS_COLUMN_ID = "subdistrictId";
 const SUBDISTRICTS_COLUMN_NAME = "name";
 const SUBDISTRICTS_COLUMN_DISTRICT_ID = "districtId";
 
+const COLUMN_ALIAS_ADDRESS_DISTRICT_ID = "addressDistrictId";
+const COLUMN_ALIAS_ADDRESS_STATE_PROVINCE_ID = "addressStateProvinceId";
+
 const USERS_TABLE_NAME = "Users";
 const USERS_COLUMN_ID = "id";
 const USERS_COLUMN_FULL_NAME = "fullName";
@@ -249,6 +252,11 @@ module.exports.SUBDISTRICTS_COLUMN_ID = SUBDISTRICTS_COLUMN_ID;
 module.exports.SUBDISTRICTS_COLUMN_NAME = SUBDISTRICTS_COLUMN_NAME;
 module.exports.SUBDISTRICTS_COLUMN_DISTRICT_ID =
                                         SUBDISTRICTS_COLUMN_DISTRICT_ID;
+
+module.exports.COLUMN_ALIAS_ADDRESS_DISTRICT_ID =
+                                    COLUMN_ALIAS_ADDRESS_DISTRICT_ID;
+module.exports.COLUMN_ALIAS_ADDRESS_STATE_PROVINCE_ID =
+                                COLUMN_ALIAS_ADDRESS_STATE_PROVINCE_ID;
 
 module.exports.USERS_TABLE_NAME = USERS_TABLE_NAME;
 module.exports.USERS_COLUMN_ID = USERS_COLUMN_ID;

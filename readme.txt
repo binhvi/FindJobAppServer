@@ -80,7 +80,9 @@ Tham số:
 userId (int)
 --
 Xem thông tin người dùng - chỉ lấy id ở trường liên kết với các bảng khác
-
+POST /api/users/details-get-id
+Tham số:
+userId (int)
 ------------------------------------
 
 Cập nhật thông tin người dùng

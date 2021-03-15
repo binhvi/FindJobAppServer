@@ -731,6 +731,9 @@ router.post('/users/details-query-all-info', (req, res) => {
 
             let selectUserInfoByIdSql =
                 "select " +
+                commonResources.USERS_TABLE_NAME + "." +
+                commonResources.USERS_COLUMN_ID + " as id, " +
+
                 commonResources.USERS_COLUMN_FULL_NAME + ", " +
 
                 // Genders.name as gender
@@ -810,7 +813,239 @@ router.post('/users/details-query-all-info', (req, res) => {
                         res.json({
                             result: false,
                             message: 'Lỗi truy vấn Users',
-                            err
+                            err: selectUserInfoErr
+                        });
+                        return;
+                    }
+
+                    let user = selectUserInfoResult[0]; // result is an array
+
+                    // Experiences
+                    let selectExperiencesByUserIdSql =
+                        "select " +
+                        commonResources.EXPERIENCES_COLUMN_COMPANY_NAME + ", " +
+                        commonResources.EXPERIENCES_COLUMN_JOB_TITLE + ", " +
+                        commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS + ", " +
+                        commonResources.EXPERIENCES_COLUMN_DATE_OUT_MILLIS + ", " +
+                        commonResources.EXPERIENCES_COLUMN_JOB_DETAILS + " " +
+                        "from " + commonResources.EXPERIENCES_TABLE_NAME + " " +
+                        "where " + commonResources.EXPERIENCES_COLUMN_USER_ID +
+                        " = ? " +
+                        "order by "
+                        + commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS + " desc;";
+
+
+                    dbConnect.query(
+                        selectExperiencesByUserIdSql,
+                        [userId],
+                        function (err, experiencesResult) {
+                            if (err) throw err;
+                            let experiences = experiencesResult;
+
+                            let selectEducationByUserIdSql =
+                                "select " +
+                                commonResources.EDUCATION_COLUMN_SCHOOL_NAME + ", " +
+                                commonResources.EDUCATION_COLUMN_MAJOR + ", " +
+                                commonResources
+                                    .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + "."
+                                + commonResources
+                                    .ACADEMIC_DEGREE_LEVELS_COLUMN_NAME
+                                + " as "
+                                + commonResources
+                                    .COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL
+                                + ", " +
+                                commonResources
+                                    .EDUCATION_COLUMN_START_DATE_MILLIS + ", " +
+                                commonResources
+                                    .EDUCATION_COLUMN_END_DATE_MILLIS + ", " +
+                                commonResources.EDUCATION_COLUMN_ACHIEVEMENTS + " " +
+                                "from " +
+                                commonResources.EDUCATION_TABLE_NAME + ", " +
+                                commonResources
+                                    .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + " " +
+                                "where " +
+                                commonResources.EDUCATION_TABLE_NAME + "." +
+                                commonResources
+                                    .EDUCATION_COLUMN_ACADEMIC_DEGREE_LEVEL_ID
+                                + " = " +
+                                commonResources
+                                    .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + "." +
+                                commonResources
+                                    .ACADEMIC_DEGREE_LEVELS_COLUMN_ID + " "
+                                + "and " +
+                                commonResources
+                                    .EDUCATION_COLUMN_USER_ID
+                                + " = ? " +
+                                "order by " +
+                                commonResources
+                                    .EDUCATION_COLUMN_START_DATE_MILLIS + " desc;"
+
+                            dbConnect.query(
+                                selectEducationByUserIdSql,
+                                [userId],
+                                function (err, educationResult) {
+                                    if (err) throw err;
+
+                                    // Query JobSkillsOfCandidate records
+                                    // of this user
+                                    let selectJobSkillsOfUserByUserIdSql =
+                                        "select " +
+                                        commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+                                        "from " +
+                                        commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                                        + ", " +
+                                        commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                                        "where " +
+
+                                        commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                                        + "." +
+                                        commonResources
+                                            .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                                        + " = " +
+                                        commonResources.JOB_SKILLS_TABLE_NAME
+                                        + "."
+                                        + commonResources.JOB_SKILLS_COLUMN_ID
+                                        + " " +
+
+                                        "and " +
+                                        commonResources
+                                            .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID +
+                                        " = ?;";
+
+                                    dbConnect.query(
+                                        selectJobSkillsOfUserByUserIdSql,
+                                        [userId],
+                                        function (
+                                            selectJobSkillsErr,
+                                            selectJobSkillResult) {
+                                            if (selectJobSkillsErr) {
+                                                throw selectJobSkillsErr;
+                                            }
+                                            let jobSkills = selectJobSkillResult;
+
+                                            res.json({
+                                                result: true,
+                                                data: {
+                                                    user,
+                                                    experiences,
+                                                    education: educationResult,
+                                                    jobSkills
+                                                }
+                                            });
+                                        }
+                                    );
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+    );
+});
+
+router.post('/users/details-get-id', (req, res) => {
+    // Validate
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId"
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId;
+    if (!userIdText.trim()) {
+        res.json({
+            result: false,
+            message: "userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "userId phải là số."
+        });
+        return;
+    }
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    let userId = userIdNumber;
+    userModule.checkIfUserIdExists(
+        userId,
+        function(isUserIdExists) {
+            if (!isUserIdExists) {
+                res.json({
+                    result: false,
+                    message: "userId không tồn tại."
+                });
+                return;
+            }
+
+            let selectUserInfoByIdSql =
+                "select " +
+                    commonResources.USERS_COLUMN_ID + ", " +
+                    commonResources.USERS_COLUMN_FULL_NAME + ", " +
+                    commonResources.USERS_COLUMN_PHONE + ", " +
+                    commonResources.USERS_COLUMN_EMAIL + ", " +
+                    commonResources.USERS_COLUMN_AVATAR_URL + ", " +
+                    commonResources.USERS_COLUMN_GRADUATED_EDUCATION_ID
+                    + ", " +
+                    commonResources.USERS_COLUMN_GENDER_ID + ", " +
+                    commonResources.USERS_COLUMN_TYPE_OF_WORK_ID + ", " +
+                    commonResources.USERS_COLUMN_EXPECTED_SALARY_VND
+                    + ", " +
+                    commonResources.USERS_COLUMN_YEARS_OF_EXPERIENCES
+                    + ", " +
+                    commonResources.USERS_COLUMN_CAREER_OBJECTIVE + ", " +
+                    commonResources.USERS_COLUMN_DOB_MILLIS + ", " +
+                    commonResources.USERS_COLUMN_RESUME_SUMMARY + ", " +
+                    commonResources.USERS_COLUMN_ADDRESS_SUBDISTRICT_ID
+                    + ", " +
+
+                    commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                    commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID + " as " +
+                    commonResources.COLUMN_ALIAS_ADDRESS_DISTRICT_ID
+                    + ", " +
+
+                    commonResources.DISTRICTS_TABLE_NAME + "." +
+                    commonResources.DISTRICTS_COLUMN_STATE_PROVINCE_ID
+                    + " as " +
+                    commonResources.COLUMN_ALIAS_ADDRESS_STATE_PROVINCE_ID
+                    + " " +
+
+                "from " + commonResources.USERS_TABLE_NAME + " " +
+                    "left join " +
+                    commonResources.SUBDISTRICTS_TABLE_NAME + " " + "on " +
+                    commonResources.USERS_COLUMN_ADDRESS_SUBDISTRICT_ID +
+                    " = " + commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                    commonResources.SUBDISTRICTS_COLUMN_ID + " " +
+
+                    "left join " + commonResources.DISTRICTS_TABLE_NAME +
+                    " on " + commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                    commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID + " = " +
+                    commonResources.DISTRICTS_TABLE_NAME + "." +
+                    commonResources.DISTRICTS_COLUMN_ID + " " +
+                "where Users.id = ?;";
+
+            dbConnect.query(
+                selectUserInfoByIdSql,
+                userId,
+                function(selectUserInfoErr, selectUserInfoResult) {
+                    if (selectUserInfoErr) {
+                        res.json({
+                            result: false,
+                            message: 'Lỗi truy vấn Users',
+                            err: selectUserInfoErr
                         });
                         return;
                     }
