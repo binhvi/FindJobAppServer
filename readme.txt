@@ -196,3 +196,17 @@ StateProvinces
 
 Lấy danh sách các tỉnh
 GET /api/states-provinces
+
+====
+Districts
+
+Lấy danh sách các huyện của một tỉnh
+POST /districts/get-districts-by-state-province-id
+Tham số: stateProvinceId (mã tỉnh, String, phải tồn tại)
+
+================
+Subdistricts
+
+Lấy danh sách các xã của một huyện
+POST /subdistricts/get-subdistricts-by-district-id
+Tham số: districtId (mã huyện, String, phải tồn tại)

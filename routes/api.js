@@ -6,6 +6,8 @@ var dbConnect = require('../public/javascripts/db');
 var userModule = require('./users');
 const academicDegreeLevelsModule = require('./academic-degree-levels');
 const jobNewsStatusModule = require('./job-news-status');
+const statesProvincesModule =
+                require('../public/javascripts/states-provinces');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -3108,6 +3110,86 @@ router.get('/states-provinces', (req, res) => {
             });
        }
    );
+});
+
+// Districts
+router.post('/districts/get-districts-by-state-province-id', (req, res) => {
+    if (req.body.stateProvinceId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường stateProvinceId."
+        });
+        return;
+    }
+
+    let stateProvinceIdText = req.body.stateProvinceId.trim();
+    if (stateProvinceIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường stateProvinceId không được để trống."
+        });
+        return;
+    }
+
+    statesProvincesModule.checkIfStateProvinceIdExists(
+        stateProvinceIdText,
+        function(
+            checkIfStateProvinceIdExistsErr,
+            isStateProvinceIdExist) {
+            if (checkIfStateProvinceIdExistsErr) {
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra " +
+                        "khi truy vấn stateProvinceId.",
+                    err: checkIfStateProvinceIdExistsErr
+                });
+                return;
+            }
+
+            if (isStateProvinceIdExist === false) {
+                res.json({
+                    result: false,
+                    message: "stateProvinceId không tồn tại."
+                });
+                return;
+            }
+
+            let getDistrictsByStateProvinceIdSql =
+                "select " +
+                    commonResources.DISTRICTS_COLUMN_ID + ", " +
+                    commonResources.DISTRICTS_COLUMN_NAME + ", " +
+                    commonResources.DISTRICTS_COLUMN_STATE_PROVINCE_ID
+                    + " " +
+                "from " +
+                    commonResources.DISTRICTS_TABLE_NAME + " " +
+                "where " +
+                    commonResources
+                        .DISTRICTS_COLUMN_STATE_PROVINCE_ID
+                    + " = ? " +
+                "order by " +
+                    commonResources.DISTRICTS_COLUMN_NAME + ";";
+
+            dbConnect.query(
+                getDistrictsByStateProvinceIdSql,
+                [stateProvinceIdText],
+                function (err, result) {
+                    if (err) {
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra khi truy vấn quận/huyện.",
+                            err
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        result: true,
+                        districts: result
+                    });
+                }
+            );
+        }
+    );
 });
 
 module.exports = router;
