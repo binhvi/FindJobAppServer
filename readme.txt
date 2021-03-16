@@ -191,3 +191,8 @@ Tham số:
 JobNewsStatus
 GET /api/job-news-status
 Web: /job-news-status
+=========================
+StateProvinces
+
+Lấy danh sách các tỉnh
+GET /api/states-provinces

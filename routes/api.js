@@ -3084,4 +3084,30 @@ router.get('/job-news-status', (req, res) => {
     );
 });
 
+// StateProvinces
+router.get('/states-provinces', (req, res) => {
+   let getStatesProvincesListSql =
+        "select " +
+            commonResources.STATE_PROVINCES_COLUMN_ID + ", " +
+            commonResources.STATE_PROVINCES_COLUMN_NAME + " " +
+       "from " + commonResources.STATE_PROVINCES_TABLE_NAME + " " +
+       "order by " + commonResources.STATE_PROVINCES_COLUMN_NAME + ";";
+   dbConnect.query(
+       getStatesProvincesListSql, function (err, result) {
+            if (err) {
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi truy vấn tỉnh/thành phố.",
+                    err
+                });
+                return;
+            }
+            res.json({
+                result: true,
+                stateProvinces: result
+            });
+       }
+   );
+});
+
 module.exports = router;
