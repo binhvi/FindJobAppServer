@@ -8,6 +8,7 @@ const academicDegreeLevelsModule = require('./academic-degree-levels');
 const jobNewsStatusModule = require('./job-news-status');
 const statesProvincesModule =
                 require('../public/javascripts/states-provinces');
+const districtsModule = require('../public/javascripts/districts');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -3192,4 +3193,80 @@ router.post('/districts/get-districts-by-state-province-id', (req, res) => {
     );
 });
 
+// Subdistricts
+router.post('/subdistricts/get-subdistrict-by-district-id', (req, res) => {
+   if (req.body.districtId === undefined) {
+       res.json({
+           result: false,
+           message: "Thiếu trường districtId."
+       });
+       return;
+   }
+
+   let districtIdText = req.body.districtId.trim();
+   if (districtIdText.length === 0) {
+       res.json({
+           result: false,
+           message: "districtId không được để trống."
+       });
+       return;
+   }
+
+   districtsModule.checkIfDistrictIdExists(
+       districtIdText,
+       function(checkDistrictIdExistsErr, isDistrictIdExist) {
+           if (checkDistrictIdExistsErr) {
+               res.json({
+                   result: false,
+                   message: "Có lỗi xảy ra khi truy vấn districtId.",
+                   err: checkDistrictIdExistsErr
+               });
+               return;
+           }
+
+           if (isDistrictIdExist === false) {
+               res.json({
+                   result: false,
+                   message: "districtId không tồn tại."
+               });
+               return;
+           }
+
+           let getSubdistrictByDistrictIdSql =
+               "select " +
+                    commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID
+                    + ", " +
+                    commonResources.SUBDISTRICTS_COLUMN_NAME + ", " +
+                    commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID
+                    + " " +
+               "from " +
+                    commonResources.SUBDISTRICTS_TABLE_NAME + " " +
+               "where " +
+                    commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID
+                    + " = ? " +
+               "order by " +
+                    commonResources.SUBDISTRICTS_COLUMN_NAME + ";";
+           dbConnect.query(
+               getSubdistrictByDistrictIdSql,
+               [districtIdText],
+               function(err, result) {
+                   if (err) {
+                       res.json({
+                           result: false,
+                           message: "Có lỗi xảy ra " +
+                                        "khi truy vấn xã/phường.",
+                           err
+                       });
+                       return;
+                   }
+
+                   res.json({
+                      result: true,
+                      subdistricts: result
+                   });
+               }
+           );
+       }
+   );
+});
 module.exports = router;
