@@ -3269,4 +3269,29 @@ router.post('/subdistricts/get-subdistrict-by-district-id', (req, res) => {
        }
    );
 });
+
+router.get('/job-skills', (req, res) => {
+    let selectAllJobSkillsSql =
+        "select * " +
+        "from " + commonResources.JOB_SKILLS_TABLE_NAME + " " +
+        "order by " + commonResources.JOB_SKILLS_COLUMN_ID + ";";
+    dbConnect.query(
+        selectAllJobSkillsSql,
+        function(err, result) {
+            if (err) {
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi truy vấn JobSkills.",
+                    err
+                });
+            }
+            let jobSkills = result;
+            res.json({
+                result: true,
+                jobSkills
+            });
+        }
+    );
+});
+
 module.exports = router;

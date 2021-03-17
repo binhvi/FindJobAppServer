@@ -200,12 +200,19 @@ GET /api/states-provinces
 Districts
 
 Lấy danh sách các huyện của một tỉnh
-POST /districts/get-districts-by-state-province-id
+POST /api/districts/get-districts-by-state-province-id
 Tham số: stateProvinceId (mã tỉnh, String, phải tồn tại)
 
 ================
 Subdistricts
 
 Lấy danh sách các xã của một huyện
-POST /subdistricts/get-subdistricts-by-district-id
+POST /api/subdistricts/get-subdistricts-by-district-id
 Tham số: districtId (mã huyện, String, phải tồn tại)
+
+================
+JobSkills
+
+Lấy danh sách kỹ năng chuyên môn
+GET /api/job-skills
+Web: /job-skills
