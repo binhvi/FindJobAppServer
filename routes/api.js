@@ -1180,7 +1180,728 @@ router.post('/users/details-get-id', (req, res) => {
 });
 
 router.post('/users/update', (req, res) => {
-    res.send('Tạm dừng endpoint này để sửa');
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "Trường userId phải là số."
+        });
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    let userId = userIdNumber;
+    userModule.checkIfUserIdExists(
+        userId,
+        function(isUserIdExists) {
+            if (!isUserIdExists) {
+                res.json({
+                    result: false,
+                    message: "userId không tồn tại."
+                });
+                return;
+            }
+
+            // fullName
+            if (req.body.fullName === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường fullName."
+                });
+                return;
+            }
+
+            let fullName = req.body.fullName.trim();
+            if (fullName.length === 0) {
+                res.json({
+                    result: false,
+                    message: "Hãy nhập họ và tên."
+                });
+                return;
+            }
+
+            if (fullName.length < 2) {
+                res.json({
+                    result: false,
+                    message: "Nhập họ tên từ hai ký tự trở lên."
+                });
+                return;
+            }
+
+            // Phone
+            if (req.body.phone === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường phone."
+                });
+                return;
+            }
+
+            let phone = req.body.phone.trim();
+            if (phone.length === 0) {
+                res.json({
+                    result: false,
+                    message: "Hãy nhập số điện thoại."
+                });
+                return;
+            }
+
+            if (!phone.match(commonResources.REGEX_PHONE)) {
+                res.json({
+                    result: false,
+                    message: "Nhập số điện thoại 9 - 10 chữ số."
+                });
+                return;
+            }
+
+            userModule.checkIfPhoneExistsWhenUpdateUser(
+                phone,
+                userId,
+                function(isPhoneExists) {
+                    if (isPhoneExists) {
+                        res.json({
+                            result: false,
+                            message: "Trùng số điện thoại."
+                        });
+                        return;
+                    }
+
+                    // Pass validate phone, continue validate other fields
+                    // Email
+                    if (req.body.email === undefined) {
+                        res.json({
+                            result: false,
+                            message: "Thiếu trường email."
+                        });
+                        return;
+                    }
+
+                    let email = req.body.email.trim();
+                    if (email.length === 0) {
+                        res.json({
+                            result: false,
+                            message: "Hãy nhập email."
+                        });
+                        return;
+                    }
+
+                    if (!email.match(commonResources.REGEX_EMAIL)) {
+                        res.json({
+                            result: false,
+                            message: "Hãy nhập email " +
+                                "đúng định dạng."
+                        });
+                        return;
+                    }
+
+                    userModule.checkIfEmailExistsWhenUpdateUser(
+                        email,
+                        userId,
+                        async function (isEmailExists) {
+                            if (isEmailExists) {
+                                res.json({
+                                    result: false,
+                                    message: "Trùng email."
+                                });
+                                return;
+                            }
+
+                            // Pass validate email,
+                            // go to validate other fields
+
+                            // If user don't upload new avatar file, don't need check
+                            // If user upload new file, check if file extension
+                            // is image format
+                            if (req.files &&
+                                !commonResources.isThisFileAnImage(
+                                    req.files.avatar.name)) {
+                                // This file doesn't have extension webp|gif|png
+                                res.json({
+                                    result: false,
+                                    message: "Hãy kiểm tra đúng định dạng ảnh avatar" +
+                                        " là webp|jpg|png"
+                                });
+                                return;
+                            }
+
+                            // Gender
+                            let genderId;
+                            if (req.body.genderId &&  //If gender not undefined, empty
+                                req.body.genderId.trim().length) {
+                                // req.body.genderId is string so if
+                                // req.body.genderId's value = 0,
+                                // block inside still executes
+                                let genderIdText = req.body.genderId.trim();
+
+                                if (isNaN(genderIdText)) {
+                                    res.json({
+                                        result: false,
+                                        message: "Id giới tính phải là số"
+                                    });
+                                    return;
+                                }
+
+                                genderId = Number(genderIdText);
+                                if (!Number.isInteger(genderId)) {
+                                    // Gender id is decimal number
+                                    res.json({
+                                        result: false,
+                                        message: "Id giới tính phải là số nguyên"
+                                    });
+                                    return;
+                                }
+
+                                let checkIfGenderIdExistsPromise = new Promise(
+                                    function (myResolve, myReject) {
+                                        let selectNumbersOfGenderHaveThisIdSql =
+                                            "select count(" + commonResources.GENDERS_COLUMN_ID + ") " +
+                                            "as numbersOfGenderIdExist " +
+                                            "from " + commonResources.GENDERS_TABLE_NAME + " " +
+                                            "where " + commonResources.GENDERS_COLUMN_ID + " = ?;";
+                                        dbConnect.query(
+                                            selectNumbersOfGenderHaveThisIdSql,
+                                            [genderId],
+                                            function (err, result) {
+                                                if (err) {
+                                                    res.json({
+                                                        result: false,
+                                                        message: 'Lỗi truy vấn Genders',
+                                                        err
+                                                    });
+                                                    throw err;
+                                                } else {
+                                                    myResolve(result);
+                                                }
+                                            }
+                                        );
+                                    }
+                                );
+
+                                let numbersOfGenderIdExistQueryResult =
+                                    await checkIfGenderIdExistsPromise;
+                                // [{"numbersOfGenderIdExist":1}]
+                                let numbersOfGenderIdExist =
+                                    numbersOfGenderIdExistQueryResult[0]
+                                        .numbersOfGenderIdExist;
+                                if (numbersOfGenderIdExist === 0) {
+                                    res.json({
+                                        result: false,
+                                        message: "Id giới tính không tồn tại."
+                                    });
+                                    return;
+                                }
+                            }
+
+                            // Birthday
+                            let birthdayMillis;
+                            if (req.body.birthdayInMilliseconds &&
+                                req.body.birthdayInMilliseconds.trim()) {
+                                let birthdayText =
+                                    req.body.birthdayInMilliseconds.trim();
+
+                                if (isNaN(birthdayText)) {
+                                    res.json({
+                                        result: false,
+                                        message: "birthdayInMilliseconds phải là số."
+                                    });
+                                    return;
+                                }
+
+                                let birthdayMillisNumber = Number(birthdayText);
+                                if (!Number.isInteger(birthdayMillisNumber)) {
+                                    res.json({
+                                        result: false,
+                                        message: "birthdayInMilliseconds phải là số nguyên."
+                                    });
+                                    return;
+                                }
+
+                                birthdayMillis = birthdayMillisNumber;
+                            }
+
+                            // Address
+                            let addressSubdistrictIdText;
+                            if (req.body.addressSubdistrictId &&
+                                req.body.addressSubdistrictId.trim()) {
+                                addressSubdistrictIdText =
+                                    req.body.addressSubdistrictId.trim();
+
+                                let checkIfSubdistrictIdExistsPromise =
+                                    new Promise(
+                                        function(myResolve, myReject) {
+                                            let selectNumbersOfSubdistrictHaveThisIdSql =
+                                                "select count(" +
+                                                    commonResources
+                                                        .SUBDISTRICTS_COLUMN_ID + ") " +
+                                                "as numberOfSubdistrictsHaveThisId " +
+                                                "from " +
+                                                    commonResources
+                                                        .SUBDISTRICTS_TABLE_NAME + " " +
+                                                "where "
+                                                    + commonResources
+                                                        .SUBDISTRICTS_COLUMN_ID
+                                                    + " = ?;";
+                                            dbConnect.query(
+                                                selectNumbersOfSubdistrictHaveThisIdSql,
+                                                [addressSubdistrictIdText],
+                                                function (err, result) {
+                                                    if (err) {
+                                                        res.json({
+                                                            result: false,
+                                                            message: "Lỗi truy vấn id xã.",
+                                                            err
+                                                        });
+                                                        throw err;
+                                                    } else {
+                                                        myResolve(result);
+                                                    }
+                                                }
+                                            );
+                                        }
+                                    );
+
+                                let numberOfSubdistrictIdExistQueryResult =
+                                    await checkIfSubdistrictIdExistsPromise;
+                                // [
+                                //     {
+                                //         "numberOfSubdistrictsHaveThisId" : 1
+                                //     }
+                                // ]
+                                let numberOfSubdistrictsHaveThisId =
+                                    numberOfSubdistrictIdExistQueryResult[0]
+                                        .numberOfSubdistrictsHaveThisId;
+                                if (numberOfSubdistrictsHaveThisId === 0) {
+                                    res.json({
+                                        result: false,
+                                        message: "ID xã không tồn tại."
+                                    });
+                                    return;
+                                }
+                            }
+
+                            // Level of education
+                            let graduatedEducationId;
+                            // If req.body.graduatedEducationId
+                            // != undefined and != empty
+                            if (req.body.graduatedEducationId &&
+                                req.body.graduatedEducationId.trim().length) {
+                                let graduatedEducationIdText =
+                                    req.body.graduatedEducationId.trim();
+
+                                if (isNaN(graduatedEducationIdText)) {
+                                    res.json({
+                                        result: false,
+                                        message: "Id trình độ học vấn phải là số"
+                                    });
+                                    return;
+                                }
+
+                                graduatedEducationId =
+                                    Number(graduatedEducationIdText);
+                                if (!Number.isInteger(graduatedEducationId)) {
+                                    // graduatedEducationId is decimal number
+                                    res.json({
+                                        result: false,
+                                        message: "Id trình độ học vấn phải là số nguyên."
+                                    });
+                                    return;
+                                }
+
+                                let checkIfLevelEducationIdExistsPromise = new Promise(
+                                    function (myResolve, myReject) {
+                                        let selectNumbersLevelEducationHaveThisIdSql =
+                                            "select count(" +
+                                            commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + ") " +
+                                            "as numbersOfLevelEducationHasThisId" + " " +
+                                            "from " + commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + " " +
+                                            "where " + commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + " = ?;";
+                                        dbConnect.query(
+                                            selectNumbersLevelEducationHaveThisIdSql,
+                                            [graduatedEducationId],
+                                            function (err, result) {
+                                                if (err) {
+                                                    res.json({
+                                                        result: false,
+                                                        message: "Lỗi truy vấn LevelsOfEducation",
+                                                        err
+                                                    });
+                                                    throw err;
+                                                } else {
+                                                    myResolve(result);
+                                                }
+                                            }
+                                        );
+                                    }
+                                );
+
+                                let numbersLevelEducationIdExistsQueryResult =
+                                    await checkIfLevelEducationIdExistsPromise;
+                                // [
+                                //      { numbersOfLevelEducationHasThisId: 1 }
+                                // ]
+                                let numbersLevelEducationIdExists =
+                                    numbersLevelEducationIdExistsQueryResult[0]
+                                        .numbersOfLevelEducationHasThisId;
+                                if (numbersLevelEducationIdExists === 0) {
+                                    res.json({
+                                        result: false,
+                                        message: "Id trình độ học vấn không tồn tại."
+                                    });
+                                    return;
+                                }
+                            }
+
+                            // Type of work
+                            let typeOfWorkId;
+                            // If req.body.typeOfWorkId
+                            // != undefined and != empty
+                            if (req.body.typeOfWorkId &&
+                                req.body.typeOfWorkId.trim().length) {
+                                let typeOfWorkIdText = req.body.typeOfWorkId.trim();
+
+                                if (isNaN(typeOfWorkIdText)) {
+                                    res.json({
+                                        result: false,
+                                        message: "Id hình thức làm việc phải là số"
+                                    });
+                                    return;
+                                }
+
+                                typeOfWorkId = Number(typeOfWorkIdText);
+                                if (!Number.isInteger(typeOfWorkId)) {
+                                    // typeOfWorkId is decimal number
+                                    res.json({
+                                        result: false,
+                                        message: "Id hình thức làm việc" +
+                                            " phải là số nguyên."
+                                    });
+                                    return;
+                                }
+
+                                let checkIfTypeOfWorkIdExistsPromise = new Promise(
+                                    function (myResolve, myReject) {
+                                        let selectNumberTypeOfWorkHaveThisIdSql =
+                                            "select count(" + commonResources.TYPES_OF_WORK_COLUMN_ID + ") " +
+                                            "as numbersOfTypeOfWorkHaveThisId" + " " +
+                                            "from " + commonResources.TYPES_OF_WORK_TABLE_NAME + " " +
+                                            "where " + commonResources.TYPES_OF_WORK_COLUMN_ID + " = ?;";
+                                        dbConnect.query(
+                                            selectNumberTypeOfWorkHaveThisIdSql,
+                                            [typeOfWorkId],
+                                            function (err, result) {
+                                                if (err) {
+                                                    res.json({
+                                                        result: false,
+                                                        message: "Lỗi truy vấn TypesOfWork.",
+                                                        err
+                                                    });
+                                                    throw err;
+                                                } else {
+                                                    myResolve(result);
+                                                }
+                                            }
+                                        );
+                                    }
+                                );
+
+                                let numberTypeOfWorkHaveThisIdQueryResult =
+                                    await checkIfTypeOfWorkIdExistsPromise;
+                                // [ { numbersOfTypeOfWorkHaveThisId: 1 } ]
+                                let numberTypeOfWorkHaveThisId =
+                                    numberTypeOfWorkHaveThisIdQueryResult[0]
+                                        .numbersOfTypeOfWorkHaveThisId;
+                                if (numberTypeOfWorkHaveThisId === 0) {
+                                    res.json({
+                                        resutl: false,
+                                        message: "Id hình thức làm việc" +
+                                            " không tồn tại."
+                                    });
+                                    return;
+                                }
+                            }
+
+                            // Expected salary
+                            let expectedSalaryInVnd;
+                            // If req.body.expectedSalaryInMillionVnd != undefined
+                            // and != empty
+                            if (req.body.expectedSalaryInVnd &&
+                                req.body.expectedSalaryInVnd.trim()) {
+                                let expectedSalaryInVndText =
+                                    req.body.expectedSalaryInVnd.trim();
+
+                                if (isNaN(expectedSalaryInVndText)) {
+                                    res.json({
+                                        result: false,
+                                        message: "Nhập mức lương mong muốn là số."
+                                    });
+                                    return;
+                                }
+
+                                let expectedSalaryInVndNumber =
+                                    Number(expectedSalaryInVndText);
+                                if (!Number.isInteger(expectedSalaryInVndNumber)) {
+                                    res.json({
+                                        result: false,
+                                        message: "Nhập mức lương mong muốn là số nguyên"
+                                    });
+                                    return;
+                                }
+
+                                expectedSalaryInVnd = expectedSalaryInVndNumber;
+                                if (expectedSalaryInVnd < 0) {
+                                    res.json({
+                                        result: false,
+                                        message: "Nhập mức lương mong muốn " +
+                                            "là số nguyên lớn hơn hoặc bằng 0."
+                                    });
+                                    return;
+                                }
+                            }
+
+                            // Years of experiences
+                            let yearsOfExperiences;
+                            // If req.body.yearsOfExperience != undefined and != empty
+                            if (req.body.yearsOfExperiences &&
+                                req.body.yearsOfExperiences.trim()) {
+                                let yearsOfExperiencesText =
+                                    req.body.yearsOfExperiences.trim();
+
+                                if (isNaN(yearsOfExperiencesText)) {
+                                    res.json({
+                                        result: false,
+                                        message: "Nhập số năm kinh nghiệm là số."
+                                    });
+                                    return;
+                                }
+
+                                yearsOfExperiences =
+                                    Number(yearsOfExperiencesText);
+                                if (!Number.isInteger(yearsOfExperiences)) {
+                                    res.json({
+                                        result: false,
+                                        message: "Nhập số năm kinh nghiệm là số nguyên."
+                                    });
+                                    return;
+                                }
+
+                                if (yearsOfExperiences < 0) {
+                                    res.json({
+                                        result: false,
+                                        message: "Nhập số năm kinh nghiệm " +
+                                            "là số nguyên lớn hơn hoặc bằng 0."
+                                    });
+                                    return;
+                                }
+                            }
+
+                            // resumeSummary
+                            let resumeSummary;
+                            // If req.body.resumeSummary != undefined and != empty
+                            // and != white space
+                            if (req.body.resumeSummary &&
+                                req.body.resumeSummary.trim()) {
+                                resumeSummary = req.body.resumeSummary.trim();
+                            }
+
+                            // careerObjective
+                            let careerObjective;
+                            // If req.body.careerObjective != undefined and != empty
+                            // and != white space
+                            if (req.body.careerObjective &&
+                                req.body.careerObjective.trim()) {
+                                careerObjective = req.body.careerObjective.trim();
+                            }
+
+                            // Pass validate
+                            // Upload file
+                            let avatarUrl;
+                            if (req.files) { // If file not empty, null
+                                let avatar = req.files.avatar;
+                                // avatar.name: Original name of upload file
+                                const fileName = uniqid() + "-" + avatar.name;
+                                // mv: move
+                                await avatar.mv(`./uploads/users/${fileName}`);
+                                // Save image url to database, not save file
+                                avatarUrl =
+                                    commonResources.PROTOCOL + "://"
+                                    + commonResources.SERVER_HOST +
+                                    "/users/" + fileName;
+                            }
+
+                            // Make SQL string to query update
+                            let updateUsersSetSubStringSql =
+                                "update "
+                                + commonResources
+                                    .USERS_TABLE_NAME +
+                                " set ";
+                            let fullNameKeyValueSubStringSql =
+                                commonResources.USERS_COLUMN_FULL_NAME
+                                + " = '" + fullName + "'";
+                            let emailKeyValueSubStringSql =
+                                commonResources.USERS_COLUMN_EMAIL + " = " +
+                                "'" + email + "'";
+                            let phoneKeyValueSubStringSql =
+                                commonResources.USERS_COLUMN_PHONE + " = " +
+                                "'" + phone + "'";
+
+                            let genderIdKeyValueSubStringSql = "";
+                            if (genderId === undefined) {
+                                genderIdKeyValueSubStringSql =
+                                    commonResources.USERS_COLUMN_GENDER_ID + " = null";
+                            } else {
+                                genderIdKeyValueSubStringSql =
+                                    commonResources.USERS_COLUMN_GENDER_ID +
+                                    " = " + genderId;
+                            }
+
+                            let birthdayMillisKeyValueSubStringSql = "";
+                            if (birthdayMillis === undefined) {
+                                birthdayMillisKeyValueSubStringSql =
+                                    commonResources.USERS_COLUMN_DOB_MILLIS + " = null";
+                            } else {
+                                birthdayMillisKeyValueSubStringSql =
+                                    commonResources.USERS_COLUMN_DOB_MILLIS + " = " +
+                                    birthdayMillis;
+                            }
+
+                            let addressSubdistrictIdKeyValueSubStringSql = "";
+                            if (addressSubdistrictIdText === undefined) {
+                                addressSubdistrictIdKeyValueSubStringSql =
+                                    commonResources
+                                        .USERS_COLUMN_ADDRESS_SUBDISTRICT_ID
+                                    + " = null";
+                            } else {
+                                addressSubdistrictIdKeyValueSubStringSql =
+                                    commonResources
+                                        .USERS_COLUMN_ADDRESS_SUBDISTRICT_ID
+                                    + " = '" + addressSubdistrictIdText + "'";
+                            }
+
+                            let graduatedEducationIdKeyValueSubStringSql = "";
+                            if (graduatedEducationId === undefined) {
+                                graduatedEducationIdKeyValueSubStringSql =
+                                    commonResources.USERS_COLUMN_GRADUATED_EDUCATION_ID +
+                                    " = null";
+                            } else {
+                                graduatedEducationIdKeyValueSubStringSql =
+                                    commonResources.USERS_COLUMN_GRADUATED_EDUCATION_ID +
+                                    " = " + graduatedEducationId;
+                            }
+
+                            let typeOfWorkIdKeyValueSubStringSql = "";
+                            if (typeOfWorkId === undefined) {
+                                typeOfWorkIdKeyValueSubStringSql =
+                                    commonResources.USERS_COLUMN_TYPE_OF_WORK_ID + " = null";
+                            } else {
+                                typeOfWorkIdKeyValueSubStringSql =
+                                    commonResources.USERS_COLUMN_TYPE_OF_WORK_ID +
+                                    " = " + typeOfWorkId;
+                            }
+
+                            let expectedSalaryInVndKeyValueSubStringSql =
+                                !expectedSalaryInVnd ?
+                                    (commonResources
+                                            .USERS_COLUMN_EXPECTED_SALARY_VND
+                                        + " = null") :
+                                    (commonResources.USERS_COLUMN_EXPECTED_SALARY_VND
+                                        + " = " + expectedSalaryInVnd);
+
+                            let yearsOfExperiencesKeyValueSubStringSql =
+                                !yearsOfExperiences ?
+                                    (commonResources.USERS_COLUMN_YEARS_OF_EXPERIENCES
+                                        + " = null") :
+                                    (commonResources.USERS_COLUMN_YEARS_OF_EXPERIENCES
+                                        + " = " + yearsOfExperiences);
+
+                            let resumeSummaryKeyValueSubStringSql =
+                                !resumeSummary ?
+                                    (commonResources.USERS_COLUMN_RESUME_SUMMARY
+                                        + " = null") :
+                                    (commonResources.USERS_COLUMN_RESUME_SUMMARY
+                                        + " = '" + resumeSummary + "'");
+
+                            let careerObjectiveKeyValueSubStringSql =
+                                !careerObjective ?
+                                    (commonResources.USERS_COLUMN_CAREER_OBJECTIVE
+                                        + " = null") :
+                                    (commonResources.USERS_COLUMN_CAREER_OBJECTIVE
+                                        + " = '" + careerObjective + "'");
+
+                            // If user doesn't up new avatar file, don't delete old avatar
+                            let avatarUrlKeyValueSubStringSql =
+                                !avatarUrl ? "" :
+                                    (", " + commonResources.USERS_COLUMN_AVATAR_URL
+                                        + " = '" + avatarUrl + "'");
+
+                            let updateUserSql =
+                                updateUsersSetSubStringSql + " " +
+                                fullNameKeyValueSubStringSql + ", " +
+                                emailKeyValueSubStringSql + ", " +
+                                phoneKeyValueSubStringSql + ", " +
+                                genderIdKeyValueSubStringSql + ", " +
+                                birthdayMillisKeyValueSubStringSql + ", " +
+                                addressSubdistrictIdKeyValueSubStringSql + ", " +
+                                graduatedEducationIdKeyValueSubStringSql + ", " +
+                                typeOfWorkIdKeyValueSubStringSql + ", " +
+                                expectedSalaryInVndKeyValueSubStringSql + ", " +
+                                yearsOfExperiencesKeyValueSubStringSql + ", " +
+                                resumeSummaryKeyValueSubStringSql + ", " +
+                                careerObjectiveKeyValueSubStringSql + " " +
+                                avatarUrlKeyValueSubStringSql + " " +
+                                "where " + commonResources.USERS_COLUMN_ID + " = ?;";
+
+                            dbConnect.query(
+                                updateUserSql,
+                                [userId], // Escaping value to avoid sql injection
+                                function (err, result) {
+                                    if (err) {
+                                        res.json({
+                                            result: false,
+                                            message: "Có lỗi xảy ra khi lưu " +
+                                                    "bản cập nhật " +
+                                                    "thông tin người dùng",
+                                            err
+                                        });
+                                        return;
+                                    }
+
+                                    res.json({
+                                        result: true,
+                                        message: "Update thành công " +
+                                            result.affectedRows + " bản ghi."
+                                    });
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+    );
 });
 
 router.post('/users/change-password', (req, res) => {
@@ -3194,7 +3915,7 @@ router.post('/districts/get-districts-by-state-province-id', (req, res) => {
 });
 
 // Subdistricts
-router.post('/subdistricts/get-subdistrict-by-district-id', (req, res) => {
+router.post('/subdistricts/get-subdistricts-by-district-id', (req, res) => {
    if (req.body.districtId === undefined) {
        res.json({
            result: false,
@@ -3234,7 +3955,7 @@ router.post('/subdistricts/get-subdistrict-by-district-id', (req, res) => {
 
            let getSubdistrictByDistrictIdSql =
                "select " +
-                    commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID
+                    commonResources.SUBDISTRICTS_COLUMN_ID
                     + ", " +
                     commonResources.SUBDISTRICTS_COLUMN_NAME + ", " +
                     commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID

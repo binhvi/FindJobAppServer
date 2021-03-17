@@ -86,7 +86,50 @@ userId (int)
 ------------------------------------
 
 Cập nhật thông tin người dùng
+POST /api/users/update
+Tham số:
+- userId (int, bắt buộc, phải tồn tại)
+- fullName
+    + String, bắt buộc
+    + Tên không được để trống
+    + Tên từ 2 ký tự trở lên
+- phone
+    + String, bắt buộc
+    + Phone không trống
+    + Phone đúng định dạng (9-10 ký tự số):  /^\d{9,10}$/
+    + Phone không trùng với người khác
+- email
+    + String, bắt buộc
+    + Email không trống
+    + Email đúng định dạng a@b.c
+        /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
+    + Email không trùng với người khác
+- avatar (file ảnh wepb/png/jpg, không bắt buộc)
+- genderId: (giới tính)
+    + int, không bắt buộc
+    + Validate: genderId không tồn tại
+- birthdayInMilliseconds: int (milliseconds), không bắt buộc
+- addressSubdistrictId: (ID xã) Không bắt buộc, String, ID phải tồn tại
+- graduatedEducationId: (bằng cấp)
+    + int, không bắt buộc
+    + Validate: graduatedEducationId không tồn tại
+- typeOfWorkId: (loại hình công việc)
+    + int, không bắt buộc
+    + Validate: typeOfWorkId không tồn tại
+- expectedSalaryInVnd (mức lương mong muốn): int >= 0, không bắt buộc
+- yearsOfExperiences (số năm kinh nghiệm): int >= 0, không bắt buộc
+- resumeSummary (giới thiệu bản thân): String, không bắt buộc
+- careerObjective (mục tiêu nghề nghiệp): String, không bắt buộc
 
+CHÚ Ý:
+    - id, fullName, phone, email là bắt buộc.
+    - Các trường genderId, birthdayInMilliseconds, addressSubdistrictId,
+    graduatedEducationId, typeOfWorkId, expectedSalaryInVnd,
+    yearsOfExperiences, resumeSummary, careerObjective nếu request
+thiếu trường hoặc có trường nhưng nội dung rỗng thì dữ liệu của trường đó
+ của User sẽ bị xóa.
+    - Trường avatar khi request thiếu trường, hoặc có trường
+nhưng giá trị rỗng sau khi request không bị xóa.
 ----------------------------------
 Lấy danh sách người dùng (ứng viên)
 GET /api/users
