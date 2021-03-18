@@ -4085,6 +4085,11 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                         }
                     }
                 );
+                res.json({
+                    result: true,
+                    message: "Cập nhật thông tin " +
+                        "kỹ năng chuyên môn thành công."
+                });
                 return;
             }
 
@@ -4137,87 +4142,56 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                             return;
                         }
 
-                        jobSkillsOfCandidateModule
-                            .checkIfSkillOfUserExisted(
-                                userId,
-                                jobSkillIdNumber,
-                                function (
-                                    checkIfUserIdAndSkillIdTupleExistedErr,
-                                    isfUserIdAndSkillIdTupleExisted) {
-                                    if (checkIfUserIdAndSkillIdTupleExistedErr) {
-                                        res.json({
-                                            result: false,
-                                            message: "Có lỗi xảy ra khi truy vấn " +
-                                                "kỹ năng ứng viên.",
-                                            err: checkIfUserIdAndSkillIdTupleExistedErr
-                                        });
-                                        return;
-                                    }
-
-                                    // If this skill has been added before,
-                                    // no need to add it again.
-                                    if (isfUserIdAndSkillIdTupleExisted === true) {
-                                        res.json({
-                                            result: true,
-                                            message: "Kỹ năng này đã được thêm " +
-                                                "vào hồ sơ ứng viên trước đó, " +
-                                                "do vậy không cần thêm nữa."
-                                        });
-                                        return;
-                                    }
-
-                                    // Delete previous data
-                                    // then add new data
-                                    jobSkillsOfCandidateModule.deleteAllJobSkillDataOfOneUser(
-                                        userId,
-                                        function(deleteJobSkillOfThisUserErr) {
-                                            if (deleteJobSkillOfThisUserErr) {
-                                                res.json({
-                                                    result: false,
-                                                    message: "Xóa thông tin " +
-                                                        "kỹ năng chuyên môn lỗi." ,
-                                                    err: deleteJobSkillOfThisUserErr
-                                                });
-                                                throw deleteJobSkillOfThisUserErr;
-                                            }
-                                        }
-                                    );
-                                    let addJobSkillForUserSql =
-                                        "insert into " +
-                                        commonResources
-                                            .JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
-                                        + "(" +
-                                        commonResources
-                                            .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID
-                                        + ", " +
-                                        commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
-                                        + ") " +
-                                        "values(" +
-                                        userId + ", " + jobSkillIdNumber
-                                        + ");";
-
-                                    dbConnect.query(
-                                        addJobSkillForUserSql,
-                                        function (err, result) {
-                                            if (err) {
-                                                res.json({
-                                                    result: false,
-                                                    message: "Có lỗi xảy ra " +
-                                                        "khi thêm bản ghi.",
-                                                    err
-                                                });
-                                                return;
-                                            }
-
-                                            res.json({
-                                                resutl: true,
-                                                message: "Thêm kỹ năng " +
-                                                    "chuyên môn thành công."
-                                            });
-                                        }
-                                    );
+                        // Delete previous data
+                        // then add new data
+                        jobSkillsOfCandidateModule.deleteAllJobSkillDataOfOneUser(
+                            userId,
+                            function(deleteJobSkillOfThisUserErr) {
+                                if (deleteJobSkillOfThisUserErr) {
+                                    res.json({
+                                        result: false,
+                                        message: "Xóa thông tin " +
+                                            "kỹ năng chuyên môn lỗi." ,
+                                        err: deleteJobSkillOfThisUserErr
+                                    });
+                                    throw deleteJobSkillOfThisUserErr;
                                 }
-                            );
+                            }
+                        );
+                        let addJobSkillForUserSql =
+                            "insert into " +
+                            commonResources
+                                .JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                            + "(" +
+                            commonResources
+                                .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID
+                            + ", " +
+                            commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                            + ") " +
+                            "values(" +
+                            userId + ", " + jobSkillIdNumber
+                            + ");";
+
+                        dbConnect.query(
+                            addJobSkillForUserSql,
+                            function (err, result) {
+                                if (err) {
+                                    res.json({
+                                        result: false,
+                                        message: "Có lỗi xảy ra " +
+                                            "khi thêm bản ghi.",
+                                        err
+                                    });
+                                    return;
+                                }
+
+                                res.json({
+                                    resutl: true,
+                                    message: "Cập nhật kỹ năng " +
+                                        "chuyên môn thành công."
+                                });
+                            }
+                        );
                     }
                 );
                 return;
@@ -4371,7 +4345,7 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
 
                      res.json({
                          resutl: true,
-                         message: "Thêm kỹ năng " +
+                         message: "Cập nhật kỹ năng " +
                              "chuyên môn thành công."
                      });
                  }
