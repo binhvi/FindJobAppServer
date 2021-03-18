@@ -134,6 +134,19 @@ nhưng giá trị rỗng sau khi request không bị xóa.
 Lấy danh sách người dùng (ứng viên)
 GET /api/users
 (Truy vấn sắp xếp id giảm dần (hay ứng viên đăng ký mới nhất cho lên đầu.)).
+--------------
+Đổi mật khẩu
+POST /api/users/change-password
+Tham số:
+- userId (int, bắt buộc, không trống, id phải tồn tại)
+- oldPassword
+    + String, bắt buộc, không trống
+    + Phải đúng với mật khẩu người dùng đã lưu trong database
+- newPassword
+    + String, bắt buộc, không trống
+    + Mật khẩu phải >= 6 ký tự
+            + Không được chứa khoảng trắng
+
 ============================
 Education
 
@@ -259,3 +272,18 @@ JobSkills
 Lấy danh sách kỹ năng chuyên môn
 GET /api/job-skills
 Web: /job-skills
+
+=====================
+JobSkillsOfCandidate
+
+Tạo thông tin kỹ năng làm việc cho ứng viên
+POST /api/job-skills-of-candidate/create
+Tham số:
+userId: int, bắt buộc, phải tồn tại
+jobSkillId: int, bắt buộc, phải tồn tại.
+(Danh sách JobSkills lấy JSON ở API GET /api/job-skills
+hoặc xem trên Web ở /job-skills)
+---------------
+Lấy danh sách kỹ năng chuyên môn (Web, mobile, game,...) của ứng viên
+POST /api/job-skills-of-candidate
+Tham số: userId (int, bắt buộc, không trống, id phải tồn tại)

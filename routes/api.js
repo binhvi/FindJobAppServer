@@ -9,6 +9,9 @@ const jobNewsStatusModule = require('./job-news-status');
 const statesProvincesModule =
                 require('../public/javascripts/states-provinces');
 const districtsModule = require('../public/javascripts/districts');
+const jobSkillsModule = require('./job-skills');
+const jobSkillsOfCandidateModule =
+            require('../public/javascripts/job-skills-of-candidate');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -3991,6 +3994,7 @@ router.post('/subdistricts/get-subdistricts-by-district-id', (req, res) => {
    );
 });
 
+// JobSkills
 router.get('/job-skills', (req, res) => {
     let selectAllJobSkillsSql =
         "select * " +
@@ -4013,6 +4017,250 @@ router.get('/job-skills', (req, res) => {
             });
         }
     );
+});
+
+// JobSkillsOfCandidate
+router.post('/job-skills-of-candidate/create', (req, res) => {
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "Trường userId phải là số."
+        });
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    let userId = userIdNumber;
+    userModule.checkIfUserIdExists(
+        userId,
+        function (isUserIdExists) {
+            if (!isUserIdExists) {
+                res.json({
+                    result: false,
+                    message: "userId không tồn tại."
+                });
+                return;
+            }
+
+            // Pass validate userId
+            // Validate jobSkillId
+            if (req.body.jobSkillId === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường jobSkillId."
+                });
+                return;
+            }
+
+            let jobSkillIdText = req.body.jobSkillId.trim();
+            if (jobSkillIdText.length === 0) {
+                res.json({
+                    result: false,
+                    message: "jobSkillId không được để trống."
+                });
+                return;
+            }
+
+            if (isNaN(jobSkillIdText)) {
+                res.json({
+                    result: false,
+                    message: "jobSkillId phải là số."
+                });
+                return;
+            }
+
+            let jobSkillIdNumber = Number(jobSkillIdText);
+            if (!Number.isInteger(jobSkillIdNumber)) {
+                res.json({
+                    result: false,
+                    message: "jobSkillId phải là số nguyên."
+                });
+                return;
+            }
+
+            jobSkillsModule.checkIfJobSkillIdExists(
+                jobSkillIdNumber,
+                function(checkJobSkillIdEErr, isJobSkillIdExist) {
+                    if (checkJobSkillIdEErr) {
+                        res.json({
+                           result: false,
+                           message: "Có lỗi xảy ra khi truy vấn " +
+                                        "id JobSkills.",
+                            checkJobSkillIdEErr
+                        });
+                        return;
+                    }
+
+                    if (isJobSkillIdExist === false) {
+                        res.json({
+                           result: false,
+                           message: "ID JobSkills không tồn tại."
+                        });
+                        return;
+                    }
+
+                    jobSkillsOfCandidateModule
+                        .checkIfSkillOfUserExisted(
+                            userId,
+                            jobSkillIdNumber,
+                        function (
+                            checkIfUserIdAndSkillIdTupleExistedErr,
+                            isfUserIdAndSkillIdTupleExisted) {
+                            if (checkIfUserIdAndSkillIdTupleExistedErr) {
+                                res.json({
+                                    result: false,
+                                    message: "Có lỗi xảy ra khi truy vấn " +
+                                        "kỹ năng ứng viên.",
+                                    err: checkIfUserIdAndSkillIdTupleExistedErr
+                                });
+                                return;
+                            }
+
+                            // If this skill has been added before,
+                            // no need to add it again.
+                            if (isfUserIdAndSkillIdTupleExisted === true) {
+                                res.json({
+                                    result: false,
+                                    message: "Kỹ năng này đã được thêm " +
+                                        "vào hồ sơ ứng viên trước đó, " +
+                                        "do vậy không cần thêm nữa."
+                                });
+                                return;
+                            }
+
+                            // Pass all validate
+                            let addJobSkillForUserSql =
+                                "insert into " +
+                                    commonResources
+                                        .JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                                    + "(" +
+                                    commonResources
+                                        .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID
+                                    + ", " +
+                                    commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                                    + ") " +
+                                "values(" +
+                                    userId + ", " + jobSkillIdNumber
+                                + ");";
+
+                            dbConnect.query(
+                                addJobSkillForUserSql,
+                                function (err, result) {
+                                    if (err) {
+                                        res.json({
+                                           result: false,
+                                           message: "Có lỗi xảy ra " +
+                                               "khi thêm bản ghi.",
+                                            err
+                                        });
+                                        return;
+                                    }
+
+                                    res.json({
+                                       resutl: true,
+                                       message: "Thêm kỹ năng " +
+                                           "chuyên môn thành công."
+                                    });
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+    );
+});
+
+/**
+ * Read job skills of user.
+ * Param: userId (int, required, must be exist).
+ */
+router.post('/job-skills-of-candidate', (req, res) => {
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "Trường userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "Trường userId phải là số."
+        });
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    let userId = userIdNumber;
+    userModule.checkIfUserIdExists(
+        userId,
+        function (isUserIdExists) {
+            if (!isUserIdExists) {
+                res.json({
+                    result: false,
+                    message: "userId không tồn tại."
+                });
+                return;
+            }
+
+            let selectJobSkillsByUserIdSql =
+                "select jobSkillId, skillName\n" +
+                "from JobSkillsOfCandidate, JobSkills\n" +
+                "where \n" +
+                "\tJobSkillsOfCandidate.jobSkillId = JobSkills.id \n" +
+                "\tand userId = 2;";
+        }
+    );
+
+
+
+    // for (let i = 0; i < req.body.hobbies.length; i++) {
+    //     console.log(req.body.hobbies[i]);
+    // }
 });
 
 module.exports = router;

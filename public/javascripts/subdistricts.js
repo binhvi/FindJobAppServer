@@ -27,7 +27,7 @@ function checkIfSubDistrictIdExists(subdistrictId, callback) {
                 result[0].numberOfSubdistrictsHaveThisId;
             if (numberOfSubdistrictsHaveThisId > 0) {
                 // If have result, result not null, err is null
-                return callback(null, true); // First arg is null
+                return callback(null, true); // First arg is err
             } else {
                 // If have result, result not null, err is null
                 return callback(null, false);
