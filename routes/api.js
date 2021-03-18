@@ -4020,7 +4020,7 @@ router.get('/job-skills', (req, res) => {
 });
 
 // JobSkillsOfCandidate
-router.post('/job-skills-of-candidate/create', (req, res) => {
+router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
     if (req.body.userId === undefined) {
         res.json({
             result: false,
@@ -4058,7 +4058,7 @@ router.post('/job-skills-of-candidate/create', (req, res) => {
     let userId = userIdNumber;
     userModule.checkIfUserIdExists(
         userId,
-        function (isUserIdExists) {
+         async function (isUserIdExists) {
             if (!isUserIdExists) {
                 res.json({
                     result: false,
@@ -4066,133 +4066,317 @@ router.post('/job-skills-of-candidate/create', (req, res) => {
                 });
                 return;
             }
-
             // Pass validate userId
-            // Validate jobSkillId
+
+            // There is no field jobSkillId -> Delete all skill records
+            // of this user
             if (req.body.jobSkillId === undefined) {
-                res.json({
-                    result: false,
-                    message: "Thiếu trường jobSkillId."
-                });
-                return;
-            }
-
-            let jobSkillIdText = req.body.jobSkillId.trim();
-            if (jobSkillIdText.length === 0) {
-                res.json({
-                    result: false,
-                    message: "jobSkillId không được để trống."
-                });
-                return;
-            }
-
-            if (isNaN(jobSkillIdText)) {
-                res.json({
-                    result: false,
-                    message: "jobSkillId phải là số."
-                });
-                return;
-            }
-
-            let jobSkillIdNumber = Number(jobSkillIdText);
-            if (!Number.isInteger(jobSkillIdNumber)) {
-                res.json({
-                    result: false,
-                    message: "jobSkillId phải là số nguyên."
-                });
-                return;
-            }
-
-            jobSkillsModule.checkIfJobSkillIdExists(
-                jobSkillIdNumber,
-                function(checkJobSkillIdEErr, isJobSkillIdExist) {
-                    if (checkJobSkillIdEErr) {
-                        res.json({
-                           result: false,
-                           message: "Có lỗi xảy ra khi truy vấn " +
-                                        "id JobSkills.",
-                            checkJobSkillIdEErr
-                        });
-                        return;
+                jobSkillsOfCandidateModule.deleteAllJobSkillDataOfOneUser(
+                    userId,
+                    function(deleteJobSkillOfThisUserErr) {
+                        if (deleteJobSkillOfThisUserErr) {
+                            res.json({
+                                result: false,
+                                message: "Xóa thông tin " +
+                                   "kỹ năng chuyên môn lỗi." ,
+                                err: deleteJobSkillOfThisUserErr
+                            });
+                            throw deleteJobSkillOfThisUserErr;
+                        }
                     }
+                );
+                return;
+            }
 
-                    if (isJobSkillIdExist === false) {
-                        res.json({
-                           result: false,
-                           message: "ID JobSkills không tồn tại."
-                        });
-                        return;
-                    }
+            // There is 1 field jobSkillId
+            if (!Array.isArray(req.body.jobSkillId)) {
+                let jobSkillIdText = req.body.jobSkillId.trim();
+                if (jobSkillIdText.length === 0) {
+                    res.json({
+                        result: false,
+                        message: "jobSkillId không được để trống."
+                    });
+                    return;
+                }
 
-                    jobSkillsOfCandidateModule
-                        .checkIfSkillOfUserExisted(
-                            userId,
-                            jobSkillIdNumber,
-                        function (
-                            checkIfUserIdAndSkillIdTupleExistedErr,
-                            isfUserIdAndSkillIdTupleExisted) {
-                            if (checkIfUserIdAndSkillIdTupleExistedErr) {
-                                res.json({
-                                    result: false,
-                                    message: "Có lỗi xảy ra khi truy vấn " +
-                                        "kỹ năng ứng viên.",
-                                    err: checkIfUserIdAndSkillIdTupleExistedErr
-                                });
-                                return;
-                            }
+                if (isNaN(jobSkillIdText)) {
+                    res.json({
+                        result: false,
+                        message: "jobSkillId phải là số."
+                    });
+                    return;
+                }
 
-                            // If this skill has been added before,
-                            // no need to add it again.
-                            if (isfUserIdAndSkillIdTupleExisted === true) {
-                                res.json({
-                                    result: false,
-                                    message: "Kỹ năng này đã được thêm " +
-                                        "vào hồ sơ ứng viên trước đó, " +
-                                        "do vậy không cần thêm nữa."
-                                });
-                                return;
-                            }
+                let jobSkillIdNumber = Number(jobSkillIdText);
+                if (!Number.isInteger(jobSkillIdNumber)) {
+                    res.json({
+                        result: false,
+                        message: "jobSkillId phải là số nguyên."
+                    });
+                    return;
+                }
 
-                            // Pass all validate
-                            let addJobSkillForUserSql =
-                                "insert into " +
-                                    commonResources
-                                        .JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
-                                    + "(" +
-                                    commonResources
-                                        .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID
-                                    + ", " +
-                                    commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
-                                    + ") " +
-                                "values(" +
-                                    userId + ", " + jobSkillIdNumber
-                                + ");";
+                jobSkillsModule.checkIfJobSkillIdExists(
+                    jobSkillIdNumber,
+                    function(checkJobSkillIdEErr, isJobSkillIdExist) {
+                        if (checkJobSkillIdEErr) {
+                            res.json({
+                                result: false,
+                                message: "Có lỗi xảy ra khi truy vấn " +
+                                    "id JobSkills.",
+                                checkJobSkillIdEErr
+                            });
+                            return;
+                        }
 
-                            dbConnect.query(
-                                addJobSkillForUserSql,
-                                function (err, result) {
-                                    if (err) {
+                        if (isJobSkillIdExist === false) {
+                            res.json({
+                                result: false,
+                                message: "ID JobSkills không tồn tại."
+                            });
+                            return;
+                        }
+
+                        jobSkillsOfCandidateModule
+                            .checkIfSkillOfUserExisted(
+                                userId,
+                                jobSkillIdNumber,
+                                function (
+                                    checkIfUserIdAndSkillIdTupleExistedErr,
+                                    isfUserIdAndSkillIdTupleExisted) {
+                                    if (checkIfUserIdAndSkillIdTupleExistedErr) {
                                         res.json({
-                                           result: false,
-                                           message: "Có lỗi xảy ra " +
-                                               "khi thêm bản ghi.",
-                                            err
+                                            result: false,
+                                            message: "Có lỗi xảy ra khi truy vấn " +
+                                                "kỹ năng ứng viên.",
+                                            err: checkIfUserIdAndSkillIdTupleExistedErr
                                         });
                                         return;
                                     }
 
-                                    res.json({
-                                       resutl: true,
-                                       message: "Thêm kỹ năng " +
-                                           "chuyên môn thành công."
-                                    });
+                                    // If this skill has been added before,
+                                    // no need to add it again.
+                                    if (isfUserIdAndSkillIdTupleExisted === true) {
+                                        res.json({
+                                            result: true,
+                                            message: "Kỹ năng này đã được thêm " +
+                                                "vào hồ sơ ứng viên trước đó, " +
+                                                "do vậy không cần thêm nữa."
+                                        });
+                                        return;
+                                    }
+
+                                    // Delete previous data
+                                    // then add new data
+                                    jobSkillsOfCandidateModule.deleteAllJobSkillDataOfOneUser(
+                                        userId,
+                                        function(deleteJobSkillOfThisUserErr) {
+                                            if (deleteJobSkillOfThisUserErr) {
+                                                res.json({
+                                                    result: false,
+                                                    message: "Xóa thông tin " +
+                                                        "kỹ năng chuyên môn lỗi." ,
+                                                    err: deleteJobSkillOfThisUserErr
+                                                });
+                                                throw deleteJobSkillOfThisUserErr;
+                                            }
+                                        }
+                                    );
+                                    let addJobSkillForUserSql =
+                                        "insert into " +
+                                        commonResources
+                                            .JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                                        + "(" +
+                                        commonResources
+                                            .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID
+                                        + ", " +
+                                        commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                                        + ") " +
+                                        "values(" +
+                                        userId + ", " + jobSkillIdNumber
+                                        + ");";
+
+                                    dbConnect.query(
+                                        addJobSkillForUserSql,
+                                        function (err, result) {
+                                            if (err) {
+                                                res.json({
+                                                    result: false,
+                                                    message: "Có lỗi xảy ra " +
+                                                        "khi thêm bản ghi.",
+                                                    err
+                                                });
+                                                return;
+                                            }
+
+                                            res.json({
+                                                resutl: true,
+                                                message: "Thêm kỹ năng " +
+                                                    "chuyên môn thành công."
+                                            });
+                                        }
+                                    );
                                 }
                             );
-                        }
-                    );
+                    }
+                );
+                return;
+            }
+
+            // There are more than 1 jobSkillId fields.
+            // If one of jobSkillId fields's value is not integer nor
+            // exist, return error message
+            for (let i = 0; i < req.body.jobSkillId.length; i++) {
+                let jobSkillIdText = req.body.jobSkillId[i].trim();
+
+                if (jobSkillIdText.length === 0) {
+                    res.json({
+                        result: false,
+                        message: "jobSkillId không được để trống."
+                    });
+                    return;
                 }
-            );
-        }
+
+                if (isNaN(jobSkillIdText)) {
+                    res.json({
+                        result: false,
+                        message: "Giá trị " + jobSkillIdText +
+                                " không hợp lệ. " +
+                                "jobSkillId phải là số."
+                    });
+                    return;
+                }
+
+                let jobSkillIdNumber = Number(jobSkillIdText);
+                if (!Number.isInteger(jobSkillIdNumber)) {
+                    res.json({
+                        result: false,
+                        message: "Giá trị " + jobSkillIdText +
+                                " không hợp lệ. " +
+                                "jobSkillId phải là số nguyên."
+                    });
+                    return;
+                }
+
+                let checkIfJobSkillIdExistsPromise = new Promise(
+                    function (myResolve, myReject) {
+                        let selectNumberOfJobSkillRecordsHaveThisIdSql =
+                            "select count(" +
+                            commonResources.JOB_SKILLS_COLUMN_ID + ") " +
+                            "as numberOfJobSkillsHaveThisId " +
+                            "from " + commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                            "where " + commonResources.JOB_SKILLS_COLUMN_ID + " = ?;";
+                        dbConnect.query(
+                            selectNumberOfJobSkillRecordsHaveThisIdSql,
+                            [jobSkillIdNumber],
+                            function(checkJobSkillIdErr, checkJobSkillIdResult) {
+                                if (checkJobSkillIdErr) {
+                                    res.json({
+                                       result: false,
+                                       message: "Lỗi truy vấn JobSkills",
+                                       err: checkJobSkillIdErr
+                                    });
+                                    throw checkJobSkillIdErr;
+                                } else {
+                                    myResolve(checkJobSkillIdResult);
+                                }
+                            }
+                        );
+                    }
+
+                );
+
+                let numberOfJobSkillRecordsHaveThisIdQueryResult =
+                    await checkIfJobSkillIdExistsPromise;
+                // [{"numberOfJobSkillsHaveThisId":1}]
+                let numberOfJobSkillsHaveThisId =
+                    numberOfJobSkillRecordsHaveThisIdQueryResult[0]
+                        .numberOfJobSkillsHaveThisId;
+                if (numberOfJobSkillsHaveThisId === 0) {
+                    res.json({
+                        result: false,
+                        message: "Giá trị " + jobSkillIdNumber +
+                            " không hợp lệ. "
+                            + "ID JobSkills không tồn tại."
+                    });
+                    return;
+                }
+
+                // Ensure that the values not duplicate
+                for (let j = 0; j < i; j++) {
+                    if (jobSkillIdNumber ===
+                        Number(req.body.jobSkillId[j].trim())) {
+                        res.json({
+                           result: false,
+                           message: "Vui lòng nhập các giá trị khác nhau " +
+                               "cho các trường jobSkillId."
+                        });
+                        return;
+                    }
+                }
+            }
+
+             // Pass validate
+             // Delete previous data
+             // then add new data
+             jobSkillsOfCandidateModule.deleteAllJobSkillDataOfOneUser(
+                 userId,
+                 function(deleteJobSkillOfThisUserErr) {
+                     if (deleteJobSkillOfThisUserErr) {
+                         res.json({
+                             result: false,
+                             message: "Xóa thông tin " +
+                                 "kỹ năng chuyên môn lỗi." ,
+                             err: deleteJobSkillOfThisUserErr
+                         });
+                         throw deleteJobSkillOfThisUserErr;
+                     }
+                 }
+             );
+
+             let addMultipleJobSkillForUserSql =
+                 "insert into " +
+                     commonResources
+                         .JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                     + "(" +
+                     commonResources
+                         .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID
+                     + ", " +
+                     commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                     + ") values";
+             for (let i = 0; i < req.body.jobSkillId.length; i++) {
+                 addMultipleJobSkillForUserSql +=
+                     "(" + userId + ", " +
+                        req.body.jobSkillId[i].trim() + "), ";
+             }
+
+             addMultipleJobSkillForUserSql =
+                 addMultipleJobSkillForUserSql.substring(
+                     0, addMultipleJobSkillForUserSql.length - 2
+             );
+             addMultipleJobSkillForUserSql += ";";
+
+             dbConnect.query(
+                 addMultipleJobSkillForUserSql,
+                 function (err, result) {
+                     if (err) {
+                         res.json({
+                             result: false,
+                             message: "Có lỗi xảy ra " +
+                                 "khi thêm bản ghi.",
+                             err
+                         });
+                         return;
+                     }
+
+                     res.json({
+                         resutl: true,
+                         message: "Thêm kỹ năng " +
+                             "chuyên môn thành công."
+                     });
+                 }
+             );
+         }
     );
 });
 
@@ -4248,19 +4432,50 @@ router.post('/job-skills-of-candidate', (req, res) => {
             }
 
             let selectJobSkillsByUserIdSql =
-                "select jobSkillId, skillName\n" +
-                "from JobSkillsOfCandidate, JobSkills\n" +
-                "where \n" +
-                "\tJobSkillsOfCandidate.jobSkillId = JobSkills.id \n" +
-                "\tand userId = 2;";
+                "select " +
+                    commonResources
+                        .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                    + ", " +
+                    commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+                "from " +
+                    commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                    + ", " +
+                    commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                "where " +
+                    commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                    + "." +
+                    commonResources
+                        .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                    + " = " +
+                    commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                    commonResources.JOB_SKILLS_COLUMN_ID + " " +
+
+                    "and " +
+                        commonResources
+                            .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID +
+                        " = ?;";
+            dbConnect.query(
+                selectJobSkillsByUserIdSql,
+                [userId],
+                function(selectSkillsErr, selectSkillsResult) {
+                    if (selectSkillsErr) {
+                        res.json({
+                           result: false,
+                            message: "Có lỗi khi truy vấn " +
+                                "kỹ năng chuyên môn.",
+                            err: selectSkillsErr
+                        });
+                        return;
+                    }
+
+                    res.json({
+                       result: true,
+                       jobSkills: selectSkillsResult
+                    });
+                }
+            );
         }
     );
-
-
-
-    // for (let i = 0; i < req.body.hobbies.length; i++) {
-    //     console.log(req.body.hobbies[i]);
-    // }
 });
 
 module.exports = router;

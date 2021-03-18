@@ -276,11 +276,20 @@ Web: /job-skills
 =====================
 JobSkillsOfCandidate
 
-Tạo thông tin kỹ năng làm việc cho ứng viên
-POST /api/job-skills-of-candidate/create
+Tạo/cập nhật thông tin kỹ năng làm việc cho ứng viên:
+(Mỗi lần request lên đều xóa dữ liệu cũ và set dữ liệu mới vào)
+POST /api/job-skills-of-candidate/set-user-job-skills
 Tham số:
-userId: int, bắt buộc, phải tồn tại
-jobSkillId: int, bắt buộc, phải tồn tại.
+- userId: int, bắt buộc, phải tồn tại
+- jobSkillId: (0, 1 hoặc nhiều trường; int; phải tồn tại)
+    + Nếu không có trường jobSkillId nào thì tất cả dữ liệu
+JobSkillsOfCandidate của người dùng đó sẽ bị xóa.
+    + Nếu có 1 trường jobSkillId: Giá trị không được để trống, là int,
+phải tồn tại. Sẽ xóa hết dữ liệu trước đó và thêm kỹ năng này vào.
+    + Nếu có hơn 1 trường jobSkillId: Tất cả các giá trị không được để trống,
+phải là số nguyên, phải tồn tại, không có các giá trị trùng nhau.
+Sẽ xóa hết dữ liệu trước đó và thay bằng các kỹ năng này vào.
+
 (Danh sách JobSkills lấy JSON ở API GET /api/job-skills
 hoặc xem trên Web ở /job-skills)
 ---------------
