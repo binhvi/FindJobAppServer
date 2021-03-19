@@ -296,3 +296,8 @@ hoặc xem trên Web ở /job-skills)
 Lấy danh sách kỹ năng chuyên môn (Web, mobile, game,...) của ứng viên
 POST /api/job-skills-of-candidate
 Tham số: userId (int, bắt buộc, không trống, id phải tồn tại)
+============================
+JobTitles
+Cấp bậc công việc
+GET /api/job-titles
+Web: /job-titles

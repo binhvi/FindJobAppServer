@@ -4452,4 +4452,31 @@ router.post('/job-skills-of-candidate', (req, res) => {
     );
 });
 
+// JobTitles
+router.get('/job-titles', (req, res) => {
+    let selectAllJobTitlesSql =
+        "select * from " +
+        commonResources.JOB_TITLES_TABLE_NAME + " " +
+        "order by " +
+        commonResources.JOB_TITLES_COLUMN_ID + ";";
+    dbConnect.query(
+        selectAllJobTitlesSql,
+        function(err, result) {
+            if (err) {
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi truy vấn JobTitles.",
+                    err
+                });
+            }
+
+            let jobTitles = result;
+            res.json({
+               result: true,
+               jobTitles
+            });
+        }
+    );
+});
+
 module.exports = router;
