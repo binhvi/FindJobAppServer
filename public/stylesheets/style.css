@@ -19,6 +19,11 @@ main.container-fluid {
   margin-bottom: 10px;
 }
 
+div.container {
+  border: 1px solid #eee;
+  padding: 0px;
+}
+
 .userAvatar {
     border-radius: 50%;
 }

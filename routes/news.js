@@ -33,7 +33,8 @@ router.get('/', async (req, res) => {
                     + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
                     + commonResources.NEWS_AUTHORS_COLUMN_ID +
             " and " + commonResources.NEWS_COLUMN_TITLE +
-            " " + "like '%" + keyword + "%';";
+            " " + "like '%" + keyword + "%' " +
+        "order by " + commonResources.NEWS_COLUMN_ID + " desc;";
     dbConnect.query(sql, function (err, result, fields) {
         if (err) throw err;
         let news = result;

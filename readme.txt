@@ -250,21 +250,21 @@ Web: /job-news-status
 =========================
 StateProvinces
 
-Lấy danh sách các tỉnh
+Lấy danh sách các tỉnh/thành phố
 GET /api/states-provinces
 =========================
 Districts
 
-Lấy danh sách các huyện của một tỉnh
+Lấy danh sách các quận/huyện của một tỉnh/thành phố
 POST /api/districts/get-districts-by-state-province-id
-Tham số: stateProvinceId (mã tỉnh, String, phải tồn tại)
+Tham số: stateProvinceId (mã tỉnh/thành phố, String, phải tồn tại)
 
 ================
 Subdistricts
 
-Lấy danh sách các xã của một huyện
+Lấy danh sách các phường/xã của một quận/huyện
 POST /api/subdistricts/get-subdistricts-by-district-id
-Tham số: districtId (mã huyện, String, phải tồn tại)
+Tham số: districtId (mã quận/huyện, String, phải tồn tại)
 
 ================
 JobSkills
