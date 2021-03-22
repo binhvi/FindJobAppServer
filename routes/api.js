@@ -1133,27 +1133,31 @@ router.post('/users/details-get-id', (req, res) => {
                                     // of this user
                                     let selectJobSkillsOfUserByUserIdSql =
                                         "select " +
-                                        commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+                                            commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                                            + ", " +
+                                            commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
                                         "from " +
-                                        commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
-                                        + ", " +
-                                        commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                                            commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                                            + ", " +
+                                            commonResources.JOB_SKILLS_TABLE_NAME + " " +
+
                                         "where " +
 
-                                        commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
-                                        + "." +
-                                        commonResources
-                                            .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
-                                        + " = " +
-                                        commonResources.JOB_SKILLS_TABLE_NAME
-                                        + "."
-                                        + commonResources.JOB_SKILLS_COLUMN_ID
-                                        + " " +
+                                            commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                                            + "." +
+                                            commonResources
+                                                .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                                            + " = " +
+                                            commonResources.JOB_SKILLS_TABLE_NAME
+                                            + "."
+                                            + commonResources.JOB_SKILLS_COLUMN_ID
+                                            + " " +
 
-                                        "and " +
-                                        commonResources
-                                            .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID +
-                                        " = ?;";
+                                            "and " +
+                                            commonResources
+                                                .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID +
+                                            " = ?;";
 
                                     dbConnect.query(
                                         selectJobSkillsOfUserByUserIdSql,
