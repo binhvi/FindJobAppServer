@@ -1061,11 +1061,12 @@ router.post('/users/details-get-id', (req, res) => {
                     // Experiences
                     let selectExperiencesByUserIdSql =
                         "select " +
-                        commonResources.EXPERIENCES_COLUMN_COMPANY_NAME + ", " +
-                        commonResources.EXPERIENCES_COLUMN_JOB_TITLE + ", " +
-                        commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS + ", " +
-                        commonResources.EXPERIENCES_COLUMN_DATE_OUT_MILLIS + ", " +
-                        commonResources.EXPERIENCES_COLUMN_JOB_DETAILS + " " +
+                            commonResources.EXPERIENCES_COLUMN_ID + ", " +
+                            commonResources.EXPERIENCES_COLUMN_COMPANY_NAME + ", " +
+                            commonResources.EXPERIENCES_COLUMN_JOB_TITLE + ", " +
+                            commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS + ", " +
+                            commonResources.EXPERIENCES_COLUMN_DATE_OUT_MILLIS + ", " +
+                            commonResources.EXPERIENCES_COLUMN_JOB_DETAILS + " " +
                         "from " + commonResources.EXPERIENCES_TABLE_NAME + " " +
                         "where " + commonResources.EXPERIENCES_COLUMN_USER_ID +
                         " = ? " +
@@ -1082,21 +1083,25 @@ router.post('/users/details-get-id', (req, res) => {
 
                             let selectEducationByUserIdSql =
                                 "select " +
-                                commonResources.EDUCATION_COLUMN_SCHOOL_NAME + ", " +
-                                commonResources.EDUCATION_COLUMN_MAJOR + ", " +
-                                commonResources
-                                    .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + "."
-                                + commonResources
-                                    .ACADEMIC_DEGREE_LEVELS_COLUMN_NAME
-                                + " as "
-                                + commonResources
-                                    .COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL
-                                + ", " +
-                                commonResources
-                                    .EDUCATION_COLUMN_START_DATE_MILLIS + ", " +
-                                commonResources
-                                    .EDUCATION_COLUMN_END_DATE_MILLIS + ", " +
-                                commonResources.EDUCATION_COLUMN_ACHIEVEMENTS + " " +
+                                    commonResources.EDUCATION_TABLE_NAME + "." +
+                                    commonResources.EDUCATION_COLUMN_ID +
+                                    " as educationId , " +
+
+                                    commonResources.EDUCATION_COLUMN_SCHOOL_NAME + ", " +
+                                    commonResources.EDUCATION_COLUMN_MAJOR + ", " +
+                                    commonResources
+                                        .ACADEMIC_DEGREE_LEVELS_TABLE_NAME + "."
+                                    + commonResources
+                                        .ACADEMIC_DEGREE_LEVELS_COLUMN_NAME
+                                    + " as "
+                                    + commonResources
+                                        .COLUMN_ALIAS_ACADEMIC_DEGREE_LEVEL
+                                    + ", " +
+                                    commonResources
+                                        .EDUCATION_COLUMN_START_DATE_MILLIS + ", " +
+                                    commonResources
+                                        .EDUCATION_COLUMN_END_DATE_MILLIS + ", " +
+                                    commonResources.EDUCATION_COLUMN_ACHIEVEMENTS + " " +
                                 "from " +
                                 commonResources.EDUCATION_TABLE_NAME + ", " +
                                 commonResources
