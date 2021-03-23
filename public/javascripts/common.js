@@ -147,6 +147,26 @@ const JOB_TITLES_TABLE_NAME = "JobTitles";
 const JOB_TITLES_COLUMN_ID = "id";
 const JOB_TITLES_COLUMN_NAME = "name";
 
+const JOB_NEWS_TABLE_NAME = "JobNews";
+const JOB_NEWS_COLUMN_ID = "id";
+const JOB_NEWS_COLUMN_OWNER_ID = "ownerId";
+const JOB_NEWS_COLUMN_STATUS_ID = "statusId";
+const JOB_NEWS_COLUMN_TYPE_OF_WORD_ID = "typeOfWorkId";
+const JOB_NEWS_COLUMN_COMPANY_NAME = "companyName";
+const JOB_NEWS_COLUMN_SHORT_DESCRIPTION = "jobShortDescription";
+const JOB_NEWS_COLUMN_SALARY_VND = "salaryInVnd";
+const JOB_NEWS_COLUMN_JOB_DESCRIPTION = "jobDescription";
+const JOB_NEWS_COLUMN_ADDRESS_SUBDISTRICT_ID = "addressSubDistrictId";
+const JOB_NEWS_COLUMN_DETAIL_ADDRESS = "detailAddress";
+const JOB_NEWS_COLUMN_REQUIRED_NUMBER_YEARS_EXPERIENCES =
+                                    "requiredNumberYearsOfExperiences";
+const JOB_NEWS_COLUMN_JOB_TITLE_ID = "jobTitleId";
+const JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES =
+                                        "companySizeByNumberEmployees";
+const JOB_NEWS_COLUMN_COMPANY_WEBSITE = "companyWebsite";
+const JOB_NEWS_COLUMN_COMPANY_EMAIL = "companyEmail";
+const JOB_NEWS_COLUMN_PHONE_NUMBER = "companyPhoneNumber";
+
 // Pagination constants
 const DEFAULT_ITEM_PER_PAGE_NUM = 100;
 const MIN_ITEM_PER_PAGE_NUM = 1;
@@ -350,6 +370,34 @@ module.exports.JOB_NEWS_STATUS_COLUMN_NAME = JOB_NEWS_STATUS_COLUMN_NAME;
 module.exports.JOB_TITLES_TABLE_NAME = JOB_TITLES_TABLE_NAME;
 module.exports.JOB_TITLES_COLUMN_ID = JOB_TITLES_COLUMN_ID;
 module.exports.JOB_TITLES_COLUMN_NAME = JOB_TITLES_COLUMN_NAME;
+
+module.exports.JOB_NEWS_TABLE_NAME = JOB_NEWS_TABLE_NAME;
+module.exports.JOB_NEWS_COLUMN_ID = JOB_NEWS_COLUMN_ID;
+module.exports.JOB_NEWS_COLUMN_OWNER_ID = JOB_NEWS_COLUMN_OWNER_ID;
+module.exports.JOB_NEWS_COLUMN_STATUS_ID = JOB_NEWS_COLUMN_STATUS_ID;
+module.exports.JOB_NEWS_COLUMN_TYPE_OF_WORD_ID =
+                                        JOB_NEWS_COLUMN_TYPE_OF_WORD_ID;
+module.exports.JOB_NEWS_COLUMN_COMPANY_NAME = JOB_NEWS_COLUMN_COMPANY_NAME;
+module.exports.JOB_NEWS_COLUMN_SHORT_DESCRIPTION =
+                                        JOB_NEWS_COLUMN_SHORT_DESCRIPTION;
+module.exports.JOB_NEWS_COLUMN_SALARY_VND = JOB_NEWS_COLUMN_SALARY_VND;
+module.exports.JOB_NEWS_COLUMN_JOB_DESCRIPTION =
+                                        JOB_NEWS_COLUMN_JOB_DESCRIPTION;
+module.exports.JOB_NEWS_COLUMN_ADDRESS_SUBDISTRICT_ID =
+                                    JOB_NEWS_COLUMN_ADDRESS_SUBDISTRICT_ID;
+module.exports.JOB_NEWS_COLUMN_DETAIL_ADDRESS =
+                                            JOB_NEWS_COLUMN_DETAIL_ADDRESS;
+module.exports.JOB_NEWS_COLUMN_REQUIRED_NUMBER_YEARS_EXPERIENCES =
+                        JOB_NEWS_COLUMN_REQUIRED_NUMBER_YEARS_EXPERIENCES;
+module.exports.JOB_NEWS_COLUMN_JOB_TITLE_ID =
+                                            JOB_NEWS_COLUMN_JOB_TITLE_ID;
+module.exports.JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES =
+                        JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES;
+module.exports.JOB_NEWS_COLUMN_COMPANY_WEBSITE =
+                                        JOB_NEWS_COLUMN_COMPANY_WEBSITE;
+module.exports.JOB_NEWS_COLUMN_COMPANY_EMAIL =
+                                            JOB_NEWS_COLUMN_COMPANY_EMAIL;
+module.exports.JOB_NEWS_COLUMN_PHONE_NUMBER = JOB_NEWS_COLUMN_PHONE_NUMBER;
 
 module.exports.DEFAULT_ITEM_PER_PAGE_NUM = DEFAULT_ITEM_PER_PAGE_NUM;
 module.exports.MIN_ITEM_PER_PAGE_NUM = MIN_ITEM_PER_PAGE_NUM;

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tất cả tin tuyển dụng</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container">
+    <main class="container-fluid">
+        <%- include('../_share/header'); %>
+        <div style="min-height: 450px; margin-top: 16px;">
+            <h4 class="text-center" style="margin-bottom: 16px;">
+                Tất cả tin tuyển dụng
+            </h4>
+
+            <div class="row" style="margin-bottom: 16px;">
+                <div class="col-6">
+                    <form action="" method="GET">
+                        <div class="form-group"
+                             style=
+                             "display: inline-block; width: 60%;">
+                            <label for="">Tìm kiếm</label>
+                            <input type="text" name="keyword"
+                                   class="form-control"
+                                   value="<%= keyword %>"
+                                    placeholder="Tìm kiếm theo tên công việc">
+                        </div>
+                        <button type="submit"
+                                class="btn btn-sm btn-primary">
+                            Tìm kiếm
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <th>Tên công việc</th>
+                    <th>Tên công ty</th>
+                    <th>Mức lương</th>
+                    <th>Khu vực</th>
+                    <th>Loại hình công việc</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </thead>
+
+                <tbody>
+                <% for(let i = 0; i < allJobNews.length; i++) { %>
+                    <tr>
+                        <td><%= allJobNews[i].jobShortDescription %></td>
+                        <td><%= allJobNews[i].companyName %></td>
+                        <td><%= allJobNews[i].salaryInVnd %> VNĐ</td>
+                        <td><%= allJobNews[i].provinceName %></td>
+                        <td><%= allJobNews[i].typeOfWork %></td>
+                        <td><%= allJobNews[i]. statusName %></td>
+                        <td>
+
+                            <form action="/job-news/general-job-news-details"
+                                  method="post"
+                                  style="display: inline-block">
+                                <input name="jobNewsId"
+                                       value="<%= allJobNews[i].id %>"
+                                       style="display:none;"
+                                />
+                                <button type="submit"
+                                        class="btn btn-info btn-sm">
+                                    Chi tiết
+                                </button>
+                            </form>
+                            &nbsp;
+                            <form action="/job-news/remove" method="post"
+                                  style="display: inline-block">
+                                <input name="jobNewsId"
+                                       value="<%= allJobNews[i].id %>"
+                                       style="display:none;" />
+                                <button type="submit"
+                                        onclick="return confirm('Bạn có ' +
+                                         'chắc chắn muốn xóa tất cả ' +
+                                          'thông tin của ' +
+                                          'tin tuyển dụng này?')"
+                                        class="btn btn-danger btn-sm">
+                                    Xóa
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <%- include('../_share/footer'); %>
+</div>
+</body>
+</html>
+

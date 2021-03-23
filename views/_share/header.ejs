@@ -1,3 +1,7 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 <header class="container-fluid" style="padding: 0px;">
     <div class="row">
         <div class="col-12" style="text-align: center;">
@@ -29,8 +33,38 @@
                         </li>
 
                         <li class="nav-item ">
-                            <a class="nav-link" href="/users">Người dùng</a>
+                            <a class="nav-link" href="/users">
+                                Người dùng</a>
                         </li>
+
+                        <div class="dropdown">
+                            <button type="button"
+                                    class=
+                                        "btn btn-primary
+                                        dropdown-toggle"
+                                    data-toggle="dropdown"
+                                    style=
+                                        "background-color: #0000;
+                                        color: rgba(0,0,0,.55);
+                                        border: 1px solid #0000;">
+                                Tin tuyển dụng
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item"
+                                   href="/job-news/unapproved-job-news">
+                                    Tin tuyển dụng chưa phê duyệt
+                                </a>
+                                <a class="dropdown-item"
+                                   href="/job-news/approved-job-news">
+                                    Tin tuyển dụng đã phê duyệt
+                                </a>
+                                <a class="dropdown-item"
+                                   href="/job-news">
+                                    Tất cả tin tuyển dụng
+                                </a>
+                            </div>
+                        </div>
+
                     </ul>
                 </div>
             </nav>
