@@ -48,13 +48,25 @@
                 <tbody>
                 <% for(let i = 0; i < unapprovedJobNews.length; i++) { %>
                     <tr>
-                        <td><%= unapprovedJobNews[i].jobShortDescription %></td>
-                        <td><%= unapprovedJobNews[i].companyName %></td>
+                        <td width="20%"><%= unapprovedJobNews[i].jobShortDescription %></td>
+                        <td width="20%"><%= unapprovedJobNews[i].companyName %></td>
                         <td><%= unapprovedJobNews[i].salaryInVnd %> VNĐ</td>
                         <td><%= unapprovedJobNews[i].provinceName %></td>
                         <td><%= unapprovedJobNews[i].typeOfWork %></td>
                         <td>
-
+                            <form action="/job-news/unapproved-job-news-details"
+                                  method="post"
+                                  style="display: inline-block">
+                                <input name="jobNewsId"
+                                       value="<%= unapprovedJobNews[i].id %>"
+                                       style="display:none;"
+                                />
+                                <button type="submit"
+                                        class="btn btn-info btn-sm">
+                                    Chi tiết
+                                </button>
+                            </form>
+                            &nbsp;
                             <form action="/job-news/do-approved-job-news"
                                   method="post"
                                   style="display: inline-block">

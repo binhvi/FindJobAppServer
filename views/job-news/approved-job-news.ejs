@@ -48,13 +48,25 @@
                 <tbody>
                 <% for(let i = 0; i < approvedJobNews.length; i++) { %>
                     <tr>
-                        <td><%= approvedJobNews[i].jobShortDescription %></td>
-                        <td><%= approvedJobNews[i].companyName %></td>
+                        <td width="20%"><%= approvedJobNews[i].jobShortDescription %></td>
+                        <td width="20%"><%= approvedJobNews[i].companyName %></td>
                         <td><%= approvedJobNews[i].salaryInVnd %> VNĐ</td>
                         <td><%= approvedJobNews[i].provinceName %></td>
                         <td><%= approvedJobNews[i].typeOfWork %></td>
                         <td>
-
+                            <form action="/job-news/approved-job-news-details"
+                                  method="post"
+                                  style="display: inline-block">
+                                <input name="jobNewsId"
+                                       value="<%= approvedJobNews[i].id %>"
+                                       style="display:none;"
+                                />
+                                <button type="submit"
+                                        class="btn btn-info btn-sm">
+                                    Chi tiết
+                                </button>
+                            </form>
+                            &nbsp;
                             <form action="/job-news/cancel-approval-job-news"
                                   method="post"
                                   style="display: inline-block">
@@ -63,7 +75,7 @@
                                        style="display:none;"
                                 />
                                 <button type="submit"
-                                        class="btn btn-success btn-sm">
+                                        class="btn btn-warning btn-sm">
                                     Hủy phê duyệt
                                 </button>
                             </form>

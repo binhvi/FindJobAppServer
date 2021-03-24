@@ -27,3 +27,12 @@ div.container {
 .userAvatar {
     border-radius: 50%;
 }
+
+/* JobNews */
+.job-news-details-short-description {
+    text-transform: uppercase;
+}
+
+.job-news-details-company-name {
+    text-transform: uppercase;
+}

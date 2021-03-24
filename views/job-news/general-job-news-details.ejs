@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Tuyển <%= jobNewsDetails.jobShortDescription %>
+        tại <%= jobNewsDetails.companyName %>
+    </title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container">
+    <%- include('../_share/header'); %>
+    <main class="container-fluid">
+        <div class="jumbotron text-center">
+            <h3 class="job-news-details-short-description text-success">
+                <%= jobNewsDetails.jobShortDescription %>
+            </h3>
+
+            <h5 class="job-news-details-company-name">
+                <%= jobNewsDetails.companyName %>
+            </h5>
+
+            <p id="address" class="text-secondary">
+                <%= jobNewsDetails.detailAddress%>,
+                <%= jobNewsDetails.subdistrictName %>,
+                <%= jobNewsDetails.districtName %>,
+                <%= jobNewsDetails.stateProvinceName %>
+            </p>
+        </div>
+
+        <hr class="my-4">
+
+        <div id="job-description" style="margin-bottom: 36px;">
+            <p style="text-transform: uppercase">
+                <strong>MÔ TẢ CÔNG VIỆC</strong>
+            </p>
+            <p>
+                <%= jobNewsDetails.jobDescription %>
+            </p>
+        </div>
+
+        <div id="job-news-recruitment-info" style="margin-bottom: 36px;">
+            <p style="text-transform: uppercase">
+                <strong>THÔNG TIN TUYỂN DỤNG</strong>
+            </p>
+
+            <p id="salary-in-vnd">
+                <strong>Mức lương: </strong>
+                <span>
+                    <%= jobNewsDetails.salaryInVnd %> VNĐ
+                </span>
+            </p>
+
+            <p id="type-of-work">
+                <strong>Hình thức làm việc: </strong>
+                <%= jobNewsDetails.typeOfWorkName %>
+            </p>
+
+            <p id="required-years-experiences">
+                <strong>Yêu cầu kinh nghiệm: </strong>
+                <% if (jobNewsDetails.requiredNumberYearsOfExperiences
+                        === 0) { %>
+                    Không yêu cầu
+                <% } else { %>
+                    <%= jobNewsDetails.requiredNumberYearsOfExperiences %>
+                     năm
+                <% } %>
+            </p>
+
+            <p id="job-title">
+                <strong>Chức vụ: </strong>
+                <%= jobNewsDetails.jobTitleName %>
+            </p>
+        </div>
+
+        <div id="company-info" style="margin-bottom: 36px;">
+            <p style="text-transform: uppercase">
+                <strong>THÔNG TIN CÔNG TY</strong>
+            </p>
+
+            <p id="company-name">
+                <strong>Tên công ty: </strong>
+                <%= jobNewsDetails.companyName %>
+            </p>
+
+            <p id="company-size-by-numbers-of-employees">
+                <strong>Số nhân viên: </strong>
+                <%= jobNewsDetails.companySizeByNumberEmployees %>
+                 nhân viên
+            </p>
+
+            <p id="company-website">
+                <strong>Website: </strong>
+                <a href="<%= jobNewsDetails.companyWebsite %>">
+                    <%= jobNewsDetails.companyWebsite %>
+                </a>
+            </p>
+
+            <p id="email">
+                <strong>Email: </strong>
+                <%= jobNewsDetails.companyEmail %>
+            </p>
+
+            <p id="phone-number">
+                <strong>Số điện thoại: </strong>
+                <%= jobNewsDetails.companyPhoneNumber %>
+            </p>
+        </div>
+
+        <div id="job-news-info">
+            <p id="job-news-status">
+                <strong>Trạng thái: </strong>
+                <%= jobNewsDetails.statusName %>
+            </p>
+
+            <p id="job-news-owner-name">
+                <strong>Người đăng: </strong>
+                <%= jobNewsDetails.ownerName %>
+            </p>
+        </div>
+
+        <form action="/job-news/remove" method="post" class="text-center">
+            <input name="jobNewsId"
+                   value="<%= jobNewsDetails.jobNewsId %>"
+                   style="display:none;" />
+            <button type="submit"
+                    onclick="return confirm('Bạn có ' +
+                                         'chắc chắn muốn xóa tất cả ' +
+                                          'thông tin của ' +
+                                          'tin tuyển dụng này?')"
+                    class="btn btn-outline-danger"
+                    style="width: 50%;">
+                Xóa
+            </button>
+        </form>
+
+    </main>
+    <%- include('../_share/footer'); %>
+</div>
+
+</body>
+</html>
+
