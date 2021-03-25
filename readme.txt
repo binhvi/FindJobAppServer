@@ -266,7 +266,7 @@ Lấy danh sách các phường/xã của một quận/huyện
 POST /api/subdistricts/get-subdistricts-by-district-id
 Tham số: districtId (mã quận/huyện, String, phải tồn tại)
 
-================he
+================
 JobSkills
 
 Lấy danh sách kỹ năng chuyên môn
@@ -301,3 +301,9 @@ JobTitles
 Cấp bậc công việc
 GET /api/job-titles
 Web: /job-titles
+======================
+JobNews
+
+Lấy danh sách tin tuyển dụng (đã được phê duyệt)
+GET /api/approved-job-news
+--------------------

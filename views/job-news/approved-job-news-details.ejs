@@ -75,6 +75,26 @@
             </p>
         </div>
 
+        <div id="required-job-skills" style="margin-bottom: 36px;">
+            <p style="text-transform: uppercase">
+                <strong>KỸ NĂNG YÊU CẦU</strong>
+            </p>
+
+            <% if (jobNewsRequiredSkills.length === 0) { %>
+                <p>Chưa cập nhật kỹ năng yêu cầu</p>
+            <% } else { %>
+                <table class="table table-striped">
+                    <% for (let i = 0; i < jobNewsRequiredSkills.length; i++) { %>
+                        <tr>
+                            <td>
+                                <%= jobNewsRequiredSkills[i].skillName %>
+                            </td>
+                        </tr>
+                    <% } %>
+                </table>
+            <% } %>
+        </div>
+
         <div id="company-info" style="margin-bottom: 36px;">
             <p style="text-transform: uppercase">
                 <strong>THÔNG TIN CÔNG TY</strong>

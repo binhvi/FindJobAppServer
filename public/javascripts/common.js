@@ -1,10 +1,10 @@
 // Host deploy
-const PROTOCOL = "https";
-const SERVER_HOST = "find-job-app.herokuapp.com";
+// const PROTOCOL = "https";
+// const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-// const PROTOCOL = "http";
-// const SERVER_HOST = "localhost:3000";
+const PROTOCOL = "http";
+const SERVER_HOST = "localhost:3000";
 
 // Host database deploy (Main)
 // const MY_SQL_HOST = "johnny.heliohost.org";
@@ -13,10 +13,10 @@ const SERVER_HOST = "find-job-app.herokuapp.com";
 // const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database deploy alternative 1 if main host got error
-const MY_SQL_HOST = "freedb.tech";
-const MY_SQL_USER = "freedbtech_scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
+// const MY_SQL_HOST = "freedb.tech";
+// const MY_SQL_USER = "freedbtech_scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
 
 // Host database deploy alternative 2 if main host got error
 // const MY_SQL_HOST = "85.10.205.173"; // db4free.net
@@ -25,10 +25,10 @@ const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
 // const MY_SQL_DATABASE_NAME = "findjobapp";
 
 // Host database development
-// const MY_SQL_HOST = "localhost";
-// const MY_SQL_USER = "scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "FindJobApp";
+const MY_SQL_HOST = "localhost";
+const MY_SQL_USER = "scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "FindJobApp";
 
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
 
@@ -166,6 +166,10 @@ const JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES =
 const JOB_NEWS_COLUMN_COMPANY_WEBSITE = "companyWebsite";
 const JOB_NEWS_COLUMN_COMPANY_EMAIL = "companyEmail";
 const JOB_NEWS_COLUMN_PHONE_NUMBER = "companyPhoneNumber";
+
+const JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME = "JobNewsRequiredSkills";
+const JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID = "jobNewsId";
+const JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID = "jobSkillId";
 
 // Pagination constants
 const DEFAULT_ITEM_PER_PAGE_NUM = 100;
@@ -398,6 +402,13 @@ module.exports.JOB_NEWS_COLUMN_COMPANY_WEBSITE =
 module.exports.JOB_NEWS_COLUMN_COMPANY_EMAIL =
                                             JOB_NEWS_COLUMN_COMPANY_EMAIL;
 module.exports.JOB_NEWS_COLUMN_PHONE_NUMBER = JOB_NEWS_COLUMN_PHONE_NUMBER;
+
+module.exports.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME =
+                                    JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME;
+module.exports.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID =
+                                JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID;
+module.exports.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID =
+                                JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID;
 
 module.exports.DEFAULT_ITEM_PER_PAGE_NUM = DEFAULT_ITEM_PER_PAGE_NUM;
 module.exports.MIN_ITEM_PER_PAGE_NUM = MIN_ITEM_PER_PAGE_NUM;

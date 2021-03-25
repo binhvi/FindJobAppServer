@@ -370,9 +370,41 @@ router.post('/general-job-news-details', (req, res) => {
        function (err, result) {
            if (err) throw err;
            let jobNewsDetails = result[0]; // Result is an array
-           res.render(
-               'job-news/general-job-news-details',
-               {jobNewsDetails}
+
+           let selectJobNewsRequiredSkillsSql =
+                "select " +
+                    commonResources.JOB_SKILLS_COLUMN_ID + ", " +
+                    commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
+               "from " +
+                    commonResources.JOB_SKILLS_TABLE_NAME + " " +
+               "inner join " +
+                    commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME +
+                    " on " +
+                    commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                    + "." +
+                    commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                    + " = " +
+                    commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                    commonResources.JOB_SKILLS_COLUMN_ID + " " +
+
+               "where " +
+                    commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                    + " = ?;";
+           dbConnect.query(
+               selectJobNewsRequiredSkillsSql,
+               [jobNewsId],
+               function (selectJobSkillErr, selectJobSkillResult) {
+                   if (selectJobSkillErr) {
+                       throw selectJobSkillErr;
+                   }
+
+                   let jobNewsRequiredSkills = selectJobSkillResult;
+                   res.render(
+                       'job-news/general-job-news-details',
+                       {jobNewsDetails, jobNewsRequiredSkills}
+                   );
+               }
            );
        }
    );
@@ -489,9 +521,41 @@ router.post('/unapproved-job-news-details', (req, res) => {
         function (err, result) {
             if (err) throw err;
             let jobNewsDetails = result[0]; // Result is an array
-            res.render(
-                'job-news/unapproved-job-news-details',
-                {jobNewsDetails}
+
+            let selectJobNewsRequiredSkillsSql =
+                "select " +
+                commonResources.JOB_SKILLS_COLUMN_ID + ", " +
+                commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
+                "from " +
+                commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                "inner join " +
+                commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME +
+                " on " +
+                commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                + "." +
+                commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                + " = " +
+                commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                commonResources.JOB_SKILLS_COLUMN_ID + " " +
+
+                "where " +
+                commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                + " = ?;";
+            dbConnect.query(
+                selectJobNewsRequiredSkillsSql,
+                [jobNewsId],
+                function (selectJobSkillErr, selectJobSkillResult) {
+                    if (selectJobSkillErr) {
+                        throw selectJobSkillErr;
+                    }
+
+                    let jobNewsRequiredSkills = selectJobSkillResult;
+                    res.render(
+                        'job-news/unapproved-job-news-details',
+                        {jobNewsDetails, jobNewsRequiredSkills}
+                    );
+                }
             );
         }
     );
@@ -608,13 +672,44 @@ router.post('/approved-job-news-details', (req, res) => {
         function (err, result) {
             if (err) throw err;
             let jobNewsDetails = result[0]; // Result is an array
-            res.render(
-                'job-news/approved-job-news-details',
-                {jobNewsDetails}
+
+            let selectJobNewsRequiredSkillsSql =
+                "select " +
+                commonResources.JOB_SKILLS_COLUMN_ID + ", " +
+                commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
+                "from " +
+                commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                "inner join " +
+                commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME +
+                " on " +
+                commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                + "." +
+                commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                + " = " +
+                commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                commonResources.JOB_SKILLS_COLUMN_ID + " " +
+
+                "where " +
+                commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                + " = ?;";
+            dbConnect.query(
+                selectJobNewsRequiredSkillsSql,
+                [jobNewsId],
+                function (selectJobSkillErr, selectJobSkillResult) {
+                    if (selectJobSkillErr) {
+                        throw selectJobSkillErr;
+                    }
+
+                    let jobNewsRequiredSkills = selectJobSkillResult;
+                    res.render(
+                        'job-news/approved-job-news-details',
+                        {jobNewsDetails, jobNewsRequiredSkills}
+                    );
+                }
             );
         }
     );
 });
-
 
 module.exports = router;
