@@ -712,6 +712,51 @@ router.post('/approved-job-news-details', (req, res) => {
     );
 });
 
+router.post('/do-approved-job-news', (req, res) => {
+    let doApprovedJobNewsSql =
+        "update " +
+            commonResources.JOB_NEWS_TABLE_NAME + " " +
+        "set " +
+            commonResources.JOB_NEWS_COLUMN_STATUS_ID + " = " +
+            commonResources.JOB_NEWS_STATUS_VALUE_APPROVED + " " +
+        "where " +
+            commonResources.JOB_NEWS_COLUMN_ID + " = ?;"
+    let jobNewsId = req.body.jobNewsId;
+    dbConnect.query(
+        doApprovedJobNewsSql,
+        [jobNewsId],
+        function (err, result) {
+            if (err) {
+                throw err;
+            }
+
+            res.redirect('/job-news/unapproved-job-news');
+        }
+    );
+});
+
+router.post('/cancel-approval-job-news', (req, res) => {
+    let cancelApprovalJobNewsSql =
+        "update " +
+        commonResources.JOB_NEWS_TABLE_NAME + " " +
+        "set " +
+        commonResources.JOB_NEWS_COLUMN_STATUS_ID + " = " +
+        commonResources.JOB_NEWS_STATUS_VALUE_UNAPPROVED + " " +
+        "where " +
+        commonResources.JOB_NEWS_COLUMN_ID + " = ?;"
+    let jobNewsId = req.body.jobNewsId;
+    dbConnect.query(
+        cancelApprovalJobNewsSql,
+        [jobNewsId],
+        function (err, result) {
+            if (err) {
+                throw err;
+            }
+
+            res.redirect('/job-news/approved-job-news');
+        }
+    );
+});
 function checkIfJobNewsIdExists(jobNewsId, callback) {
     let selectNumberOfJobNewsRecordsHaveThisIdSql =
         "select count(" +
