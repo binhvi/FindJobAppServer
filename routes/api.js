@@ -4656,8 +4656,82 @@ router.get('/approved-job-news', (req, res) => {
             commonResources.STATE_PROVINCES_TABLE_NAME + "." +
             commonResources.STATE_PROVINCES_COLUMN_ID + " " +
 
-        "where " ;
+        "where " +
+            commonResources.JOB_NEWS_COLUMN_STATUS_ID
+            + " = 1 " +  // Approved
 
+        "order by " +
+        commonResources.JOB_NEWS_TABLE_NAME + "." +
+        commonResources.JOB_NEWS_COLUMN_ID + " desc;";
 
+    dbConnect.query(
+        selectApprovedJobNewsSql,
+        async function(selectApprovedJobNewsErr, selectApprovedJobNewsResult) {
+            if (selectApprovedJobNewsErr) {
+                res.json({
+                   result: false,
+                   message: "Lỗi truy vấn JobNews.",
+                   err: selectApprovedJobNewsErr
+                });
+                return;
+            }
+
+            let jobNewsArr = selectApprovedJobNewsResult;
+            for (let i = 0; i < jobNewsArr.length; i++) {
+                let currentJobNewsId = jobNewsArr[i].jobNewsId;
+
+                let getCurrentJobNewsRequiredSkillsPromise = new Promise(
+                    function (myResolve, myReject) {
+                        let selectJobNewsRequiredSkillsSql =
+                            "select " +
+                                commonResources.JOB_SKILLS_COLUMN_ID + ", " +
+                                commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
+                            "from " +
+                                commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                                "inner join " +
+                                commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME +
+                                " on " +
+                                commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                                + "." +
+                                commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                                + " = " +
+                                commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                                commonResources.JOB_SKILLS_COLUMN_ID + " " +
+
+                            "where " +
+                                commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                                + " = ?;";
+                        dbConnect.query(
+                            selectJobNewsRequiredSkillsSql,
+                            [currentJobNewsId],
+                            function(selectJobSkillsErr, selectJobSkillsResult) {
+                                if (selectJobSkillsErr) {
+                                    res.json({
+                                       result: false,
+                                       message: "Lỗi truy vấn kỹ năng yêu cầu của công việc.",
+                                       err: selectJobSkillsErr
+                                    });
+                                    return;
+                                }
+
+                                myResolve(selectJobSkillsResult);
+                            }
+                        );
+                    }
+                );
+
+                let currentJobNewsJobSkillsResult =
+                    await getCurrentJobNewsRequiredSkillsPromise;
+                jobNewsArr[i].requiredSkills =
+                    currentJobNewsJobSkillsResult;
+            }
+
+            res.json({
+                result: true,
+                jobNewsArr
+            });
+        }
+    );
 });
 module.exports = router;
