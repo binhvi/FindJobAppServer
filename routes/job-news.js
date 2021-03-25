@@ -712,4 +712,40 @@ router.post('/approved-job-news-details', (req, res) => {
     );
 });
 
+function checkIfJobNewsIdExists(jobNewsId, callback) {
+    let selectNumberOfJobNewsRecordsHaveThisIdSql =
+        "select count(" +
+            commonResources.JOB_NEWS_COLUMN_ID + ") " +
+        "as numberOfJobNewsHaveThisId " +
+        "from " + commonResources.JOB_NEWS_TABLE_NAME + " " +
+        "where " +
+            commonResources.JOB_NEWS_COLUMN_ID + " = ?;"
+    dbConnect.query(
+        selectNumberOfJobNewsRecordsHaveThisIdSql,
+        [jobNewsId],
+        function (err, result) {
+            if (err) {
+                // Callback function has 2 params: err, result
+                // If err not null -> result null
+                return callback(err, null); // Result is null here
+            }
+
+            // [
+            //     {
+            //         "numberOfJobNewsHaveThisId" : 1
+            //     }
+            // ]
+            let numberOfJobNewsHaveThisId =
+                result[0].numberOfJobNewsHaveThisId;
+            // Result is not null here, so err is null
+            if (numberOfJobNewsHaveThisId > 0) {
+                return callback(null, true);
+            } else {
+                return callback(null, false);
+            }
+        }
+    );
+}
+
 module.exports = router;
+module.exports.checkIfJobNewsIdExists = checkIfJobNewsIdExists;

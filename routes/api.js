@@ -5,13 +5,13 @@ var uniqid = require('uniqid');
 var dbConnect = require('../public/javascripts/db');
 var userModule = require('./users');
 const academicDegreeLevelsModule = require('./academic-degree-levels');
-const jobNewsStatusModule = require('./job-news-status');
 const statesProvincesModule =
                 require('../public/javascripts/states-provinces');
 const districtsModule = require('../public/javascripts/districts');
 const jobSkillsModule = require('./job-skills');
 const jobSkillsOfCandidateModule =
             require('../public/javascripts/job-skills-of-candidate');
+const jobNewsModule = require('./job-news');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -4556,7 +4556,7 @@ router.get('/job-titles', (req, res) => {
 });
 
 // JobNews
-router.get('/approved-job-news', (req, res) => {
+router.get('/job-news/approved-job-news', (req, res) => {
     let selectApprovedJobNewsSql =
         "select " +
             commonResources.JOB_NEWS_TABLE_NAME + "." +
@@ -4731,6 +4731,230 @@ router.get('/approved-job-news', (req, res) => {
                 result: true,
                 jobNewsArr
             });
+        }
+    );
+});
+
+router.post('/job-news/details', (req, res) => {
+    // Validate
+    if (req.body.jobNewsId === undefined) {
+        res.json({
+           result: false,
+           message: "Thiếu trường jobNewsId."
+        });
+        return;
+    }
+
+    let jobNewsIdText = req.body.jobNewsId.trim();
+    if (jobNewsIdText.length === 0) {
+        res.json({
+           result: false,
+           message: "jobNewsId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(jobNewsIdText)) {
+        res.json({
+           result: false,
+           message: "jobNewsId phải là một số."
+        });
+        return;
+    }
+
+    let jobNewsIdNumber = Number(jobNewsIdText);
+    if (!Number.isInteger(jobNewsIdNumber)) {
+        res.json({
+           result: false,
+           message: "jobNewsId phải là số nguyên."
+        });
+        return;
+    }
+
+    jobNewsModule.checkIfJobNewsIdExists(
+        jobNewsIdNumber,
+        function (checkJosNewsIdErr, isJobNewsIdExist) {
+            if (checkJosNewsIdErr) {
+                res.json({
+                   result: false,
+                   message: "Có lỗi xảy ra khi truy vấn id JobNews.",
+                   err: checkJosNewsIdErr
+                });
+                return;
+            }
+
+            if (isJobNewsIdExist === false) {
+                res.json({
+                   result: false,
+                   message: "ID JobNews không tồn tại."
+                });
+                return;
+            }
+
+            // Pass validate
+            // Query job news's info
+            let selectJobNewsDetailsSql =
+                "select " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_ID + " as jobNewsId, " +
+
+                commonResources.USERS_COLUMN_FULL_NAME + " " +
+                "as ownerName, " +
+
+                commonResources.JOB_NEWS_STATUS_COLUMN_NAME + ", " +
+
+                commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+                commonResources.TYPES_OF_WORK_COLUMN_NAME +
+                " as typeOfWorkName, " +
+
+                commonResources.JOB_NEWS_COLUMN_COMPANY_NAME + ", " +
+                commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
+                commonResources.JOB_NEWS_COLUMN_SALARY_VND + ", " +
+                commonResources.JOB_NEWS_COLUMN_JOB_DESCRIPTION + ", " +
+
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_NAME + " " +
+                "as subdistrictName, " +
+
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_NAME + " " +
+                "as districtName, " +
+
+                commonResources.STATE_PROVINCES_TABLE_NAME + "." +
+                commonResources.STATE_PROVINCES_COLUMN_NAME + " " +
+                "as stateProvinceName, " +
+
+                commonResources.JOB_NEWS_COLUMN_DETAIL_ADDRESS + ", " +
+                commonResources
+                    .JOB_NEWS_COLUMN_REQUIRED_NUMBER_YEARS_EXPERIENCES
+                + ", " +
+
+                commonResources.JOB_TITLES_TABLE_NAME + "." +
+                commonResources.JOB_TITLES_COLUMN_NAME + " " +
+                "as jobTitleName, " +
+
+                commonResources
+                    .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
+                commonResources.JOB_NEWS_COLUMN_PHONE_NUMBER + " " +
+
+                "from " +
+                commonResources.JOB_NEWS_TABLE_NAME + " " +
+
+                "inner join " +
+                commonResources.USERS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_OWNER_ID + " = " +
+                commonResources.USERS_TABLE_NAME + "." +
+                commonResources.USERS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.JOB_NEWS_STATUS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_STATUS_ID + " = " +
+                commonResources.JOB_NEWS_STATUS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_STATUS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.TYPES_OF_WORK_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_TYPE_OF_WORD_ID + " = " +
+                commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+                commonResources.TYPES_OF_WORK_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_ADDRESS_SUBDISTRICT_ID
+                + " = " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.JOB_TITLES_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_JOB_TITLE_ID + " = " +
+                commonResources.JOB_TITLES_TABLE_NAME + "." +
+                commonResources.JOB_TITLES_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.DISTRICTS_TABLE_NAME + " on " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID + " = " +
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.STATE_PROVINCES_TABLE_NAME + " on " +
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_STATE_PROVINCE_ID + " = " +
+                commonResources.STATE_PROVINCES_TABLE_NAME + "." +
+                commonResources.STATE_PROVINCES_COLUMN_ID + " " +
+
+                "where " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_ID + " = ?;";
+            dbConnect.query(
+                selectJobNewsDetailsSql,
+                [jobNewsIdNumber],
+                function (selectJobNewsDetailErr, selectJobNewsDetailsResult) {
+                    if (selectJobNewsDetailErr) {
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra khi truy vấn " +
+                               "thông tin tin tuyển dụng.",
+                            err: selectJobNewsDetailErr
+                        });
+                        return;
+                    }
+
+                    // Result is an array
+                    let jobNewsDetails = selectJobNewsDetailsResult[0];
+                    let selectJobNewsRequiredSkillsSql =
+                        "select " +
+                        commonResources.JOB_SKILLS_COLUMN_ID + ", " +
+                        commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
+                        "from " +
+                        commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                        "inner join " +
+                        commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME +
+                        " on " +
+                        commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                        + "." +
+                        commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                        + " = " +
+                        commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                        commonResources.JOB_SKILLS_COLUMN_ID + " " +
+
+                        "where " +
+                        commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                        + " = ?;";
+                    dbConnect.query(
+                        selectJobNewsRequiredSkillsSql,
+                        [jobNewsIdNumber],
+                        function(selectJobSkillErr, selectJobSkillResult) {
+                            if (selectJobSkillErr) {
+                                res.json({
+                                   result: false,
+                                   message: "Có lỗi xảy ra " +
+                                           "khi truy vấn " +
+                                           "kỹ năng chuyên môn yêu cầu."
+                                });
+                                return;
+                            }
+
+                            jobNewsDetails.requiredJobSkills =
+                                                selectJobSkillResult;
+                            res.json({
+                                result: true,
+                                jobNewsDetails
+                            });
+                        }
+                    );
+                }
+            );
         }
     );
 });

@@ -305,5 +305,8 @@ Web: /job-titles
 JobNews
 
 Lấy danh sách tin tuyển dụng (đã được phê duyệt)
-GET /api/approved-job-news
+GET /api/job-news/approved-job-news
 --------------------
+Lấy thông tin chi tiết một tin tuyển dụng
+POST /api/job-news/details
+Tham số: jobNewsId (bắt buộc, int, phải tồn tại)
