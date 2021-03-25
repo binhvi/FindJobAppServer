@@ -2111,22 +2111,33 @@ router.get('/users', (req, res) => {
             commonResources.COLUMN_ALIAS_GENDER + ", " +
 
             commonResources.USERS_COLUMN_DOB_MILLIS + ", " +
-            commonResources.USERS_COLUMN_AVATAR_URL + " " +
+            commonResources.USERS_COLUMN_AVATAR_URL + ", " +
+
+            commonResources.LEVELS_OF_EDUCATION_COLUMN_NAME + " " +
 
         "from " +
             commonResources.USERS_TABLE_NAME + " " +
+
             "left join " +
             commonResources.GENDERS_TABLE_NAME + " on " +
             commonResources.GENDERS_TABLE_NAME + "." +
             commonResources.GENDERS_COLUMN_ID + " = " +
             commonResources.USERS_COLUMN_GENDER_ID + " " +
+
+            "left join " +
+            commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + " on " +
+            commonResources.USERS_TABLE_NAME + "." +
+            commonResources.USERS_COLUMN_GRADUATED_EDUCATION_ID + " = " +
+            commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + "." +
+            commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + " " +
+
         "order by " +
         commonResources.USERS_TABLE_NAME + "." +
         commonResources.USERS_COLUMN_ID + " desc";
 
     dbConnect.query(
         selectAllUsersSql,
-        function (err, result) {
+        async function (err, result) {
             if (err) {
                 res.json({
                     result: false,
@@ -2134,13 +2145,69 @@ router.get('/users', (req, res) => {
                     err
                 });
             } else {
+                let users = result;
+                for (let i = 0; i < users.length; i++) {
+                    let currentUserId = users[i].id;
+
+                    let getCurrentUserSkillsPromise = new Promise(
+                        function (myResolve, myReject) {
+                            let selectJobSkillsOfUserByUserIdSql =
+                                "select " +
+                                commonResources
+                                    .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                                + ", " +
+                                commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
+                                "from " +
+                                commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                                + ", " +
+                                commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                                "where " +
+
+                                commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                                + "." +
+                                commonResources
+                                    .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                                + " = " +
+                                commonResources.JOB_SKILLS_TABLE_NAME
+                                + "."
+                                + commonResources.JOB_SKILLS_COLUMN_ID
+                                + " " +
+
+                                "and " +
+                                commonResources
+                                    .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID +
+                                " = ?;";
+                            dbConnect.query(
+                                selectJobSkillsOfUserByUserIdSql,
+                                [currentUserId],
+                                function (selectSkillsErr, selectSkillsResult) {
+                                    if (selectSkillsErr) {
+                                        res.json({
+                                            result: false,
+                                            message: "Lỗi truy vấn JobSkills",
+                                            err: selectSkillsErr
+                                        });
+                                        throw selectSkillsErr;
+                                    } else {
+                                        myResolve(selectSkillsResult);
+                                    }
+                                }
+                            );
+                        }
+                    );
+
+                    let currentUserJobSkillsResult =
+                        await getCurrentUserSkillsPromise;
+                    users[i].skills = currentUserJobSkillsResult;
+                }
                 res.json({
                     result: true,
-                    users: result
+                    users
                 });
             }
         }
-    )
+    );
 });
 
 // Education info of user
