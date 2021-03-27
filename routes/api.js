@@ -12,6 +12,8 @@ const jobSkillsModule = require('./job-skills');
 const jobSkillsOfCandidateModule =
             require('../public/javascripts/job-skills-of-candidate');
 const jobNewsModule = require('./job-news');
+const subdistrictsModule = require('../public/javascripts/subdistricts');
+const typeOfWorksModule = require('./types-of-work');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -4097,15 +4099,48 @@ router.get('/job-skills', (req, res) => {
 
 // JobSkillsOfCandidate
 router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
-    if (req.body.userId === undefined) {
+    // Parse json from requestDataJsonString field
+    if (req.body.requestDataJsonString === undefined) {
         res.json({
             result: false,
-            message: "Thiếu trường userId."
+            message: "Thiếu trường requestDataJsonString."
         });
         return;
     }
 
-    let userIdText = req.body.userId.trim();
+    let requestDataJsonString = req.body.requestDataJsonString.trim();
+    if (requestDataJsonString.length === 0) {
+        res.json({
+            result: false,
+            message: "requestDataJsonString không được để trống."
+        });
+        return;
+    }
+
+    try {
+        JSON.parse(requestDataJsonString);
+    } catch (parseJsonErr) {
+        res.json({
+            result: false,
+            message: "Giá trị trường requestDataJsonString" +
+                    " phải là một chuỗi JSON."
+        });
+        return;
+    }
+
+    let requestDataJsObj = JSON.parse(requestDataJsonString);
+
+    // Handle data in JSON string
+    if (requestDataJsObj.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId " +
+                "trong chuỗi JSON của trường requestDataJsObj."
+        });
+        return;
+    }
+
+    let userIdText = requestDataJsObj.userId.trim();
     if (userIdText.length === 0) {
         res.json({
             result: false,
@@ -4134,7 +4169,7 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
     let userId = userIdNumber;
     userModule.checkIfUserIdExists(
         userId,
-         async function (isUserIdExists) {
+        async function (isUserIdExists) {
             if (!isUserIdExists) {
                 res.json({
                     result: false,
@@ -4143,10 +4178,28 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                 return;
             }
             // Pass validate userId
+            // Validate jobSkillIdArr
+            if (requestDataJsObj.jobSkillIdArr === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường jobSkillIdArr " +
+                        "trong chuỗi JSON của trường requestDataJsObj."
+                });
+                return;
+            }
 
-            // There is no field jobSkillId -> Delete all skill records
-            // of this user
-            if (req.body.jobSkillId === undefined) {
+            if (!Array.isArray(requestDataJsObj.jobSkillIdArr)) {
+                res.send({
+                    result: false,
+                    message: "Giá trị của trường jobSkillIdArr " +
+                        "(trong chuỗi JSON của trường requestDataJsObj) " +
+                        "phải là một mảng."
+                });
+                return;
+            }
+
+            // If skill array empty -> delete all skill records
+            if (requestDataJsObj.jobSkillIdArr.length === 0) {
                 jobSkillsOfCandidateModule.deleteAllJobSkillDataOfOneUser(
                     userId,
                     function(deleteJobSkillOfThisUserErr) {
@@ -4154,7 +4207,7 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                             res.json({
                                 result: false,
                                 message: "Xóa thông tin " +
-                                   "kỹ năng chuyên môn lỗi." ,
+                                    "kỹ năng chuyên môn lỗi." ,
                                 err: deleteJobSkillOfThisUserErr
                             });
                             throw deleteJobSkillOfThisUserErr;
@@ -4169,30 +4222,26 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                 return;
             }
 
-            // There is 1 field jobSkillId
-            if (!Array.isArray(req.body.jobSkillId)) {
-                let jobSkillIdText = req.body.jobSkillId.trim();
-                if (jobSkillIdText.length === 0) {
+            // There is only 1 element in skill array
+            if (requestDataJsObj.jobSkillIdArr.length === 1) {
+                if (typeof(requestDataJsObj.jobSkillIdArr[0]) !== 'number') {
                     res.json({
                         result: false,
-                        message: "jobSkillId không được để trống."
+                        message: "Phần tử của mảng jobSkillIdArr" +
+                            " phải là một số."
                     });
                     return;
                 }
 
-                if (isNaN(jobSkillIdText)) {
-                    res.json({
-                        result: false,
-                        message: "jobSkillId phải là số."
-                    });
-                    return;
-                }
-
-                let jobSkillIdNumber = Number(jobSkillIdText);
+                let jobSkillIdNumber =
+                        Number(
+                            requestDataJsObj.jobSkillIdArr[0]
+                        );
                 if (!Number.isInteger(jobSkillIdNumber)) {
                     res.json({
                         result: false,
-                        message: "jobSkillId phải là số nguyên."
+                        message: "Phần tử của mảng jobSkillIdArr" +
+                            " phải là số nguyên."
                     });
                     return;
                 }
@@ -4205,7 +4254,7 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                                 result: false,
                                 message: "Có lỗi xảy ra khi truy vấn " +
                                     "id JobSkills.",
-                                checkJobSkillIdEErr
+                                err: checkJobSkillIdEErr
                             });
                             return;
                         }
@@ -4273,37 +4322,35 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                 return;
             }
 
-            // There are more than 1 jobSkillId fields.
-            // If one of jobSkillId fields's value is not integer nor
-            // exist, return error message
-            for (let i = 0; i < req.body.jobSkillId.length; i++) {
-                let jobSkillIdText = req.body.jobSkillId[i].trim();
-
-                if (jobSkillIdText.length === 0) {
+            // There are more than 1 element in skill array
+            // If one of element's value is not integer nor
+            // exist, return error message.
+            for (let i = 0;
+                 i < requestDataJsObj.jobSkillIdArr.length;
+                 i++) {
+                if (typeof(requestDataJsObj.jobSkillIdArr[i])
+                    !== 'number') {
                     res.json({
                         result: false,
-                        message: "jobSkillId không được để trống."
+                        message: "Gía trị "
+                            + requestDataJsObj.jobSkillIdArr[i] +
+                                " không hợp lệ. Phần tử của mảng " +
+                            "jobSkillIdArr phải có kiểu giá trị là số."
                     });
                     return;
                 }
 
-                if (isNaN(jobSkillIdText)) {
-                    res.json({
-                        result: false,
-                        message: "Giá trị " + jobSkillIdText +
-                                " không hợp lệ. " +
-                                "jobSkillId phải là số."
-                    });
-                    return;
-                }
-
-                let jobSkillIdNumber = Number(jobSkillIdText);
+                let jobSkillIdNumber =
+                    Number(
+                        requestDataJsObj.jobSkillIdArr[i]
+                    );
                 if (!Number.isInteger(jobSkillIdNumber)) {
                     res.json({
                         result: false,
-                        message: "Giá trị " + jobSkillIdText +
-                                " không hợp lệ. " +
-                                "jobSkillId phải là số nguyên."
+                        message: "Giá trị " + jobSkillIdNumber +
+                            " không hợp lệ. " +
+                            "Phần tử của mảng " +
+                            "jobSkillIdArr phải là số nguyên."
                     });
                     return;
                 }
@@ -4322,9 +4369,9 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                             function(checkJobSkillIdErr, checkJobSkillIdResult) {
                                 if (checkJobSkillIdErr) {
                                     res.json({
-                                       result: false,
-                                       message: "Lỗi truy vấn JobSkills",
-                                       err: checkJobSkillIdErr
+                                        result: false,
+                                        message: "Lỗi truy vấn JobSkills",
+                                        err: checkJobSkillIdErr
                                     });
                                     throw checkJobSkillIdErr;
                                 } else {
@@ -4355,78 +4402,80 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                 // Ensure that the values not duplicate
                 for (let j = 0; j < i; j++) {
                     if (jobSkillIdNumber ===
-                        Number(req.body.jobSkillId[j].trim())) {
+                        Number(requestDataJsObj.jobSkillIdArr[j])) {
                         res.json({
-                           result: false,
-                           message: "Vui lòng nhập các giá trị khác nhau " +
-                               "cho các trường jobSkillId."
+                            result: false,
+                            message: "Vui lòng nhập các giá trị khác nhau " +
+                                "cho các phần tử của mảng jobSkillIdArr."
                         });
                         return;
                     }
                 }
             }
 
-             // Pass validate
-             // Delete previous data
-             // then add new data
-             jobSkillsOfCandidateModule.deleteAllJobSkillDataOfOneUser(
-                 userId,
-                 function(deleteJobSkillOfThisUserErr) {
-                     if (deleteJobSkillOfThisUserErr) {
-                         res.json({
-                             result: false,
-                             message: "Xóa thông tin " +
-                                 "kỹ năng chuyên môn lỗi." ,
-                             err: deleteJobSkillOfThisUserErr
-                         });
-                         throw deleteJobSkillOfThisUserErr;
-                     }
-                 }
-             );
+            // Pass validate
+            // Delete previous data
+            // then add new data
+            jobSkillsOfCandidateModule.deleteAllJobSkillDataOfOneUser(
+                userId,
+                function(deleteJobSkillOfThisUserErr) {
+                    if (deleteJobSkillOfThisUserErr) {
+                        res.json({
+                            result: false,
+                            message: "Xóa thông tin " +
+                                "kỹ năng chuyên môn lỗi." ,
+                            err: deleteJobSkillOfThisUserErr
+                        });
+                        throw deleteJobSkillOfThisUserErr;
+                    }
+                }
+            );
 
-             let addMultipleJobSkillForUserSql =
-                 "insert into " +
-                     commonResources
-                         .JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
-                     + "(" +
-                     commonResources
-                         .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID
-                     + ", " +
-                     commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
-                     + ") values";
-             for (let i = 0; i < req.body.jobSkillId.length; i++) {
-                 addMultipleJobSkillForUserSql +=
-                     "(" + userId + ", " +
-                        req.body.jobSkillId[i].trim() + "), ";
-             }
+            let addMultipleJobSkillForUserSql =
+                "insert into " +
+                commonResources
+                    .JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
+                + "(" +
+                commonResources
+                    .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID
+                + ", " +
+                commonResources.JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
+                + ") values";
+            for (let i = 0;
+                 i < requestDataJsObj.jobSkillIdArr.length;
+                 i++) {
+                addMultipleJobSkillForUserSql +=
+                    "(" + userId + ", " +
+                    requestDataJsObj.jobSkillIdArr[i] + "), ";
+            }
 
-             addMultipleJobSkillForUserSql =
-                 addMultipleJobSkillForUserSql.substring(
-                     0, addMultipleJobSkillForUserSql.length - 2
-             );
-             addMultipleJobSkillForUserSql += ";";
+            addMultipleJobSkillForUserSql =
+                addMultipleJobSkillForUserSql.substring(
+                    0, addMultipleJobSkillForUserSql.length - 2
+                );
+            addMultipleJobSkillForUserSql += ";";
 
-             dbConnect.query(
-                 addMultipleJobSkillForUserSql,
-                 function (err, result) {
-                     if (err) {
-                         res.json({
-                             result: false,
-                             message: "Có lỗi xảy ra " +
-                                 "khi thêm bản ghi.",
-                             err
-                         });
-                         return;
-                     }
+            dbConnect.query(
+                addMultipleJobSkillForUserSql,
+                function (err, result) {
+                    if (err) {
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra " +
+                                "khi thêm bản ghi.",
+                            err
+                        });
+                        return;
+                    }
 
-                     res.json({
-                         resutl: true,
-                         message: "Cập nhật kỹ năng " +
-                             "chuyên môn thành công."
-                     });
-                 }
-             );
-         }
+                    res.json({
+                        resutl: true,
+                        message: "Cập nhật kỹ năng " +
+                            "chuyên môn thành công."
+                    });
+                }
+            );
+        }
     );
 });
 
@@ -4957,5 +5006,332 @@ router.post('/job-news/details', (req, res) => {
             );
         }
     );
+});
+
+router.post('/job-news/create', (req, res) => {
+   // Validate userId (user is owner of job news)
+   if (req.body.userId === undefined) {
+       res.json({
+          result: false,
+          message: "Thiếu trường userId."
+       });
+       return;
+   }
+
+   let userIdText = req.body.userId.trim();
+   if (userIdText.length === 0) {
+       res.json({
+           result: false,
+           message: "userId không được để trống."
+       });
+       return;
+   }
+
+   if (isNaN(userIdText)) {
+       res.json({
+           result: false,
+           message: "userId phải là một số."
+       })
+       return;
+   }
+
+   let userIdNumber = Number(userIdText);
+   if (!Number.isInteger(userIdNumber)) {
+       res.json({
+          result: false,
+          message: "userId phải là số nguyên."
+       });
+       return;
+   }
+
+   userModule.checkIfUserIdExists(
+       userIdNumber,
+       function (isUserIdExists) {
+           if (!isUserIdExists) {
+               res.json({
+                   result: false,
+                   message: "userId không tồn tại."
+               });
+               return;
+           }
+
+           // Validate companyName
+           if (req.body.companyName === undefined) {
+               res.json({
+                  result: false,
+                  message: "Thiếu trường companyName."
+               });
+               return;
+           }
+
+           let companyName = req.body.companyName.trim();
+           if (companyName.length === 0) {
+               res.json({
+                   result: false,
+                   message: "Tên công ty không được để trống."
+               });
+               return;
+           }
+
+           // Validate jobShortDescription
+           if (req.body.jobShortDescription === undefined) {
+               res.json({
+                  result: false,
+                  message: "Thiếu trường jobShortDescription."
+               });
+               return;
+           }
+
+            let jobShortDescriptionText =
+                req.body.jobShortDescription.trim();
+            if (jobShortDescriptionText.length === 0) {
+                res.json({
+                   result: false,
+                   message: "Mô tả ngắn/tên công việc không được để trống."
+                });
+                return;
+            }
+
+            // Validate salaryInVnd
+           if (req.body.salaryInVnd === undefined) {
+               res.json({
+                  result: false,
+                  message: "Thiếu trường salaryInVnd."
+               });
+               return;
+           }
+
+           let salaryInVndText = req.body.salaryInVnd.trim();
+           if (salaryInVndText.length === 0) {
+               res.json({
+                  result: false,
+                   message: "Mức lương không được để trống."
+               });
+               return;
+           }
+
+           if (isNaN(salaryInVndText)) {
+               res.json({
+                  result: false,
+                  message: "Mức lương phải là một số."
+               });
+               return;
+           }
+
+           let salaryInVndNumber = Number(salaryInVndText);
+           if (!Number.isInteger(salaryInVndNumber)) {
+               res.json({
+                  result: false,
+                  message: "Mức lương phải là số nguyên."
+               });
+               return;
+           }
+
+           if (salaryInVndNumber < 0) {
+               res.json({
+                   result: false,
+                   message: "Mức lương phải là số nguyên >= 0."
+               });
+               return;
+           }
+
+           // Validate addressSubDistrictId
+           if (req.body.addressSubdistrictId === undefined) {
+               res.json({
+                  result: false,
+                  message: "Thiếu trường addressSubdistrictId."
+               });
+               return;
+           }
+
+           let addressSubdistrictIdText =
+                                    req.body.addressSubdistrictId.trim();
+           if (addressSubdistrictIdText.length === 0) {
+               res.json({
+                  result: false,
+                  message: "Hãy chọn địa chỉ " +
+                      "tỉnh/thành phố - quận/huyện - xã/phường."
+               });
+               return;
+           }
+
+           subdistrictsModule.checkIfSubDistrictIdExists(
+               addressSubdistrictIdText,
+               function (checkSubdistrictIdErr,
+                         isSubdistrictIdExists) {
+                   if (checkSubdistrictIdErr) {
+                       res.json({
+                          result: false,
+                          message: "Có lỗi xảy ra khi truy vấn ID xã.",
+                          err:  checkSubdistrictIdErr
+                       });
+                       return;
+                   }
+
+                   if (isSubdistrictIdExists === false) {
+                       res.json({
+                           result: false,
+                           message: "ID xã không tồn tại."
+                       });
+                       return;
+                   }
+
+                   // Validate typeOfWorkId
+                   if (req.body.typeOfWorkId === undefined) {
+                       res.json({
+                           result: false,
+                           message: "Thiếu trường typeOfWorkId."
+                       });
+                       return;
+                   }
+
+                   let typeOfWorkIdText = req.body.typeOfWorkId.trim();
+                   if (typeOfWorkIdText.length === 0) {
+                       res.json({
+                           result: false,
+                           message: "typeOfWorkId không được để trống."
+                       });
+                       return;
+                   }
+
+                   if (isNaN(typeOfWorkIdText)) {
+                       res.json({
+                           result: false,
+                           message: "typeOfWorkId phải là một số."
+                       });
+                       return;
+                   }
+
+                   let typeOfWorkIdNumber = Number(typeOfWorkIdText);
+                   if (!Number.isInteger(typeOfWorkIdNumber)) {
+                       res.json({
+                           result: false,
+                           message: "typeOfWorkId phải là số nguyên."
+                       });
+                       return;
+                   }
+
+                   typeOfWorksModule.checkIfTypeOfWorkIdExists(
+                       typeOfWorkIdNumber,
+                       function (checkTypeOfWorkIdErr,
+                                        isTypeOfWorkIdExist) {
+                           if (checkTypeOfWorkIdErr) {
+                               console.trace(); // Print stack trace error
+                               res.json({
+                                   result: false,
+                                   message: "Có lỗi xảy ra " +
+                                       "khi truy vấn ID " +
+                                       "hình thức làm việc.",
+                                   err: checkTypeOfWorkIdErr
+                               });
+                               return;
+                           }
+
+                           if (isTypeOfWorkIdExist === false) {
+                               res.json({
+                                   result: false,
+                                   message: "ID hình thức làm việc" +
+                                       " không tồn tại."
+                               });
+                               return;
+                           }
+
+                           // Validate requiredNumberYearsOfExperiences
+                           if (req.body.requiredNumberYearsOfExperiences
+                                === undefined) {
+                               res.json({
+                                   result: false,
+                                   message: "Thiếu trường " +
+                                       "requiredNumberYearsOfExperiences."
+                               });
+                               return;
+                           }
+
+                           let requiredNumberYearsOfExperiencesText =
+                               req.body.requiredNumberYearsOfExperiences
+                                   .trim();
+                           if (requiredNumberYearsOfExperiencesText
+                                .length === 0) {
+                               res.json({
+                                   result: false,
+                                   message: "Số năm kinh nghiệm yêu cầu" +
+                                       " không được để trống."
+                               });
+                               return;
+                           }
+
+                           if (isNaN(requiredNumberYearsOfExperiencesText)) {
+                               res.json({
+                                   result: false,
+                                   message: "Số năm kinh nghiệm yêu cầu" +
+                                       " phải là một số."
+                               });
+                               return;
+                           }
+
+                           let requiredNumberYearsOfExperiences =
+                               Number(
+                                   requiredNumberYearsOfExperiencesText
+                               );
+                           if (!Number.isInteger(requiredNumberYearsOfExperiences)) {
+                               res.json({
+                                   result: false,
+                                   message: "Số năm kinh nghiệm yêu cầu" +
+                                       " phải là số nguyên."
+                               });
+                               return;
+                           }
+
+                           if (requiredNumberYearsOfExperiences < 0) {
+                               res.json({
+                                   result: false,
+                                   message: "Số năm kinh nghiệm yêu cầu" +
+                                       " phải là số nguyên >= 0."
+                               });
+                               return;
+                           }
+
+                           // Validate detailAddress
+                           if (req.body.detailAddress === undefined) {
+                               res.json({
+                                   result: false,
+                                   message: "Thiếu trường detailAddress."
+                               });
+                               return;
+                           }
+
+                           let detailAddressText =
+                                req.body.detailAddress.trim();
+                           if (detailAddressText.length === 0) {
+                               res.json({
+                                   result: false,
+                                   message: "Địa chỉ công ty cụ thể " +
+                                       "(đường, số nhà,...) " +
+                                       "không được để trống."
+                               });
+                               return;
+                           }
+
+
+                           res.json(req.body);
+                           // res.json({
+                           //     message: "Pass validate",
+                           //     data: {
+                           //         userIdNumber,
+                           //         companyName,
+                           //         jobShortDescriptionText,
+                           //         salaryInVndNumber,
+                           //         addressSubdistrictIdText,
+                           //         typeOfWorkIdNumber,
+                           //         requiredNumberYearsOfExperiences,
+                           //         detailAddressText
+                           //     }
+                           // });
+                       }
+                   );
+               }
+           );
+       }
+   );
 });
 module.exports = router;

@@ -280,15 +280,24 @@ Tạo/cập nhật thông tin kỹ năng làm việc cho ứng viên:
 (Mỗi lần request lên đều xóa dữ liệu cũ và set dữ liệu mới vào)
 POST /api/job-skills-of-candidate/set-user-job-skills
 Tham số:
-- userId: int, bắt buộc, phải tồn tại
-- jobSkillId: (0, 1 hoặc nhiều trường; int; phải tồn tại)
-    + Nếu không có trường jobSkillId nào thì tất cả dữ liệu
+requestDataJsonString
+- Bắt buộc, không trống
+- String là chuỗi JSON, trong chuỗi JSON có chứa các trường sau:
+    + userId: int, bắt buộc, phải tồn tại
+    + jobSkillIdArr: Là mảng ID JobSkills, các phần tử là số nguyên,
+phải tồn tại.
+        * Nếu jobSkillIdArr không có phần tử nào thì tất cả dữ liệu
 JobSkillsOfCandidate của người dùng đó sẽ bị xóa.
-    + Nếu có 1 trường jobSkillId: Giá trị không được để trống, là int,
-phải tồn tại. Sẽ xóa hết dữ liệu trước đó và thêm kỹ năng này vào.
-    + Nếu có hơn 1 trường jobSkillId: Tất cả các giá trị không được để trống,
-phải là số nguyên, phải tồn tại, không có các giá trị trùng nhau.
-Sẽ xóa hết dữ liệu trước đó và thay bằng các kỹ năng này vào.
+        + Nếu jobSkillIdArr có 1 phần tử: Phần tử phải là số nguyên,
+phải có giá trị nằm trong các ID của JobSkills. Sẽ xóa hết dữ liệu trước đó
+và thêm ID của kỹ năng này vào.
+        + Nếu jobSkillIdArr có hơn 2 phần tử: Tất cả các phần tử
+phải là số nguyên, phải có giá trị nằm trong các ID của JobSkills,
+không có các giá trị trùng nhau. Sẽ xóa hết dữ liệu trước đó
+và thay bằng các kỹ năng này vào.
+
+Ví dụ: Một request có key là requestDataJsonString và value là
+'{"userId":"22","jobSkillIdArr": [1, 2, 3]}'.
 
 (Danh sách JobSkills lấy JSON ở API GET /api/job-skills
 hoặc xem trên Web ở /job-skills)
@@ -310,3 +319,22 @@ GET /api/job-news/approved-job-news
 Lấy thông tin chi tiết một tin tuyển dụng
 POST /api/job-news/details
 Tham số: jobNewsId (bắt buộc, int, phải tồn tại)
+--------------
+Tạo tin tuyển dụng
+POST /api/job-news/create
+Tham số:
+- userId (bắt buộc, int, không trống, phải tồn tại)
+- companyName (bắt buộc, String, không trống)
+- jobShortDescription (bắt buộc, String, không trống)
+- salaryInVnd (bắt buộc, int, >= 0)
+- addressSubdistrictId (là ID xã, bắt buộc, String, phải tồn tại)
+- typeOfWorkId (bắt buộc, int, phải tồn tại)
+- requiredNumberYearsOfExperiences (bắt buộc, int, >= 0)
+- detailAddress (bắt buộc, String, không trống)
+- jobTitleId (bắt buộc, int, phải tồn tại)
+- companySizeByNumberEmployees (bắt buộc, int, >= 0)
+- companyWebsite (bắt buộc, String, không trống, phải là một URL)
+- companyEmail (bắt buộc, String, phải đúng định dạng
+ /\w{1,}@\w{1,}.\w{1,}/ (anyword@anyword.anyword)
+- companyPhoneNumber (bắt buộc, String, phải đúng định dạng
+ (chuỗi 10-12 chữ số)
