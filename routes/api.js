@@ -2116,7 +2116,8 @@ router.get('/users', (req, res) => {
             commonResources.USERS_COLUMN_DOB_MILLIS + ", " +
             commonResources.USERS_COLUMN_AVATAR_URL + ", " +
 
-            commonResources.LEVELS_OF_EDUCATION_COLUMN_NAME + " " +
+            commonResources.LEVELS_OF_EDUCATION_COLUMN_NAME + ", " +
+            commonResources.USERS_COLUMN_EXPECTED_SALARY_VND + " " +
 
         "from " +
             commonResources.USERS_TABLE_NAME + " " +
@@ -2152,6 +2153,7 @@ router.get('/users', (req, res) => {
                 for (let i = 0; i < users.length; i++) {
                     let currentUserId = users[i].id;
 
+                    // Get skill list
                     let getCurrentUserSkillsPromise = new Promise(
                         function (myResolve, myReject) {
                             let selectJobSkillsOfUserByUserIdSql =
@@ -2203,7 +2205,100 @@ router.get('/users', (req, res) => {
                     let currentUserJobSkillsResult =
                         await getCurrentUserSkillsPromise;
                     users[i].skills = currentUserJobSkillsResult;
+
+                    // Get address
+                    let getCurrentUserAddressPromise = new Promise(
+                        function(myResolve, myReject) {
+                            let selectAddressOfCurrentUserSql =
+                                "select " +
+                                commonResources.STATE_PROVINCES_TABLE_NAME + "." +
+                                commonResources.STATE_PROVINCES_COLUMN_NAME + " as " +
+                                commonResources.COLUMN_ALIAS_STATE_PROVINCE_NAME + ", " +
+
+                                commonResources.DISTRICTS_TABLE_NAME + "." +
+                                commonResources.DISTRICTS_COLUMN_NAME + " as " +
+                                commonResources.COLUMN_ALIAS_DISTRICT_NAME + ", " +
+
+                                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                                commonResources.SUBDISTRICTS_COLUMN_NAME + " as " +
+                                commonResources.COLUMN_ALIAS_SUBDISTRICT_NAME + " " +
+                                "from " +
+                                commonResources.USERS_TABLE_NAME + " " +
+
+                                "left join " +
+                                commonResources.SUBDISTRICTS_TABLE_NAME + " " + "on " +
+                                commonResources.USERS_COLUMN_ADDRESS_SUBDISTRICT_ID +
+                                " = " + commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                                commonResources.SUBDISTRICTS_COLUMN_ID + " " +
+
+                                "left join " + commonResources.DISTRICTS_TABLE_NAME +
+                                " on " + commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                                commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID + " = " +
+                                commonResources.DISTRICTS_TABLE_NAME + "." +
+                                commonResources.DISTRICTS_COLUMN_ID + " " +
+
+                                "left join " + commonResources.STATE_PROVINCES_TABLE_NAME +
+                                " on " + commonResources.DISTRICTS_TABLE_NAME + "." +
+                                commonResources.DISTRICTS_COLUMN_STATE_PROVINCE_ID +
+                                " = " + commonResources.STATE_PROVINCES_TABLE_NAME +
+                                "." + commonResources.STATE_PROVINCES_COLUMN_ID + " " +
+
+                                "where " +
+                                commonResources.USERS_COLUMN_ID + " = ?;";
+                            dbConnect.query(
+                                selectAddressOfCurrentUserSql,
+                                [currentUserId],
+                                function (selectAddressErr, selectAddressResult) {
+                                    if (selectAddressErr) {
+                                        console.trace(); // Print err stack trace
+                                        res.json({
+                                            result: false,
+                                            message: "Lỗi truy vấn " +
+                                                "địa chỉ người dùng.",
+                                            err: selectAddressErr
+                                        });
+                                        throw selectAddressErr;
+                                    } else {
+                                        myResolve(selectAddressResult);
+                                    }
+                                }
+                            );
+                        }
+                    );
+
+                    let currentUserAddressQueryResult =
+                        await getCurrentUserAddressPromise;
+                //    [
+                    //   {
+                    //     stateProvinceName: null,
+                    //     districtName: null,
+                    //     subdistrictName: null
+                    //   }
+                    // ]
+                    // or
+                    // [
+                    //    {
+                    //     stateProvinceName: 'Thành phố Hà Nội',
+                    //     districtName: 'Quận Cầu Giấy',
+                    //     subdistrictName: 'Phường Quan Hoa'
+                    //   }
+                    // ]
+                    if (currentUserAddressQueryResult[0].subdistrictName
+                            === null) {
+                        console.log(currentUserId + ", " + null);
+                        users[i].addressText = null;
+                    } else {
+                        users[i].addressText =
+                            currentUserAddressQueryResult[0]
+                                .subdistrictName + " - " +
+                            currentUserAddressQueryResult[0]
+                                .districtName + " - " +
+                            currentUserAddressQueryResult[0]
+                                .stateProvinceName;
+                    }
                 }
+
+
                 res.json({
                     result: true,
                     users
