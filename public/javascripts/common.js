@@ -168,7 +168,7 @@ const JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES =
                                         "companySizeByNumberEmployees";
 const JOB_NEWS_COLUMN_COMPANY_WEBSITE = "companyWebsite";
 const JOB_NEWS_COLUMN_COMPANY_EMAIL = "companyEmail";
-const JOB_NEWS_COLUMN_PHONE_NUMBER = "companyPhoneNumber";
+const JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER = "companyPhoneNumber";
 
 const JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME = "JobNewsRequiredSkills";
 const JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID = "jobNewsId";
@@ -194,9 +194,15 @@ const RESPONSE_KEY_PAGE_INDEX = "page";
 const RESPONSE_KEY_NUMBER_OF_PAGES = "pages";
 const RESPONSE_KEY_RESULT_STATUS = "result";
 
-const REGEX_PHONE = /^\d{9,10}$/; // 9-10 digits
+const REGEX_PHONE = /^\d{9,10}$/; // 9-10 digits (regex of Users)
 const REGEX_EMAIL = /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
 const REGEX_PASSWORD = /^\S*$/; // Not contains white space
+const REGEX_COMPANY_PHONE = /^\d{10,12}$/; // 10-12 digits (regex of JobNews)
+// There's no phone number with 9 digits but REGEX_PHONE is in use
+// so I don't want to change value of REGEX_PHONE constants of Users.
+// Because phone number of a company can be landline phone number
+// so phone number can be 12 digits, so I have to create new const
+// regex to validate company phone number.
 
 const ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
                                 "Mật khẩu không được chứa khoảng trắng.";
@@ -413,7 +419,7 @@ module.exports.JOB_NEWS_COLUMN_COMPANY_WEBSITE =
                                         JOB_NEWS_COLUMN_COMPANY_WEBSITE;
 module.exports.JOB_NEWS_COLUMN_COMPANY_EMAIL =
                                             JOB_NEWS_COLUMN_COMPANY_EMAIL;
-module.exports.JOB_NEWS_COLUMN_PHONE_NUMBER = JOB_NEWS_COLUMN_PHONE_NUMBER;
+module.exports.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER = JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER;
 
 module.exports.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME =
                                     JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME;
@@ -445,6 +451,7 @@ module.exports.RESPONSE_KEY_RESULT_STATUS = RESPONSE_KEY_RESULT_STATUS;
 module.exports.REGEX_PHONE = REGEX_PHONE;
 module.exports.REGEX_EMAIL = REGEX_EMAIL;
 module.exports.REGEX_PASSWORD = REGEX_PASSWORD;
+module.exports.REGEX_COMPANY_PHONE = REGEX_COMPANY_PHONE;
 
 module.exports.ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
                             ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX;

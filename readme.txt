@@ -288,10 +288,10 @@ requestDataJsonString
 phải tồn tại.
         * Nếu jobSkillIdArr không có phần tử nào thì tất cả dữ liệu
 JobSkillsOfCandidate của người dùng đó sẽ bị xóa.
-        + Nếu jobSkillIdArr có 1 phần tử: Phần tử phải là số nguyên,
+        * Nếu jobSkillIdArr có 1 phần tử: Phần tử phải là số nguyên,
 phải có giá trị nằm trong các ID của JobSkills. Sẽ xóa hết dữ liệu trước đó
 và thêm ID của kỹ năng này vào.
-        + Nếu jobSkillIdArr có hơn 2 phần tử: Tất cả các phần tử
+        * Nếu jobSkillIdArr có hơn 2 phần tử: Tất cả các phần tử
 phải là số nguyên, phải có giá trị nằm trong các ID của JobSkills,
 không có các giá trị trùng nhau. Sẽ xóa hết dữ liệu trước đó
 và thay bằng các kỹ năng này vào.
@@ -320,7 +320,8 @@ Lấy thông tin chi tiết một tin tuyển dụng
 POST /api/job-news/details
 Tham số: jobNewsId (bắt buộc, int, phải tồn tại)
 --------------
-Tạo tin tuyển dụng
+Tạo tin tuyển dụng: Tạo một tin tuyển dụng mới, có trạng thái
+chưa phê duyệt.
 POST /api/job-news/create
 Tham số:
 - userId (bắt buộc, int, không trống, phải tồn tại)
@@ -338,3 +339,4 @@ Tham số:
  /\w{1,}@\w{1,}.\w{1,}/ (anyword@anyword.anyword)
 - companyPhoneNumber (bắt buộc, String, phải đúng định dạng
  (chuỗi 10-12 chữ số)
+
