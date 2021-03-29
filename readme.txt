@@ -341,3 +341,17 @@ Tham số:
 - companyPhoneNumber (bắt buộc, String, phải đúng định dạng
  (chuỗi 10-12 chữ số)
 
+====================
+JobApplications
+
+Ứng tuyển
+POST /api/job-applications/apply-job
+Tham số:
+- userId (bắt buộc, int, không trống, phải tồn tại)
+- jobNewsId (bắt buộc, int, không trống, phải tồn tại,
+tin phải được phê duyệt rồi).
+Nếu ứng viên đã ứng tuyển một công việc rồi mà vẫn ứng tuyển tiếp
+sẽ có thông báo lỗi.
+
+
+

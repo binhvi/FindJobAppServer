@@ -15,6 +15,8 @@ const jobNewsModule = require('./job-news');
 const subdistrictsModule = require('../public/javascripts/subdistricts');
 const typeOfWorksModule = require('./types-of-work');
 const jobTitlesModule = require('./job-titles');
+const jobApplicationsModule =
+                    require('../public/javascripts/job-applications');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -2297,7 +2299,6 @@ router.get('/users', (req, res) => {
                                 .stateProvinceName;
                     }
                 }
-
 
                 res.json({
                     result: true,
@@ -5722,5 +5723,230 @@ router.post('/job-news/create', (req, res) => {
            );
        }
    );
+});
+
+// JobApplications
+router.post('/job-applications/apply-job', (req, res) => {
+    // Validate userId
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "userId phải là một số."
+        })
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    userModule.checkIfUserIdExists(
+        userIdNumber,
+        function (isUserIdExists) {
+            if (!isUserIdExists) {
+                res.json({
+                    result: false,
+                    message: "userId không tồn tại."
+                });
+                return;
+            }
+
+            // Validate jobNewsId
+            if (req.body.jobNewsId === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường jobNewsId."
+                });
+                return;
+            }
+
+            let jobNewsIdText = req.body.jobNewsId.trim();
+            if (jobNewsIdText.length === 0) {
+                res.json({
+                    result: false,
+                    message: "jobNewsId không được để trống."
+                });
+                return;
+            }
+
+            if (isNaN(jobNewsIdText)) {
+                res.json({
+                    result: false,
+                    message: "jobNewsId phải là một số."
+                });
+                return;
+            }
+
+            let jobNewsIdNumber = Number(jobNewsIdText);
+            if (!Number.isInteger(jobNewsIdNumber)) {
+                res.json({
+                    result: false,
+                    message: "jobNewsId phải là số nguyên."
+                });
+                return;
+            }
+
+            jobNewsModule.checkIfJobNewsIdExists(
+                jobNewsIdNumber,
+                function (checkJosNewsIdErr, isJobNewsIdExist) {
+                    if (checkJosNewsIdErr) {
+                        console.trace();
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra khi truy vấn id JobNews.",
+                            err: checkJosNewsIdErr
+                        });
+                        return;
+                    }
+
+                    if (isJobNewsIdExist === false) {
+                        res.json({
+                            result: false,
+                            message: "ID JobNews không tồn tại."
+                        });
+                        return;
+                    }
+
+                    // Check if this job news has been approved
+                    let selectJobNewsStatusIdSql =
+                        "select " +
+                            commonResources
+                                .JOB_NEWS_COLUMN_STATUS_ID + " " +
+                        "from " +
+                            commonResources.JOB_NEWS_TABLE_NAME + " " +
+                        "where " +
+                            commonResources.JOB_NEWS_COLUMN_ID + " = ?;";
+                    dbConnect.query(
+                        selectJobNewsStatusIdSql,
+                        [jobNewsIdNumber],
+                        function (selectJobNewsStatusIdErr,
+                                  selectJobNewsStatusIdResult) {
+                            if (selectJobNewsStatusIdErr) {
+                                console.trace();
+                                res.json({
+                                    result: false,
+                                    message: "Có lỗi xảy ra khi truy vấn" +
+                                        " trạng thái tin tuyển dụng.",
+                                    err: selectJobNewsStatusIdErr
+                                });
+                                return;
+                            }
+
+                            // [ { statusId: 0 } ]
+                            let jobNewsStatusId =
+                                selectJobNewsStatusIdResult[0].statusId;
+                            if (jobNewsStatusId ===
+                                commonResources
+                                    .JOB_NEWS_STATUS_VALUE_UNAPPROVED) {
+                                res.json({
+                                    result: false,
+                                    message: "Tin tuyển dụng này " +
+                                        "chưa được phê duyệt."
+                                });
+                                return;
+                            }
+
+                            // Check if user has been
+                            // apply this job news before.
+                            jobApplicationsModule.checkIfThisUserHasAppliedForThisJobNewsBefore(
+                                userIdNumber,
+                                jobNewsIdNumber,
+                                function (checkIfUserHasAppliedThisJobBeforeErr,
+                                          hasUserAppliedThisJobBefore) {
+                                    if (checkIfUserHasAppliedThisJobBeforeErr) {
+                                        console.trace();
+                                        res.json({
+                                            result: false,
+                                            message: "Có lỗi xảy ra " +
+                                                "khi kiểm tra " +
+                                                "người dùng đã ứng tuyển" +
+                                                " tin này hay chưa.",
+                                            err: checkIfUserHasAppliedThisJobBeforeErr
+                                        });
+                                        return;
+                                    }
+
+                                    if (hasUserAppliedThisJobBefore
+                                                        === true) {
+                                        res.json({
+                                            result: false,
+                                            message: "Người dùng đã " +
+                                                "ứng tuyển công việc này" +
+                                                " trước đó nên không cần" +
+                                                " phải ứng tuyển " +
+                                                "thêm lần nữa."
+                                        });
+                                        return;
+                                    }
+
+                                    // Pass validate
+                                    let applyJobSql =
+                                        "insert into " +
+                                            commonResources
+                                                .JOB_APPLICATIONS_TABLE_NAME
+                                            + "(" +
+                                            commonResources
+                                                .JOB_APPLICATIONS_COL_USER_ID
+                                            + ", " +
+                                            commonResources
+                                                .JOB_APPLICATIONS_COL_JOB_NEWS_ID
+                                            + ") " +
+                                        "values(" +
+                                            userIdNumber + ", " +
+                                            jobNewsIdNumber + ");";
+                                    dbConnect.query(
+                                        applyJobSql,
+                                        function (applyJobErr,
+                                                  applyJobResult) {
+                                            if (applyJobErr) {
+                                                console.trace();
+                                                res.json({
+                                                    result: false,
+                                                    message: "Có lỗi" +
+                                                        " xảy ra khi" +
+                                                        " lưu thông tin" +
+                                                        " ứng tuyển.",
+                                                    err: applyJobErr
+                                                });
+                                                return;
+                                            }
+
+                                            res.json({
+                                                result: true,
+                                                message: "Lưu thông tin" +
+                                                    " ứng tuyển thành công."
+                                            });
+                                        }
+                                    );
+                                }
+                            );
+                        }
+                    );
+                }
+            );
+        }
+    );
 });
 module.exports = router;
