@@ -5949,4 +5949,97 @@ router.post('/job-applications/apply-job', (req, res) => {
         }
     );
 });
+
+router.post(
+    '/job-applications/get-applied-jobs-of-one-candidate',
+    (req, res) => {
+    // Validate
+    if (req.body.userId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường userId."
+        });
+        return;
+    }
+
+    let userIdText = req.body.userId.trim();
+    if (userIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "userId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(userIdText)) {
+        res.json({
+            result: false,
+            message: "userId phải là một số."
+        })
+        return;
+    }
+
+    let userIdNumber = Number(userIdText);
+    if (!Number.isInteger(userIdNumber)) {
+        res.json({
+            result: false,
+            message: "userId phải là số nguyên."
+        });
+        return;
+    }
+
+    userModule.checkIfUserIdExists(
+        userIdNumber,
+        function (isUserIdExists) {
+            if (!isUserIdExists) {
+                res.json({
+                    result: false,
+                    message: "userId không tồn tại."
+                });
+                return;
+            }
+
+            // Pass validate
+            let getAppliedJobListOfCandidateSql =
+                "select " +
+                    commonResources.JOB_APPLICATIONS_COL_JOB_NEWS_ID
+                    + ", " +
+                    commonResources.JOB_NEWS_COLUMN_COMPANY_NAME + ", " +
+                    commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION + " " +
+                "from " +
+                    commonResources.JOB_APPLICATIONS_TABLE_NAME + " " +
+                    "inner join " +
+                    commonResources.JOB_NEWS_TABLE_NAME + " on " +
+                    commonResources.JOB_APPLICATIONS_TABLE_NAME + "." +
+                    commonResources.JOB_APPLICATIONS_COL_JOB_NEWS_ID + " = " +
+                    commonResources.JOB_NEWS_TABLE_NAME + "." +
+                    commonResources.JOB_NEWS_COLUMN_ID + " " +
+                "where " +
+                    commonResources.JOB_APPLICATIONS_COL_USER_ID + " = ?;";
+            dbConnect.query(
+                getAppliedJobListOfCandidateSql,
+                [userIdNumber],
+                function (getAppliedJobListErr, getAppliedJobListResult) {
+                    if (getAppliedJobListErr) {
+                        console.trace(); // Print err stack trace
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra " +
+                                "khi lấy danh sách " +
+                                "các công việc đã ứng tuyển" +
+                                " của ứng viên này.",
+                            err: getAppliedJobListErr
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        result: true,
+                        appliedJobArr: getAppliedJobListResult
+                    });
+                }
+            );
+        }
+    );
+});
 module.exports = router;

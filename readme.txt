@@ -352,6 +352,10 @@ Tham số:
 tin phải được phê duyệt rồi).
 Nếu ứng viên đã ứng tuyển một công việc rồi mà vẫn ứng tuyển tiếp
 sẽ có thông báo lỗi.
-
+-----------------------
+Xem danh sách những tin mà ứng viên đã ứng tuyển
+POST /api/job-applications/get-applied-jobs-of-one-candidate
+Tham số:
+- userId (bắt buộc, int, không trống, phải tồn tại)
 
 
