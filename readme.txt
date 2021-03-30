@@ -359,6 +359,14 @@ POST /api/job-news/remove
 Tham số: jobNewsId (là ID bài tuyển dụng, bắt buộc, int, không trống,
 phải tồn tại).
 
+===================
+JobNewsRequiredSkills
+
+Lấy danh sách các kỹ năng chuyên môn yêu cầu của tin tuyển dụng
+POST /api/job-news-required-skills/required-job-skills-of-job-news
+Tham số: jobNewsId (là ID bài tuyển dụng, bắt buộc, int, không trống,
+phải tồn tại).
+
 ====================
 
 JobApplications

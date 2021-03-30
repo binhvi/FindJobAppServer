@@ -2445,7 +2445,6 @@ router.post('/education', (req, res) => {
     );
 });
 
-
 router.post('/education/create', (req, res) => {
     // Validate
     if (req.body.userId === undefined) {
@@ -6171,6 +6170,111 @@ router.post('/job-news/remove', (req, res) => {
                         message: "Xóa thành công "
                             + deleteJobNewsResult.affectedRows
                             + " bài tuyển dụng."
+                    });
+                }
+            );
+        }
+    );
+});
+
+router.post('/job-news-required-skills/required-job-skills-of-job-news', (req, res) => {
+    // Validate
+    if (req.body.jobNewsId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường jobNewsId."
+        });
+        return;
+    }
+
+    let jobNewsIdText = req.body.jobNewsId.trim();
+    if (jobNewsIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "jobNewsId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(jobNewsIdText)) {
+        res.json({
+            result: false,
+            message: "jobNewsId phải là một số."
+        });
+        return;
+    }
+
+    let jobNewsIdNumber = Number(jobNewsIdText);
+    if (!Number.isInteger(jobNewsIdNumber)) {
+        res.json({
+            result: false,
+            message: "jobNewsId phải là số nguyên."
+        });
+        return;
+    }
+
+    jobNewsModule.checkIfJobNewsIdExists(
+        jobNewsIdNumber,
+        function (checkJosNewsIdErr, isJobNewsIdExist) {
+            if (checkJosNewsIdErr) {
+                console.trace();
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi truy vấn id JobNews.",
+                    err: checkJosNewsIdErr
+                });
+                return;
+            }
+
+            if (isJobNewsIdExist === false) {
+                res.json({
+                    result: false,
+                    message: "ID JobNews không tồn tại."
+                });
+                return;
+            }
+
+            // Pass validate
+            let selectJobSkillListOfJobNewsSql =
+                "select " +
+                    commonResources
+                        .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID + ", " +
+                    commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+                "from " +
+                    commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME +
+                    " inner join " +
+                    commonResources.JOB_SKILLS_TABLE_NAME + " on " +
+                    commonResources
+                        .JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME + "." +
+                    commonResources
+                        .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID +
+                    " = " +
+                    commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                    commonResources.JOB_SKILLS_COLUMN_ID + " " +
+                "where " +
+                    commonResources
+                        .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                    + " = ?;";
+
+            dbConnect.query(
+                selectJobSkillListOfJobNewsSql,
+                [jobNewsIdNumber],
+                function (selectJobSkillsErr, selectJobSkillsResult) {
+                    if (selectJobSkillsErr) {
+                        console.trace(); // Print err stack trace
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra " +
+                                    "khi truy vấn " +
+                                    "kỹ năng chuyên môn yêu cầu.",
+                            err: selectJobSkillsErr
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        result: true,
+                        requiredJobSkills: selectJobSkillsResult
                     });
                 }
             );
