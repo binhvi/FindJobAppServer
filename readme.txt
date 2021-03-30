@@ -352,6 +352,13 @@ POST /api/job-news/get-approved-job-news-of-an-owner
 Tham số:
 ownerId (cũng là ID của người dùng, bắt buộc, int, không trống,
 phải tồn tại)
+-----------------------
+
+Xóa tin tuyển dụng
+POST /api/job-news/remove
+Tham số: jobNewsId (là ID bài tuyển dụng, bắt buộc, int, không trống,
+phải tồn tại).
+
 ====================
 
 JobApplications

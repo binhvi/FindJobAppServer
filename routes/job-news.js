@@ -777,6 +777,7 @@ router.post('/remove', (req, res) => {
        }
    );
 });
+
 function checkIfJobNewsIdExists(jobNewsId, callback) {
     let selectNumberOfJobNewsRecordsHaveThisIdSql =
         "select count(" +

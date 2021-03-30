@@ -6089,6 +6089,95 @@ router.post('/job-news/get-approved-job-news-of-an-owner', (req, res) => {
     );
 });
 
+router.post('/job-news/remove', (req, res) => {
+    // Validate
+    if (req.body.jobNewsId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường jobNewsId."
+        });
+        return;
+    }
+
+    let jobNewsIdText = req.body.jobNewsId.trim();
+    if (jobNewsIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "jobNewsId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(jobNewsIdText)) {
+        res.json({
+            result: false,
+            message: "jobNewsId phải là một số."
+        });
+        return;
+    }
+
+    let jobNewsIdNumber = Number(jobNewsIdText);
+    if (!Number.isInteger(jobNewsIdNumber)) {
+        res.json({
+            result: false,
+            message: "jobNewsId phải là số nguyên."
+        });
+        return;
+    }
+
+    jobNewsModule.checkIfJobNewsIdExists(
+        jobNewsIdNumber,
+        function (checkJosNewsIdErr, isJobNewsIdExist) {
+            if (checkJosNewsIdErr) {
+                console.trace();
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi truy vấn id JobNews.",
+                    err: checkJosNewsIdErr
+                });
+                return;
+            }
+
+            if (isJobNewsIdExist === false) {
+                res.json({
+                    result: false,
+                    message: "ID JobNews không tồn tại."
+                });
+                return;
+            }
+
+            let deleteJobNewsByIdSql =
+                "delete from " +
+                    commonResources.JOB_NEWS_TABLE_NAME + " " +
+                "where " +
+                commonResources.JOB_NEWS_COLUMN_ID + " = ?;";
+            dbConnect.query(
+                deleteJobNewsByIdSql,
+                [jobNewsIdNumber],
+                function(deleteJobNewsErr, deleteJobNewsResult) {
+                    if (deleteJobNewsErr) {
+                        console.trace(); // Print error stack trace
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra " +
+                                "khi xóa bài tuyển dụng.",
+                            err: deleteJobNewsErr
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        result: true,
+                        message: "Xóa thành công "
+                            + deleteJobNewsResult.affectedRows
+                            + " bài tuyển dụng."
+                    });
+                }
+            );
+        }
+    );
+});
+
 // JobApplications
 router.post('/job-applications/apply-job', (req, res) => {
     // Validate userId
