@@ -340,8 +340,20 @@ Tham số:
  /\w{1,}@\w{1,}.\w{1,}/ (anyword@anyword.anyword)
 - companyPhoneNumber (bắt buộc, String, phải đúng định dạng
  (chuỗi 10-12 chữ số)
-
+------------------
+Xem những tin tuyển dụng của một người dùng đăng mà chưa được duyệt
+POST /api/job-news/get-unapproved-job-news-of-an-owner
+Tham số:
+ownerId (cũng là ID của người dùng, bắt buộc, int, không trống,
+phải tồn tại)
+--------------------------
+Xem những tin tuyển dụng đã được phê duyệt của một người dùng đăng
+POST /api/job-news/get-approved-job-news-of-an-owner
+Tham số:
+ownerId (cũng là ID của người dùng, bắt buộc, int, không trống,
+phải tồn tại)
 ====================
+
 JobApplications
 
 Ứng tuyển

@@ -5725,6 +5725,370 @@ router.post('/job-news/create', (req, res) => {
    );
 });
 
+router.post('/job-news/get-unapproved-job-news-of-an-owner', (req, res) => {
+    // Validate userId (ownerId)
+    if (req.body.ownerId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường ownerId."
+        });
+        return;
+    }
+
+    let ownerIdText = req.body.ownerId.trim();
+    if (ownerIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "ownerId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(ownerIdText)) {
+        res.json({
+            result: false,
+            message: "ownerId phải là một số."
+        })
+        return;
+    }
+
+    let ownerIdNumber = Number(ownerIdText);
+    if (!Number.isInteger(ownerIdNumber)) {
+        res.json({
+            result: false,
+            message: "ownerId phải là số nguyên."
+        });
+        return;
+    }
+
+    // The owner ID is also the user ID,
+    // so checking for the existence of the owner ID
+    // is to check for the existence of the user ID
+    userModule.checkIfUserIdExists(
+        ownerIdNumber,
+        function (isOwnerIdExists) {
+            if (!isOwnerIdExists) {
+                res.json({
+                    result: false,
+                    message: "ownerId không tồn tại."
+                });
+                return;
+            }
+
+            let selectUnapprovedJobNewsListOfThisOwnerSql =
+                "select " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_ID + " as jobNewsId, " +
+
+                commonResources.USERS_COLUMN_FULL_NAME + " " +
+                "as ownerName, " +
+
+                commonResources.JOB_NEWS_STATUS_COLUMN_NAME + ", " +
+
+                commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+                commonResources.TYPES_OF_WORK_COLUMN_NAME +
+                " as typeOfWorkName, " +
+
+                commonResources.JOB_NEWS_COLUMN_COMPANY_NAME + ", " +
+                commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
+                commonResources.JOB_NEWS_COLUMN_SALARY_VND + ", " +
+                commonResources.JOB_NEWS_COLUMN_JOB_DESCRIPTION + ", " +
+
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_NAME + " " +
+                "as subdistrictName, " +
+
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_NAME + " " +
+                "as districtName, " +
+
+                commonResources.STATE_PROVINCES_TABLE_NAME + "." +
+                commonResources.STATE_PROVINCES_COLUMN_NAME + " " +
+                "as stateProvinceName, " +
+
+                commonResources.JOB_NEWS_COLUMN_DETAIL_ADDRESS + ", " +
+                commonResources
+                    .JOB_NEWS_COLUMN_REQUIRED_NUMBER_YEARS_EXPERIENCES
+                + ", " +
+
+                commonResources.JOB_TITLES_TABLE_NAME + "." +
+                commonResources.JOB_TITLES_COLUMN_NAME + " " +
+                "as jobTitleName, " +
+
+                commonResources
+                    .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + " " +
+
+                "from " +
+                commonResources.JOB_NEWS_TABLE_NAME + " " +
+
+                "inner join " +
+                commonResources.USERS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_OWNER_ID + " = " +
+                commonResources.USERS_TABLE_NAME + "." +
+                commonResources.USERS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.JOB_NEWS_STATUS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_STATUS_ID + " = " +
+                commonResources.JOB_NEWS_STATUS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_STATUS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.TYPES_OF_WORK_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_TYPE_OF_WORD_ID + " = " +
+                commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+                commonResources.TYPES_OF_WORK_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_ADDRESS_SUBDISTRICT_ID
+                + " = " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.JOB_TITLES_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_JOB_TITLE_ID + " = " +
+                commonResources.JOB_TITLES_TABLE_NAME + "." +
+                commonResources.JOB_TITLES_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.DISTRICTS_TABLE_NAME + " on " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID + " = " +
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.STATE_PROVINCES_TABLE_NAME + " on " +
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_STATE_PROVINCE_ID + " = " +
+                commonResources.STATE_PROVINCES_TABLE_NAME + "." +
+                commonResources.STATE_PROVINCES_COLUMN_ID + " " +
+            "where " +
+                commonResources.JOB_NEWS_COLUMN_OWNER_ID+ " = ? and " +
+                commonResources.JOB_NEWS_COLUMN_STATUS_ID + " = " +
+                commonResources.JOB_NEWS_STATUS_VALUE_UNAPPROVED + ";";
+            dbConnect.query(
+                selectUnapprovedJobNewsListOfThisOwnerSql,
+                [ownerIdNumber],
+                function (getUnapprovedJobNewsErr,
+                          getUnapprovedJobNewsResult) {
+                    if (getUnapprovedJobNewsErr) {
+                        console.trace();
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra " +
+                                "khi truy vấn " +
+                                "tin chưa được phê duyệt" +
+                                " của người dùng này.",
+                            err: getUnapprovedJobNewsErr
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        result: true,
+                        unapprovedJobNewsOfThisOwnerArr:
+                                    getUnapprovedJobNewsResult
+                    });
+                }
+            );
+        }
+    );
+});
+
+router.post('/job-news/get-approved-job-news-of-an-owner', (req, res) => {
+    // Validate userId (ownerId)
+    if (req.body.ownerId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường ownerId."
+        });
+        return;
+    }
+
+    let ownerIdText = req.body.ownerId.trim();
+    if (ownerIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "ownerId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(ownerIdText)) {
+        res.json({
+            result: false,
+            message: "ownerId phải là một số."
+        })
+        return;
+    }
+
+    let ownerIdNumber = Number(ownerIdText);
+    if (!Number.isInteger(ownerIdNumber)) {
+        res.json({
+            result: false,
+            message: "ownerId phải là số nguyên."
+        });
+        return;
+    }
+
+    // The owner ID is also the user ID,
+    // so checking for the existence of the owner ID
+    // is to check for the existence of the user ID
+    userModule.checkIfUserIdExists(
+        ownerIdNumber,
+        function (isOwnerIdExists) {
+            if (!isOwnerIdExists) {
+                res.json({
+                    result: false,
+                    message: "ownerId không tồn tại."
+                });
+                return;
+            }
+
+            let selectApprovedJobNewsListOfThisOwnerSql =
+                "select " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_ID + " as jobNewsId, " +
+
+                commonResources.USERS_COLUMN_FULL_NAME + " " +
+                "as ownerName, " +
+
+                commonResources.JOB_NEWS_STATUS_COLUMN_NAME + ", " +
+
+                commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+                commonResources.TYPES_OF_WORK_COLUMN_NAME +
+                " as typeOfWorkName, " +
+
+                commonResources.JOB_NEWS_COLUMN_COMPANY_NAME + ", " +
+                commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
+                commonResources.JOB_NEWS_COLUMN_SALARY_VND + ", " +
+                commonResources.JOB_NEWS_COLUMN_JOB_DESCRIPTION + ", " +
+
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_NAME + " " +
+                "as subdistrictName, " +
+
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_NAME + " " +
+                "as districtName, " +
+
+                commonResources.STATE_PROVINCES_TABLE_NAME + "." +
+                commonResources.STATE_PROVINCES_COLUMN_NAME + " " +
+                "as stateProvinceName, " +
+
+                commonResources.JOB_NEWS_COLUMN_DETAIL_ADDRESS + ", " +
+                commonResources
+                    .JOB_NEWS_COLUMN_REQUIRED_NUMBER_YEARS_EXPERIENCES
+                + ", " +
+
+                commonResources.JOB_TITLES_TABLE_NAME + "." +
+                commonResources.JOB_TITLES_COLUMN_NAME + " " +
+                "as jobTitleName, " +
+
+                commonResources
+                    .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + " " +
+
+                "from " +
+                commonResources.JOB_NEWS_TABLE_NAME + " " +
+
+                "inner join " +
+                commonResources.USERS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_OWNER_ID + " = " +
+                commonResources.USERS_TABLE_NAME + "." +
+                commonResources.USERS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.JOB_NEWS_STATUS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_STATUS_ID + " = " +
+                commonResources.JOB_NEWS_STATUS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_STATUS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.TYPES_OF_WORK_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_TYPE_OF_WORD_ID + " = " +
+                commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
+                commonResources.TYPES_OF_WORK_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_ADDRESS_SUBDISTRICT_ID
+                + " = " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.JOB_TITLES_TABLE_NAME + " on " +
+                commonResources.JOB_NEWS_TABLE_NAME + "." +
+                commonResources.JOB_NEWS_COLUMN_JOB_TITLE_ID + " = " +
+                commonResources.JOB_TITLES_TABLE_NAME + "." +
+                commonResources.JOB_TITLES_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.DISTRICTS_TABLE_NAME + " on " +
+                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+                commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID + " = " +
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_ID + " " +
+
+                "inner join " +
+                commonResources.STATE_PROVINCES_TABLE_NAME + " on " +
+                commonResources.DISTRICTS_TABLE_NAME + "." +
+                commonResources.DISTRICTS_COLUMN_STATE_PROVINCE_ID + " = " +
+                commonResources.STATE_PROVINCES_TABLE_NAME + "." +
+                commonResources.STATE_PROVINCES_COLUMN_ID + " " +
+
+                "where " +
+                commonResources.JOB_NEWS_COLUMN_OWNER_ID+ " = ? and " +
+                commonResources.JOB_NEWS_COLUMN_STATUS_ID + " = " +
+                commonResources.JOB_NEWS_STATUS_VALUE_APPROVED + ";";
+
+            dbConnect.query(
+                selectApprovedJobNewsListOfThisOwnerSql,
+                [ownerIdNumber],
+                function (getApprovedJobNewsErr,
+                          getApprovedJobNewsResult) {
+                    if (getApprovedJobNewsErr) {
+                        console.trace();
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra " +
+                                "khi truy vấn " +
+                                "tin đã phê duyệt" +
+                                " của người dùng này.",
+                            err: getApprovedJobNewsErr
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        result: true,
+                        approvedJobNewsOfThisOwnerArr:
+                                    getApprovedJobNewsResult
+                    });
+                }
+            );
+        }
+    );
+});
+
 // JobApplications
 router.post('/job-applications/apply-job', (req, res) => {
     // Validate userId
