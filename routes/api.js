@@ -4948,6 +4948,7 @@ router.post('/job-news/details', (req, res) => {
                 commonResources.USERS_COLUMN_FULL_NAME + " " +
                 "as ownerName, " +
 
+                commonResources.USERS_COLUMN_AVATAR_URL + ", " +
                 commonResources.JOB_NEWS_STATUS_COLUMN_NAME + ", " +
 
                 commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
