@@ -17,6 +17,8 @@ const typeOfWorksModule = require('./types-of-work');
 const jobTitlesModule = require('./job-titles');
 const jobApplicationsModule =
                     require('../public/javascripts/job-applications');
+const jobNewsRequiredSkillsModule =
+    require('../public/javascripts/job-news-required-skills');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -1653,7 +1655,7 @@ router.post('/users/update', (req, res) => {
                                         .numbersOfTypeOfWorkHaveThisId;
                                 if (numberTypeOfWorkHaveThisId === 0) {
                                     res.json({
-                                        resutl: false,
+                                        result: false,
                                         message: "Id hình thức làm việc" +
                                             " không tồn tại."
                                     });
@@ -4344,13 +4346,13 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
 
                 jobSkillsModule.checkIfJobSkillIdExists(
                     jobSkillIdNumber,
-                    function(checkJobSkillIdEErr, isJobSkillIdExist) {
-                        if (checkJobSkillIdEErr) {
+                    function(checkJobSkillIdErr, isJobSkillIdExist) {
+                        if (checkJobSkillIdErr) {
                             res.json({
                                 result: false,
                                 message: "Có lỗi xảy ra khi truy vấn " +
                                     "id JobSkills.",
-                                err: checkJobSkillIdEErr
+                                err: checkJobSkillIdErr
                             });
                             return;
                         }
@@ -4407,7 +4409,7 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                                 }
 
                                 res.json({
-                                    resutl: true,
+                                    result: true,
                                     message: "Cập nhật kỹ năng " +
                                         "chuyên môn thành công."
                                 });
@@ -4565,7 +4567,7 @@ router.post('/job-skills-of-candidate/set-user-job-skills', (req, res) => {
                     }
 
                     res.json({
-                        resutl: true,
+                        result: true,
                         message: "Cập nhật kỹ năng " +
                             "chuyên môn thành công."
                     });
@@ -6177,6 +6179,7 @@ router.post('/job-news/remove', (req, res) => {
     );
 });
 
+// JobNewsRequiredSkills
 router.post('/job-news-required-skills/required-job-skills-of-job-news', (req, res) => {
     // Validate
     if (req.body.jobNewsId === undefined) {
@@ -6275,6 +6278,466 @@ router.post('/job-news-required-skills/required-job-skills-of-job-news', (req, r
                     res.json({
                         result: true,
                         requiredJobSkills: selectJobSkillsResult
+                    });
+                }
+            );
+        }
+    );
+});
+
+router.post('/job-news-required-skills/set-job-news-required-job-skills', (req, res) => {
+    // Parse json from requestDataJsonString field
+    if (req.body.requestDataJsonString === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường requestDataJsonString."
+        });
+        return;
+    }
+
+    let requestDataJsonString = req.body.requestDataJsonString.trim();
+    if (requestDataJsonString.length === 0) {
+        res.json({
+            result: false,
+            message: "requestDataJsonString không được để trống."
+        });
+        return;
+    }
+
+    try {
+        JSON.parse(requestDataJsonString);
+    } catch (parseJsonErr) {
+        res.json({
+            result: false,
+            message: "Giá trị trường requestDataJsonString" +
+                " phải là một chuỗi JSON."
+        });
+        return;
+    }
+
+    let requestDataJsObj = JSON.parse(requestDataJsonString);
+
+    // Handle data in JSON string
+    // Validate jobNewsId
+    if (requestDataJsObj.jobNewsId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường jobNewsId trong chuỗi JSON của trường requestDataJsObj."
+        });
+        return;
+    }
+
+    let jobNewsIdText = requestDataJsObj.jobNewsId.trim();
+    if (jobNewsIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "jobNewsId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(jobNewsIdText)) {
+        res.json({
+            result: false,
+            message: "jobNewsId phải là một số."
+        });
+        return;
+    }
+
+    let jobNewsIdNumber = Number(jobNewsIdText);
+    if (!Number.isInteger(jobNewsIdNumber)) {
+        res.json({
+            result: false,
+            message: "jobNewsId phải là số nguyên."
+        });
+        return;
+    }
+
+    jobNewsModule.checkIfJobNewsIdExists(
+        jobNewsIdNumber,
+        async function (checkJosNewsIdErr, isJobNewsIdExist) {
+            if (checkJosNewsIdErr) {
+                console.trace();
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi truy vấn id JobNews.",
+                    err: checkJosNewsIdErr
+                });
+                return;
+            }
+
+            if (isJobNewsIdExist === false) {
+                res.json({
+                    result: false,
+                    message: "ID JobNews không tồn tại."
+                });
+                return;
+            }
+
+            // Pass validate jobNewsId
+            // Validate jobSkillIdArr
+            if (requestDataJsObj.jobSkillIdArr === undefined) {
+                res.json({
+                    result: false,
+                    message: "Thiếu trường jobSkillIdArr " +
+                        "trong chuỗi JSON của trường requestDataJsObj."
+                });
+                return;
+            }
+
+            if (!Array.isArray(requestDataJsObj.jobSkillIdArr)) {
+                res.send({
+                    result: false,
+                    message: "Giá trị của trường jobSkillIdArr " +
+                        "(trong chuỗi JSON của trường requestDataJsObj) " +
+                        "phải là một mảng."
+                });
+                return;
+            }
+
+            // If skill array empty -> delete all skill records
+            if (requestDataJsObj.jobSkillIdArr.length === 0) {
+                let deleteAllRequiredJobSkillsOfAJobNewsPromise =
+                    new Promise(
+                        function (myResolve, myReject) {
+                            jobNewsRequiredSkillsModule
+                                .deleteAllRequiredJobSkillsOfAJobNews(
+                                    jobNewsIdNumber,
+                                    function (
+                                        deleteRequiredJobSkillOfThisJobNewsErr,
+                                        deleteRequiredJobSkillOfThisJobNewsResult) {
+
+                                        if (deleteRequiredJobSkillOfThisJobNewsErr) {
+                                            res.json({
+                                                result: false,
+                                                message: "Xóa thông tin " +
+                                                    "kỹ năng chuyên môn yêu cầu" +
+                                                    " lỗi.",
+                                                err: deleteRequiredJobSkillOfThisJobNewsErr
+                                            });
+                                            throw deleteRequiredJobSkillOfThisJobNewsErr;
+                                        } else {
+                                            myResolve(deleteRequiredJobSkillOfThisJobNewsResult)
+                                        }
+                                    }
+                                );
+                        }
+                    );
+                let deleteRequiredJobSkillOfThisJobNewsResult =
+                    await deleteAllRequiredJobSkillsOfAJobNewsPromise;
+
+                res.json({
+                    result: true,
+                    message: "Xóa "
+                        + deleteRequiredJobSkillOfThisJobNewsResult
+                            .affectedRows +
+                        " kỹ năng đã lưu trước đó. Cập nhật " +
+                        "kỹ năng chuyên môn yêu cầu " +
+                        "thành công."
+                });
+                return;
+            }
+
+            // There is only 1 element in skill array
+            if (requestDataJsObj.jobSkillIdArr.length === 1) {
+                if (typeof(requestDataJsObj.jobSkillIdArr[0]) !== 'number') {
+                    res.json({
+                        result: false,
+                        message: "Phần tử của mảng jobSkillIdArr" +
+                            " phải là một số."
+                    });
+                    return;
+                }
+
+                let jobSkillIdNumber =
+                    Number(
+                        requestDataJsObj.jobSkillIdArr[0]
+                    );
+                if (!Number.isInteger(jobSkillIdNumber)) {
+                    res.json({
+                        result: false,
+                        message: "Phần tử của mảng jobSkillIdArr" +
+                            " phải là số nguyên."
+                    });
+                    return;
+                }
+
+                let checkIfJobSkillIdExistsPromise = new Promise(
+                    function (myResolve, myReject) {
+                        jobSkillsModule.checkIfJobSkillIdExists(
+                            jobSkillIdNumber,
+                            function (checkJobSkillIdErr,
+                                      isJobSkillIdExist) {
+                                if (checkJobSkillIdErr) {
+                                    res.json({
+                                        result: false,
+                                        message: "Có lỗi xảy ra khi truy vấn " +
+                                            "id JobSkills.",
+                                        err: checkJobSkillIdErr
+                                    });
+                                    throw checkJobSkillIdErr;
+                                } else {
+                                    myResolve(isJobSkillIdExist);
+                                }
+                            }
+                        );
+                    }
+                );
+                let isJobSkillIdExist =
+                    await checkIfJobSkillIdExistsPromise;
+                if (isJobSkillIdExist === false) {
+                    res.json({
+                        result: false,
+                        message: "ID JobSkills không tồn tại."
+                    });
+                    return;
+                }
+
+                let deleteAllRequiredJobSkillsOfAJobNewsPromise =
+                    new Promise(
+                        function (myResolve, myReject) {
+                            jobNewsRequiredSkillsModule
+                                .deleteAllRequiredJobSkillsOfAJobNews(
+                                    jobNewsIdNumber,
+                                    function (
+                                        deleteRequiredJobSkillOfThisJobNewsErr,
+                                        deleteRequiredJobSkillOfThisJobNewsResult) {
+
+                                        if (deleteRequiredJobSkillOfThisJobNewsErr) {
+                                            res.json({
+                                                result: false,
+                                                message: "Xóa thông tin " +
+                                                    "kỹ năng chuyên môn yêu cầu" +
+                                                    " lỗi.",
+                                                err: deleteRequiredJobSkillOfThisJobNewsErr
+                                            });
+                                            throw deleteRequiredJobSkillOfThisJobNewsErr;
+                                        } else {
+                                            myResolve(deleteRequiredJobSkillOfThisJobNewsResult)
+                                        }
+                                    }
+                                );
+                        }
+                    );
+                // Result is not being used, just use await
+                // to synchronous
+                let deleteRequiredJobSkillOfThisJobNewsResult =
+                    await deleteAllRequiredJobSkillsOfAJobNewsPromise;
+
+                let addRequiredJobSkillsForJobNewsPromise = new Promise(
+                    function (myResolve, myReject) {
+                        let addRequiredJobSkillsForJobNewsSql =
+                            "insert into " +
+                            commonResources
+                                .JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                            + "(" +
+                            commonResources
+                                .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                            + ", " +
+                            commonResources
+                                .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                            + ") " +
+                            "values(" +
+                            jobNewsIdNumber + ", " + jobSkillIdNumber
+                            + ");";
+                        dbConnect.query(
+                            addRequiredJobSkillsForJobNewsSql,
+                            function (addRequiredJobSkillsForJobNewsErr,
+                                      addRequiredJobSkillsForJobNewsResult) {
+                                if (addRequiredJobSkillsForJobNewsErr) {
+                                    res.json({
+                                        result: false,
+                                        message: "Có lỗi xảy ra " +
+                                           "khi thêm bản ghi.",
+                                        err: addRequiredJobSkillsForJobNewsErr
+                                    });
+                                    throw addRequiredJobSkillsForJobNewsErr;
+                                } else {
+                                    myResolve(addRequiredJobSkillsForJobNewsResult);
+                                }
+                            }
+                        );
+                    }
+                );
+                // Result isn't being used, just use to use await to synchronous
+                let addRequiredJobSkillsForJobNewsResult =
+                    await addRequiredJobSkillsForJobNewsPromise;
+                res.json({
+                    result: true,
+                    message: "Cập nhật kỹ năng " +
+                        "chuyên môn thành công."
+                });
+                return;
+            }
+
+            // There are more than 1 elements in skill array
+            // If one of element's value is not integer nor
+            // exist, return error message.
+            for (let i = 0;
+                 i < requestDataJsObj.jobSkillIdArr.length;
+                 i++) {
+                if (typeof(requestDataJsObj.jobSkillIdArr[i])
+                    !== 'number') {
+                    res.json({
+                        result: false,
+                        message: "Giá trị "
+                            + requestDataJsObj.jobSkillIdArr[i] +
+                            " không hợp lệ. Phần tử của mảng " +
+                            "jobSkillIdArr phải có kiểu giá trị là số."
+                    });
+                    return;
+                }
+
+                let jobSkillIdNumber =
+                    Number(
+                        requestDataJsObj.jobSkillIdArr[i]
+                    );
+                if (!Number.isInteger(jobSkillIdNumber)) {
+                    res.json({
+                        result: false,
+                        message: "Giá trị " + jobSkillIdNumber +
+                            " không hợp lệ. " +
+                            "Phần tử của mảng " +
+                            "jobSkillIdArr phải là số nguyên."
+                    });
+                    return;
+                }
+
+                let checkIfJobSkillIdExistsPromise = new Promise(
+                    function (myResolve, myReject) {
+                        let selectNumberOfJobSkillRecordsHaveThisIdSql =
+                            "select count(" +
+                            commonResources.JOB_SKILLS_COLUMN_ID + ") " +
+                            "as numberOfJobSkillsHaveThisId " +
+                            "from " + commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                            "where " + commonResources.JOB_SKILLS_COLUMN_ID + " = ?;";
+                        dbConnect.query(
+                            selectNumberOfJobSkillRecordsHaveThisIdSql,
+                            [jobSkillIdNumber],
+                            function(checkJobSkillIdErr, checkJobSkillIdResult) {
+                                if (checkJobSkillIdErr) {
+                                    res.json({
+                                        result: false,
+                                        message: "Lỗi truy vấn JobSkills",
+                                        err: checkJobSkillIdErr
+                                    });
+                                    throw checkJobSkillIdErr;
+                                } else {
+                                    myResolve(checkJobSkillIdResult);
+                                }
+                            }
+                        );
+                    }
+                );
+
+                let numberOfJobSkillRecordsHaveThisIdQueryResult =
+                    await checkIfJobSkillIdExistsPromise;
+                // [{"numberOfJobSkillsHaveThisId":1}]
+                let numberOfJobSkillsHaveThisId =
+                    numberOfJobSkillRecordsHaveThisIdQueryResult[0]
+                        .numberOfJobSkillsHaveThisId;
+                if (numberOfJobSkillsHaveThisId === 0) {
+                    res.json({
+                        result: false,
+                        message: "Giá trị " + jobSkillIdNumber +
+                            " không hợp lệ. "
+                            + "ID JobSkills không tồn tại."
+                    });
+                    return;
+                }
+
+                // Ensure that the values not duplicate
+                for (let j = 0; j < i; j++) {
+                    if (jobSkillIdNumber ===
+                        Number(requestDataJsObj.jobSkillIdArr[j])) {
+                        res.json({
+                            result: false,
+                            message: "Vui lòng nhập các giá trị khác nhau " +
+                                "cho các phần tử của mảng jobSkillIdArr."
+                        });
+                        return;
+                    }
+                }
+            }
+
+            // Pass validate
+            // Delete previous data
+            // then add new data
+            let deleteAllRequiredJobSkillsOfAJobNewsPromise =
+                new Promise(
+                    function (myResolve, myReject) {
+                        jobNewsRequiredSkillsModule
+                            .deleteAllRequiredJobSkillsOfAJobNews(
+                                jobNewsIdNumber,
+                                function (
+                                    deleteRequiredJobSkillOfThisJobNewsErr,
+                                    deleteRequiredJobSkillOfThisJobNewsResult) {
+
+                                    if (deleteRequiredJobSkillOfThisJobNewsErr) {
+                                        res.json({
+                                            result: false,
+                                            message: "Xóa thông tin " +
+                                                "kỹ năng chuyên môn yêu cầu" +
+                                                " lỗi.",
+                                            err: deleteRequiredJobSkillOfThisJobNewsErr
+                                        });
+                                        throw deleteRequiredJobSkillOfThisJobNewsErr;
+                                    } else {
+                                        myResolve(deleteRequiredJobSkillOfThisJobNewsResult)
+                                    }
+                                }
+                            );
+                    }
+                );
+            // Result is not being used, just use await
+            // to synchronous
+            let deleteRequiredJobSkillOfThisJobNewsResult =
+                await deleteAllRequiredJobSkillsOfAJobNewsPromise;
+
+            let addMultipleRequiredJobSkillsForAJobNewsSql =
+                "insert into " +
+                commonResources
+                    .JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                + "(" +
+                commonResources
+                    .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                + ", " +
+                commonResources
+                    .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                + ") values";
+            for (let i = 0;
+                 i < requestDataJsObj.jobSkillIdArr.length;
+                 i++) {
+                addMultipleRequiredJobSkillsForAJobNewsSql +=
+                    "(" + jobNewsIdNumber + ", " +
+                    requestDataJsObj.jobSkillIdArr[i] + "), ";
+            }
+
+            addMultipleRequiredJobSkillsForAJobNewsSql =
+                addMultipleRequiredJobSkillsForAJobNewsSql.substring(
+                    0,
+                    addMultipleRequiredJobSkillsForAJobNewsSql.length - 2
+                );
+            addMultipleRequiredJobSkillsForAJobNewsSql += ";";
+
+            dbConnect.query(
+                addMultipleRequiredJobSkillsForAJobNewsSql,
+                function (addRequiredJobSkillsForJobNewsErr,
+                          addRequiredJobSkillsForJobNewsResult) {
+                    if (addRequiredJobSkillsForJobNewsErr) {
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra " +
+                                "khi thêm bản ghi.",
+                            err: addRequiredJobSkillsForJobNewsErr
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        result: true,
+                        message: "Cập nhật kỹ năng " +
+                            "chuyên môn thành công."
                     });
                 }
             );
@@ -6599,4 +7062,5 @@ router.post(
         }
     );
 });
+
 module.exports = router;

@@ -367,6 +367,32 @@ POST /api/job-news-required-skills/required-job-skills-of-job-news
 Tham số: jobNewsId (là ID bài tuyển dụng, bắt buộc, int, không trống,
 phải tồn tại).
 
+---------------------
+Tạo/cập nhật thông tin kỹ năng chuyên môn yêu cầu cho tin tuyển dụng:
+(Mỗi lần request lên đều xóa dữ liệu cũ và set dữ liệu mới vào)
+POST /api/job-news-required-skills/set-job-news-required-job-skills
+Tham số:
+requestDataJsonString
+- Bắt buộc, không trống
+- String là chuỗi JSON, trong chuỗi JSON có chứa các trường sau:
+    + jobNewsId: int, bắt buộc, phải tồn tại
+    + jobSkillIdArr: Là mảng ID JobSkills, các phần tử là số nguyên,
+phải tồn tại.
+        * Nếu jobSkillIdArr không có phần tử nào thì tất cả dữ liệu
+        JobNewsRequiredSkills của người dùng đó sẽ bị xóa.
+        * Nếu jobSkillIdArr có 1 phần tử: Phần tử phải là số nguyên,
+        phải có giá trị nằm trong các ID của JobSkills. Sẽ xóa hết dữ liệu trước đó
+        và thêm ID của kỹ năng này vào.
+        * Nếu jobSkillIdArr có hơn 2 phần tử: Tất cả các phần tử
+        phải là số nguyên, phải có giá trị nằm trong các ID của JobSkills,
+        không có các giá trị trùng nhau. Sẽ xóa hết dữ liệu trước đó
+        và thay bằng các kỹ năng này vào.
+
+Ví dụ: Một request có key là requestDataJsonString và value là
+'{"jobNewsId":"1","jobSkillIdArr": [1, 2, 3]}'.
+
+(Danh sách JobSkills lấy JSON ở API GET /api/job-skills
+hoặc xem trên Web ở /job-skills)
 ====================
 
 JobApplications
