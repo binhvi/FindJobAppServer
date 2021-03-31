@@ -545,7 +545,7 @@ router.post('/users/create', async (req, res) => {
                     if (password.length === 0) {
                         res.json({
                             result: false,
-                            message: "Hãy nhập password."
+                            message: "Hãy nhập mật khẩu."
                         });
                         return;
                     }
