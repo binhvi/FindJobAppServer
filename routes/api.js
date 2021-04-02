@@ -6913,11 +6913,7 @@ router.post('/job-applications/apply-job', (req, res) => {
                                                         === true) {
                                         res.json({
                                             result: false,
-                                            message: "Người dùng đã " +
-                                                "ứng tuyển công việc này" +
-                                                " trước đó nên không cần" +
-                                                " phải ứng tuyển " +
-                                                "thêm lần nữa."
+                                            message: "Bạn đã ứng tuyển công việc này."
                                         });
                                         return;
                                     }
