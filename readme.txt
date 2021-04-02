@@ -421,7 +421,7 @@ Tham số:
 Hủy ứng tuyển (dành cho ứng viên)
 POST /api/job-applications/cancel-job-application-from-candidate
 Tham số:
-- userId (bắt buộc, int, không trống, phải tồn tại)
+- candidateUserId (là ID người dùng của người ứng tuyển, bắt buộc, int, không trống, phải tồn tại)
 - jobNewsId (bắt buộc, int, không trống, phải tồn tại)
 
 --------------------------------

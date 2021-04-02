@@ -7146,50 +7146,50 @@ router.post(
 });
 
 router.post(
-    '/job-applications/cancel-job-application-for-candidate',
+    '/job-applications/cancel-job-application-from-candidate',
     (req, res) => {
         // Validate userId
-        if (req.body.userId === undefined) {
+        if (req.body.candidateUserId === undefined) {
             res.json({
                 result: false,
-                message: "Thiếu trường userId."
+                message: "Thiếu trường candidateUserId."
             });
             return;
         }
 
-        let userIdText = req.body.userId.trim();
-        if (userIdText.length === 0) {
+        let candidateUserIdText = req.body.candidateUserId.trim();
+        if (candidateUserIdText.length === 0) {
             res.json({
                 result: false,
-                message: "userId không được để trống."
+                message: "candidateUserId không được để trống."
             });
             return;
         }
 
-        if (isNaN(userIdText)) {
+        if (isNaN(candidateUserIdText)) {
             res.json({
                 result: false,
-                message: "userId phải là một số."
+                message: "candidateUserId phải là một số."
             })
             return;
         }
 
-        let userIdNumber = Number(userIdText);
-        if (!Number.isInteger(userIdNumber)) {
+        let candidateUserIdNumber = Number(candidateUserIdText);
+        if (!Number.isInteger(candidateUserIdNumber)) {
             res.json({
                 result: false,
-                message: "userId phải là số nguyên."
+                message: "candidateUserId phải là số nguyên."
             });
             return;
         }
 
         userModule.checkIfUserIdExists(
-            userIdNumber,
+            candidateUserIdNumber,
             function (isUserIdExists) {
                 if (!isUserIdExists) {
                     res.json({
                         result: false,
-                        message: "userId không tồn tại."
+                        message: "ID người dùng không tồn tại."
                     });
                     return;
                 }
@@ -7250,7 +7250,78 @@ router.post(
                             return;
                         }
 
+                        // Return if candidate hadn't applied
+                        // for this job yet
+                        jobApplicationsModule.checkIfThisUserHasAppliedForThisJobNewsBefore(
+                            candidateUserIdNumber,
+                            jobNewsIdNumber,
+                            function (checkIfUserHasAppliedThisJobBeforeErr,
+                                      hasUserAppliedThisJobBefore) {
+                                if (checkIfUserHasAppliedThisJobBeforeErr) {
+                                    console.trace();
+                                    res.json({
+                                        result: false,
+                                        message: "Có lỗi xảy ra " +
+                                            "khi kiểm tra " +
+                                            "người dùng đã ứng tuyển" +
+                                            " tin này hay chưa.",
+                                        err: checkIfUserHasAppliedThisJobBeforeErr
+                                    });
+                                    return;
+                                }
 
+                                if (hasUserAppliedThisJobBefore === false) {
+                                    res.json({
+                                        result: false,
+                                        message: "Người dùng " +
+                                            "chưa ứng tuyển " +
+                                            "công việc này."
+                                    });
+                                    return;
+                                }
+
+                                let cancelApplyJobSql =
+                                    "delete from " +
+                                        commonResources
+                                            .JOB_APPLICATIONS_TABLE_NAME
+                                            + " " +
+                                    "where " +
+                                        commonResources
+                                            .JOB_APPLICATIONS_COL_USER_ID
+                                        + " = ? and " +
+                                        commonResources
+                                            .JOB_APPLICATIONS_COL_JOB_NEWS_ID
+                                        + " = ?;"
+                                dbConnect.query(
+                                    cancelApplyJobSql,
+                                    [
+                                        candidateUserIdNumber,
+                                        jobNewsIdNumber
+                                    ],
+                                    function (
+                                        cancelApplyJobErr,
+                                        cancelApplyJobResult
+                                    ) {
+                                        if (cancelApplyJobErr) {
+                                            console.trace();
+                                            res.json({
+                                                result: false,
+                                                message: "Có lỗi xảy ra " +
+                                                    "khi hủy ứng tuyển.",
+                                                err: cancelApplyJobErr
+                                            });
+                                            return;
+                                        }
+
+                                        res.json({
+                                            result: true,
+                                            message: "Hủy ứng tuyển " +
+                                                "thành công."
+                                        });
+                                    }
+                                );
+                            }
+                        );
                     }
                 );
             }
