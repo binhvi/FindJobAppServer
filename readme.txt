@@ -401,11 +401,12 @@ JobApplications
 POST /api/job-applications/apply-job
 Tham số:
 - userId (bắt buộc, int, không trống, phải tồn tại, nếu người ứng tuyển
-là người đăng tin tuyển dụng thì không được tự ứng tuyển vào tin mình đăng.).
+là người đăng tin tuyển dụng thì không được tự ứng tuyển vào tin mình đăng).
 - jobNewsId (bắt buộc, int, không trống, phải tồn tại,
 tin phải được phê duyệt rồi).
-Nếu ứng viên đã ứng tuyển một công việc rồi mà vẫn ứng tuyển tiếp
-sẽ có thông báo lỗi.
+Nếu ứng viên đã ứng tuyển một công việc rồi mà vẫn ứng tuyển tiếp vào
+công việc đó thì sẽ có thông báo lỗi (ứng tuyển vào những công việc khác
+vẫn được).
 
 -----------------------
 Xem danh sách những tin mà ứng viên đã ứng tuyển

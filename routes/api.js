@@ -6960,12 +6960,7 @@ router.post('/job-applications/apply-job', (req, res) => {
                                                 res.json({
                                                     result: false,
                                                     message:
-                                                        "Người đăng tin" +
-                                                        " tuyển dụng" +
-                                                        " không được" +
-                                                        " tự ứng tuyển vào " +
-                                                        "chính tin " +
-                                                        "của mình."
+                                                        "Tin tuyển dụng này là của bạn."
                                                 });
                                                 return;
                                             }
