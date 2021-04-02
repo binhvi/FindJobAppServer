@@ -340,6 +340,8 @@ Tham số:
  /\w{1,}@\w{1,}.\w{1,}/ (anyword@anyword.anyword)
 - companyPhoneNumber (bắt buộc, String, phải đúng định dạng
  (chuỗi 10-12 chữ số)
+
+ (Một người dùng chỉ có thể đăng tối đa 5 tin)
 ------------------
 Xem những tin tuyển dụng của một người dùng đăng mà chưa được duyệt
 POST /api/job-news/get-unapproved-job-news-of-an-owner
