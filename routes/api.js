@@ -6922,43 +6922,93 @@ router.post('/job-applications/apply-job', (req, res) => {
                                         return;
                                     }
 
-                                    // Pass validate
-                                    let applyJobSql =
-                                        "insert into " +
+                                    // If the candidate is the one who
+                                    // posted this job news, he/she
+                                    // cannot apply this job
+                                    let getUserIdOfJobNewsOwnerSql =
+                                        "select " +
                                             commonResources
-                                                .JOB_APPLICATIONS_TABLE_NAME
-                                            + "(" +
-                                            commonResources
-                                                .JOB_APPLICATIONS_COL_USER_ID
-                                            + ", " +
-                                            commonResources
-                                                .JOB_APPLICATIONS_COL_JOB_NEWS_ID
-                                            + ") " +
-                                        "values(" +
-                                            userIdNumber + ", " +
-                                            jobNewsIdNumber + ");";
+                                                .JOB_NEWS_COLUMN_OWNER_ID +
+                                        " from " +
+                                            commonResources.JOB_NEWS_TABLE_NAME
+                                        + " where " +
+                                            commonResources.JOB_NEWS_COLUMN_ID
+                                        + " = ?;";
                                     dbConnect.query(
-                                        applyJobSql,
-                                        function (applyJobErr,
-                                                  applyJobResult) {
-                                            if (applyJobErr) {
+                                        getUserIdOfJobNewsOwnerSql,
+                                        [jobNewsIdNumber],
+                                        function (getJobNewsOwnerUserIdErr,
+                                                  getJobNewsOwnerUserIdResult) {
+                                            if (getJobNewsOwnerUserIdErr) {
                                                 console.trace();
                                                 res.json({
                                                     result: false,
-                                                    message: "Có lỗi" +
-                                                        " xảy ra khi" +
-                                                        " lưu thông tin" +
-                                                        " ứng tuyển.",
-                                                    err: applyJobErr
+                                                    message: "Có lỗi xảy ra " +
+                                                        "khi truy vấn " +
+                                                        "ID của người đăng tin.",
+                                                    err: getJobNewsOwnerUserIdErr
                                                 });
                                                 return;
                                             }
 
-                                            res.json({
-                                                result: true,
-                                                message: "Lưu thông tin" +
-                                                    " ứng tuyển thành công."
-                                            });
+                                            // [ { ownerId: 22 } ]
+                                            let jobNewsOwnerIdNumber =
+                                                getJobNewsOwnerUserIdResult[0]
+                                                    .ownerId;
+                                            if (jobNewsOwnerIdNumber
+                                                    === userIdNumber) {
+                                                res.json({
+                                                    result: false,
+                                                    message:
+                                                        "Người đăng tin" +
+                                                        " tuyển dụng" +
+                                                        " không được" +
+                                                        " tự ứng tuyển vào " +
+                                                        "chính tin " +
+                                                        "của mình."
+                                                });
+                                                return;
+                                            }
+
+                                            // Pass validate
+                                            let applyJobSql =
+                                                "insert into " +
+                                                    commonResources
+                                                        .JOB_APPLICATIONS_TABLE_NAME
+                                                    + "(" +
+                                                    commonResources
+                                                        .JOB_APPLICATIONS_COL_USER_ID
+                                                    + ", " +
+                                                    commonResources
+                                                        .JOB_APPLICATIONS_COL_JOB_NEWS_ID
+                                                    + ") " +
+                                                "values(" +
+                                                    userIdNumber + ", " +
+                                                    jobNewsIdNumber + ");";
+                                            dbConnect.query(
+                                                applyJobSql,
+                                                function (applyJobErr,
+                                                          applyJobResult) {
+                                                    if (applyJobErr) {
+                                                        console.trace();
+                                                        res.json({
+                                                            result: false,
+                                                            message: "Có lỗi" +
+                                                                " xảy ra khi" +
+                                                                " lưu thông tin" +
+                                                                " ứng tuyển.",
+                                                            err: applyJobErr
+                                                        });
+                                                        return;
+                                                    }
+
+                                                    res.json({
+                                                        result: true,
+                                                        message: "Lưu thông tin" +
+                                                            " ứng tuyển thành công."
+                                                    });
+                                                }
+                                            );
                                         }
                                     );
                                 }
@@ -7063,5 +7113,118 @@ router.post(
         }
     );
 });
+
+router.post(
+    '/job-applications/cancel-job-application-for-candidate',
+    (req, res) => {
+        // Validate userId
+        if (req.body.userId === undefined) {
+            res.json({
+                result: false,
+                message: "Thiếu trường userId."
+            });
+            return;
+        }
+
+        let userIdText = req.body.userId.trim();
+        if (userIdText.length === 0) {
+            res.json({
+                result: false,
+                message: "userId không được để trống."
+            });
+            return;
+        }
+
+        if (isNaN(userIdText)) {
+            res.json({
+                result: false,
+                message: "userId phải là một số."
+            })
+            return;
+        }
+
+        let userIdNumber = Number(userIdText);
+        if (!Number.isInteger(userIdNumber)) {
+            res.json({
+                result: false,
+                message: "userId phải là số nguyên."
+            });
+            return;
+        }
+
+        userModule.checkIfUserIdExists(
+            userIdNumber,
+            function (isUserIdExists) {
+                if (!isUserIdExists) {
+                    res.json({
+                        result: false,
+                        message: "userId không tồn tại."
+                    });
+                    return;
+                }
+
+                // Validate jobNewsId
+                if (req.body.jobNewsId === undefined) {
+                    res.json({
+                        result: false,
+                        message: "Thiếu trường jobNewsId."
+                    });
+                    return;
+                }
+
+                let jobNewsIdText = req.body.jobNewsId.trim();
+                if (jobNewsIdText.length === 0) {
+                    res.json({
+                        result: false,
+                        message: "jobNewsId không được để trống."
+                    });
+                    return;
+                }
+
+                if (isNaN(jobNewsIdText)) {
+                    res.json({
+                        result: false,
+                        message: "jobNewsId phải là một số."
+                    });
+                    return;
+                }
+
+                let jobNewsIdNumber = Number(jobNewsIdText);
+                if (!Number.isInteger(jobNewsIdNumber)) {
+                    res.json({
+                        result: false,
+                        message: "jobNewsId phải là số nguyên."
+                    });
+                    return;
+                }
+
+                jobNewsModule.checkIfJobNewsIdExists(
+                    jobNewsIdNumber,
+                    function (checkJosNewsIdErr, isJobNewsIdExist) {
+                        if (checkJosNewsIdErr) {
+                            console.trace();
+                            res.json({
+                                result: false,
+                                message: "Có lỗi xảy ra khi truy vấn id JobNews.",
+                                err: checkJosNewsIdErr
+                            });
+                            return;
+                        }
+
+                        if (isJobNewsIdExist === false) {
+                            res.json({
+                                result: false,
+                                message: "ID JobNews không tồn tại."
+                            });
+                            return;
+                        }
+
+
+                    }
+                );
+            }
+        );
+    }
+);
 
 module.exports = router;
