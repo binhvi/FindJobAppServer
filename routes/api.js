@@ -5154,567 +5154,607 @@ router.post('/job-news/create', (req, res) => {
                return;
            }
 
-           // Validate companyName
-           if (req.body.companyName === undefined) {
-               res.json({
-                  result: false,
-                  message: "Thiếu trường companyName."
-               });
-               return;
-           }
+           let selectCountOfJobNewsOfThisOwnerSql =
+               "select count(" +
+                    commonResources.JOB_NEWS_COLUMN_ID + ") " +
+                    " as numbersOfJobNewsOfThisOwner " +
+               "from " +
+                    commonResources.JOB_NEWS_TABLE_NAME + " " +
+               "where " +
+                    commonResources.JOB_NEWS_COLUMN_OWNER_ID +
+                    " = ?;";
+           dbConnect.query(
+               selectCountOfJobNewsOfThisOwnerSql,
+               [userIdNumber],
+               function (selectCountOfJobNewsOfThisOwnerErr,
+                         selectCountOfJobNewsOfThisOwnerResult) {
+                   if (selectCountOfJobNewsOfThisOwnerErr) {
+                       console.trace();
+                       res.json({
+                           result: false,
+                           message: "Có lỗi xảy ra khi truy vấn " +
+                               "số tin người dùng này đã đăng.",
+                           err: selectCountOfJobNewsOfThisOwnerErr
+                       });
+                       return;
+                   }
 
-           let companyName = req.body.companyName.trim();
-           if (companyName.length === 0) {
-               res.json({
-                   result: false,
-                   message: "Tên công ty không được để trống."
-               });
-               return;
-           }
+                   // [ { numbersOfJobNewsOfThisOwner: 6 } ]
+                   let numbersOfJobNewsOfThisOwner =
+                       selectCountOfJobNewsOfThisOwnerResult[0]
+                           .numbersOfJobNewsOfThisOwner;
+                   if (numbersOfJobNewsOfThisOwner >= 5) {
+                       res.json({
+                           result: false,
+                           message: "Người dùng chỉ được đăng" +
+                               " tối đa 5 tin."
+                       });
+                       return;
+                   }
 
-           // Validate jobShortDescription
-           if (req.body.jobShortDescription === undefined) {
-               res.json({
-                  result: false,
-                  message: "Thiếu trường jobShortDescription."
-               });
-               return;
-           }
-
-            let jobShortDescriptionText =
-                req.body.jobShortDescription.trim();
-            if (jobShortDescriptionText.length === 0) {
-                res.json({
-                   result: false,
-                   message: "Mô tả ngắn/tên công việc không được để trống."
-                });
-                return;
-            }
-
-            // Validate salaryInVnd
-           if (req.body.salaryInVnd === undefined) {
-               res.json({
-                  result: false,
-                  message: "Thiếu trường salaryInVnd."
-               });
-               return;
-           }
-
-           let salaryInVndText = req.body.salaryInVnd.trim();
-           if (salaryInVndText.length === 0) {
-               res.json({
-                  result: false,
-                   message: "Mức lương không được để trống."
-               });
-               return;
-           }
-
-           if (isNaN(salaryInVndText)) {
-               res.json({
-                  result: false,
-                  message: "Mức lương phải là một số."
-               });
-               return;
-           }
-
-           let salaryInVndNumber = Number(salaryInVndText);
-           if (!Number.isInteger(salaryInVndNumber)) {
-               res.json({
-                  result: false,
-                  message: "Mức lương phải là số nguyên."
-               });
-               return;
-           }
-
-           if (salaryInVndNumber < 0) {
-               res.json({
-                   result: false,
-                   message: "Mức lương phải là số nguyên >= 0."
-               });
-               return;
-           }
-
-           // Validate jobDescription
-           if (req.body.jobDescription === undefined) {
-               res.json({
-                   result: false,
-                   message: "Thiếu trường jobDescription."
-               });
-               return;
-           }
-
-           let jobDescriptionText = req.body.jobDescription.trim();
-           if (jobDescriptionText.length === 0) {
-               res.json({
-                   result: false,
-                   message: "Phần mô tả công việc không được để trống."
-               });
-               return;
-           }
-
-           // Validate addressSubDistrictId
-           if (req.body.addressSubdistrictId === undefined) {
-               res.json({
-                  result: false,
-                  message: "Thiếu trường addressSubdistrictId."
-               });
-               return;
-           }
-
-           let addressSubdistrictIdText =
-                                    req.body.addressSubdistrictId.trim();
-           if (addressSubdistrictIdText.length === 0) {
-               res.json({
-                  result: false,
-                  message: "Hãy chọn địa chỉ " +
-                      "tỉnh/thành phố - quận/huyện - xã/phường."
-               });
-               return;
-           }
-
-           subdistrictsModule.checkIfSubDistrictIdExists(
-               addressSubdistrictIdText,
-               function (checkSubdistrictIdErr,
-                         isSubdistrictIdExists) {
-                   if (checkSubdistrictIdErr) {
+                   // Validate companyName
+                   if (req.body.companyName === undefined) {
                        res.json({
                           result: false,
-                          message: "Có lỗi xảy ra khi truy vấn ID xã.",
-                          err:  checkSubdistrictIdErr
+                          message: "Thiếu trường companyName."
                        });
                        return;
                    }
 
-                   if (isSubdistrictIdExists === false) {
+                   let companyName = req.body.companyName.trim();
+                   if (companyName.length === 0) {
                        res.json({
                            result: false,
-                           message: "ID xã không tồn tại."
+                           message: "Tên công ty không được để trống."
                        });
                        return;
                    }
 
-                   // Validate typeOfWorkId
-                   if (req.body.typeOfWorkId === undefined) {
+                   // Validate jobShortDescription
+                   if (req.body.jobShortDescription === undefined) {
+                       res.json({
+                          result: false,
+                          message: "Thiếu trường jobShortDescription."
+                       });
+                       return;
+                   }
+
+                    let jobShortDescriptionText =
+                        req.body.jobShortDescription.trim();
+                    if (jobShortDescriptionText.length === 0) {
+                        res.json({
+                           result: false,
+                           message: "Mô tả ngắn/tên công việc không được để trống."
+                        });
+                        return;
+                    }
+
+                    // Validate salaryInVnd
+                   if (req.body.salaryInVnd === undefined) {
+                       res.json({
+                          result: false,
+                          message: "Thiếu trường salaryInVnd."
+                       });
+                       return;
+                   }
+
+                   let salaryInVndText = req.body.salaryInVnd.trim();
+                   if (salaryInVndText.length === 0) {
+                       res.json({
+                          result: false,
+                           message: "Mức lương không được để trống."
+                       });
+                       return;
+                   }
+
+                   if (isNaN(salaryInVndText)) {
+                       res.json({
+                          result: false,
+                          message: "Mức lương phải là một số."
+                       });
+                       return;
+                   }
+
+                   let salaryInVndNumber = Number(salaryInVndText);
+                   if (!Number.isInteger(salaryInVndNumber)) {
+                       res.json({
+                          result: false,
+                          message: "Mức lương phải là số nguyên."
+                       });
+                       return;
+                   }
+
+                   if (salaryInVndNumber < 0) {
                        res.json({
                            result: false,
-                           message: "Thiếu trường typeOfWorkId."
+                           message: "Mức lương phải là số nguyên >= 0."
                        });
                        return;
                    }
 
-                   let typeOfWorkIdText = req.body.typeOfWorkId.trim();
-                   if (typeOfWorkIdText.length === 0) {
+                   // Validate jobDescription
+                   if (req.body.jobDescription === undefined) {
                        res.json({
                            result: false,
-                           message: "typeOfWorkId không được để trống."
+                           message: "Thiếu trường jobDescription."
                        });
                        return;
                    }
 
-                   if (isNaN(typeOfWorkIdText)) {
+                   let jobDescriptionText = req.body.jobDescription.trim();
+                   if (jobDescriptionText.length === 0) {
                        res.json({
                            result: false,
-                           message: "typeOfWorkId phải là một số."
+                           message: "Phần mô tả công việc không được để trống."
                        });
                        return;
                    }
 
-                   let typeOfWorkIdNumber = Number(typeOfWorkIdText);
-                   if (!Number.isInteger(typeOfWorkIdNumber)) {
+                   // Validate addressSubDistrictId
+                   if (req.body.addressSubdistrictId === undefined) {
                        res.json({
-                           result: false,
-                           message: "typeOfWorkId phải là số nguyên."
+                          result: false,
+                          message: "Thiếu trường addressSubdistrictId."
                        });
                        return;
                    }
 
-                   typeOfWorksModule.checkIfTypeOfWorkIdExists(
-                       typeOfWorkIdNumber,
-                       function (checkTypeOfWorkIdErr,
-                                        isTypeOfWorkIdExist) {
-                           if (checkTypeOfWorkIdErr) {
-                               console.trace(); // Print stack trace error
-                               res.json({
-                                   result: false,
-                                   message: "Có lỗi xảy ra " +
-                                       "khi truy vấn ID " +
-                                       "hình thức làm việc.",
-                                   err: checkTypeOfWorkIdErr
-                               });
-                               return;
-                           }
+                   let addressSubdistrictIdText =
+                                            req.body.addressSubdistrictId.trim();
+                   if (addressSubdistrictIdText.length === 0) {
+                       res.json({
+                          result: false,
+                          message: "Hãy chọn địa chỉ " +
+                              "tỉnh/thành phố - quận/huyện - xã/phường."
+                       });
+                       return;
+                   }
 
-                           if (isTypeOfWorkIdExist === false) {
-                               res.json({
-                                   result: false,
-                                   message: "ID hình thức làm việc" +
-                                       " không tồn tại."
-                               });
-                               return;
-                           }
-
-                           // Validate requiredNumberYearsOfExperiences
-                           if (req.body.requiredNumberYearsOfExperiences
-                                === undefined) {
-                               res.json({
-                                   result: false,
-                                   message: "Thiếu trường " +
-                                       "requiredNumberYearsOfExperiences."
-                               });
-                               return;
-                           }
-
-                           let requiredNumberYearsOfExperiencesText =
-                               req.body.requiredNumberYearsOfExperiences
-                                   .trim();
-                           if (requiredNumberYearsOfExperiencesText
-                                .length === 0) {
-                               res.json({
-                                   result: false,
-                                   message: "Số năm kinh nghiệm yêu cầu" +
-                                       " không được để trống."
-                               });
-                               return;
-                           }
-
-                           if (isNaN(requiredNumberYearsOfExperiencesText)) {
-                               res.json({
-                                   result: false,
-                                   message: "Số năm kinh nghiệm yêu cầu" +
-                                       " phải là một số."
-                               });
-                               return;
-                           }
-
-                           let requiredNumberYearsOfExperiences =
-                               Number(
-                                   requiredNumberYearsOfExperiencesText
-                               );
-                           if (!Number.isInteger(requiredNumberYearsOfExperiences)) {
-                               res.json({
-                                   result: false,
-                                   message: "Số năm kinh nghiệm yêu cầu" +
-                                       " phải là số nguyên."
-                               });
-                               return;
-                           }
-
-                           if (requiredNumberYearsOfExperiences < 0) {
-                               res.json({
-                                   result: false,
-                                   message: "Số năm kinh nghiệm yêu cầu" +
-                                       " phải là số nguyên >= 0."
-                               });
-                               return;
-                           }
-
-                           // Validate detailAddress
-                           if (req.body.detailAddress === undefined) {
-                               res.json({
-                                   result: false,
-                                   message: "Thiếu trường detailAddress."
-                               });
-                               return;
-                           }
-
-                           let detailAddressText =
-                                req.body.detailAddress.trim();
-                           if (detailAddressText.length === 0) {
-                               res.json({
-                                   result: false,
-                                   message: "Địa chỉ công ty cụ thể " +
-                                       "(đường, số nhà,...) " +
-                                       "không được để trống."
-                               });
-                               return;
-                           }
-
-                           // Validate jobTitleId
-                           if (req.body.jobTitleId === undefined) {
-                               res.json({
-                                   result: false,
-                                   message: "Thiếu trường jobTitleId."
-                               });
-                               return;
-                           }
-
-                           let jobTitleIdText =
-                                            req.body.jobTitleId.trim();
-                           if (jobTitleIdText.length === 0) {
+                   subdistrictsModule.checkIfSubDistrictIdExists(
+                       addressSubdistrictIdText,
+                       function (checkSubdistrictIdErr,
+                                 isSubdistrictIdExists) {
+                           if (checkSubdistrictIdErr) {
                                res.json({
                                   result: false,
-                                  message: "jobTitleId không được để trống."
+                                  message: "Có lỗi xảy ra khi truy vấn ID xã.",
+                                  err:  checkSubdistrictIdErr
                                });
                                return;
                            }
 
-                           if (isNaN(jobTitleIdText)) {
+                           if (isSubdistrictIdExists === false) {
                                res.json({
-                                  result: false,
-                                  message: "jobTitleId phải là một số."
+                                   result: false,
+                                   message: "ID xã không tồn tại."
                                });
                                return;
                            }
 
-                           let jobTitleIdNumber = Number(jobTitleIdText);
-                           if (!Number.isInteger(jobTitleIdNumber)) {
+                           // Validate typeOfWorkId
+                           if (req.body.typeOfWorkId === undefined) {
                                res.json({
-                                  result: false,
-                                  message: "jobTitleId phải là số nguyên."
+                                   result: false,
+                                   message: "Thiếu trường typeOfWorkId."
                                });
                                return;
                            }
 
-                           jobTitlesModule.checkIfJobTitleIdExists(
-                               jobTitleIdNumber,
-                               function (checkJobTitleIdErr,
-                                         isJobTitleIdExist) {
-                                   if (checkJobTitleIdErr) {
-                                       console.trace(); // Print error
-                                                        // stack trace
+                           let typeOfWorkIdText = req.body.typeOfWorkId.trim();
+                           if (typeOfWorkIdText.length === 0) {
+                               res.json({
+                                   result: false,
+                                   message: "typeOfWorkId không được để trống."
+                               });
+                               return;
+                           }
+
+                           if (isNaN(typeOfWorkIdText)) {
+                               res.json({
+                                   result: false,
+                                   message: "typeOfWorkId phải là một số."
+                               });
+                               return;
+                           }
+
+                           let typeOfWorkIdNumber = Number(typeOfWorkIdText);
+                           if (!Number.isInteger(typeOfWorkIdNumber)) {
+                               res.json({
+                                   result: false,
+                                   message: "typeOfWorkId phải là số nguyên."
+                               });
+                               return;
+                           }
+
+                           typeOfWorksModule.checkIfTypeOfWorkIdExists(
+                               typeOfWorkIdNumber,
+                               function (checkTypeOfWorkIdErr,
+                                                isTypeOfWorkIdExist) {
+                                   if (checkTypeOfWorkIdErr) {
+                                       console.trace(); // Print stack trace error
                                        res.json({
                                            result: false,
                                            message: "Có lỗi xảy ra " +
-                                               "khi truy vấn " +
-                                               "ID cấp bậc công việc" +
-                                               " nhận vào.",
-                                           err: checkJobTitleIdErr
+                                               "khi truy vấn ID " +
+                                               "hình thức làm việc.",
+                                           err: checkTypeOfWorkIdErr
                                        });
                                        return;
                                    }
 
-                                   if (isJobTitleIdExist === false) {
+                                   if (isTypeOfWorkIdExist === false) {
                                        res.json({
                                            result: false,
-                                           message: "ID cấp bậc công việc" +
-                                               " nhận vào không tồn tại."
+                                           message: "ID hình thức làm việc" +
+                                               " không tồn tại."
                                        });
                                        return;
                                    }
 
-                                   // Validate companySizeByNumberEmployees
-                                   if (req.body
-                                       .companySizeByNumberEmployees
-                                       === undefined) {
+                                   // Validate requiredNumberYearsOfExperiences
+                                   if (req.body.requiredNumberYearsOfExperiences
+                                        === undefined) {
                                        res.json({
                                            result: false,
                                            message: "Thiếu trường " +
-                                               "companySizeByNumberEmployees."
+                                               "requiredNumberYearsOfExperiences."
                                        });
                                        return;
                                    }
 
-                                   let companySizeByNumberEmployeesText =
-                                       req.body
-                                           .companySizeByNumberEmployees
+                                   let requiredNumberYearsOfExperiencesText =
+                                       req.body.requiredNumberYearsOfExperiences
                                            .trim();
-                                   if (companySizeByNumberEmployeesText
-                                       .length === 0) {
+                                   if (requiredNumberYearsOfExperiencesText
+                                        .length === 0) {
                                        res.json({
                                            result: false,
-                                           message: "Quy mô công ty" +
-                                                   " tính bằng " +
-                                                   "số lương nhân viên" +
-                                                   " không được để trống."
-                                       });
-                                       return;
-                                   }
-
-                                   if (isNaN(companySizeByNumberEmployeesText)) {
-                                       res.json({
-                                          result: false,
-                                          message: "Quy mô công ty" +
-                                              " tính bằng " +
-                                              "số lương nhân viên" +
-                                              " phải là một số."
-                                       });
-                                       return;
-                                   }
-
-                                   let companySizeByNumberEmployees =
-                                       Number(
-                                           companySizeByNumberEmployeesText
-                                       );
-                                   if (!Number.isInteger(
-                                       companySizeByNumberEmployees)) {
-                                       res.json({
-                                           result: false,
-                                           message: "Quy mô công ty" +
-                                               " tính bằng " +
-                                               "số lương nhân viên" +
-                                               " phải là số nguyên."
-                                       });
-                                       return;
-                                   }
-
-                                   if (companySizeByNumberEmployees <= 0) {
-                                       res.json({
-                                           result: false,
-                                           message: "Quy mô công ty" +
-                                               " tính bằng " +
-                                               "số lương nhân viên" +
-                                               " phải là số nguyên " +
-                                               "lớn hơn 0."
-                                       });
-                                       return;
-                                   }
-
-                                   // Validate companyWebsite
-                                   if (req.body.companyWebsite
-                                                        === undefined) {
-                                       res.json({
-                                           result: false,
-                                           message: "Thiếu trường " +
-                                               "companyWebsite."
-                                       });
-                                       return;
-                                   }
-
-                                   let companyWebsiteText =
-                                       req.body.companyWebsite.trim();
-                                   if (companyWebsiteText.length === 0) {
-                                       res.json({
-                                           result: false,
-                                           message: "Website công ty " +
-                                               "không được để trống."
-                                       });
-                                       return;
-                                   }
-
-                                   try {
-                                       new URL(companyWebsiteText);
-                                   } catch (err) {
-                                       res.json({
-                                           result: false,
-                                           message: "Nhập website công ty" +
-                                               " là URL hợp lệ," +
-                                               " có cả " +
-                                               "http/https."
-                                       });
-                                       return;
-                                   }
-
-                                   // Validate companyEmail
-                                   if (req.body.companyEmail === undefined) {
-                                       res.json({
-                                           result: false,
-                                           message: "Thiếu trường " +
-                                               "companyEmail."
-                                       });
-                                       return;
-                                   }
-
-                                   let companyEmail =
-                                       req.body.companyEmail.trim();
-                                   if (companyEmail.length === 0) {
-                                       res.json({
-                                           result: false,
-                                           message: "Email công ty" +
+                                           message: "Số năm kinh nghiệm yêu cầu" +
                                                " không được để trống."
                                        });
                                        return;
                                    }
 
-                                   if (!companyEmail.match(
-                                        commonResources.REGEX_EMAIL)) {
+                                   if (isNaN(requiredNumberYearsOfExperiencesText)) {
                                        res.json({
                                            result: false,
-                                           message: "Hãy nhập " +
-                                               "email công ty " +
-                                               "đúng định dạng."
+                                           message: "Số năm kinh nghiệm yêu cầu" +
+                                               " phải là một số."
                                        });
                                        return;
                                    }
 
-                                   // Validate companyPhoneNumber
-                                   if (req.body.companyPhoneNumber
-                                        === undefined) {
+                                   let requiredNumberYearsOfExperiences =
+                                       Number(
+                                           requiredNumberYearsOfExperiencesText
+                                       );
+                                   if (!Number.isInteger(requiredNumberYearsOfExperiences)) {
                                        res.json({
                                            result: false,
-                                           message: "Thiếu trường " +
-                                               "companyPhoneNumber."
+                                           message: "Số năm kinh nghiệm yêu cầu" +
+                                               " phải là số nguyên."
                                        });
                                        return;
                                    }
 
-                                   let companyPhoneNumberText =
-                                       req.body.companyPhoneNumber.trim();
-                                   if (companyPhoneNumberText.length === 0) {
+                                   if (requiredNumberYearsOfExperiences < 0) {
                                        res.json({
                                            result: false,
-                                           message: "Số điện thoại " +
-                                               "của công ty " +
+                                           message: "Số năm kinh nghiệm yêu cầu" +
+                                               " phải là số nguyên >= 0."
+                                       });
+                                       return;
+                                   }
+
+                                   // Validate detailAddress
+                                   if (req.body.detailAddress === undefined) {
+                                       res.json({
+                                           result: false,
+                                           message: "Thiếu trường detailAddress."
+                                       });
+                                       return;
+                                   }
+
+                                   let detailAddressText =
+                                        req.body.detailAddress.trim();
+                                   if (detailAddressText.length === 0) {
+                                       res.json({
+                                           result: false,
+                                           message: "Địa chỉ công ty cụ thể " +
+                                               "(đường, số nhà,...) " +
                                                "không được để trống."
                                        });
                                        return;
                                    }
 
-                                   if (!companyPhoneNumberText.match(
-                                       commonResources
-                                           .REGEX_COMPANY_PHONE)) {
+                                   // Validate jobTitleId
+                                   if (req.body.jobTitleId === undefined) {
                                        res.json({
                                            result: false,
-                                           message: "Hãy nhập " +
-                                               "số điện thoại công ty " +
-                                               "đúng định dạng " +
-                                               "(10-12 chữ số)."
+                                           message: "Thiếu trường jobTitleId."
                                        });
                                        return;
                                    }
 
-                                   // Pass validate
-                                   let addNewJobNewsToDbSql =
-                                       "insert into " + commonResources.JOB_NEWS_TABLE_NAME + "(" +
-                                            commonResources.JOB_NEWS_COLUMN_OWNER_ID + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_COMPANY_NAME + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_SALARY_VND + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_JOB_DESCRIPTION + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_ADDRESS_SUBDISTRICT_ID + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_TYPE_OF_WORD_ID + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_REQUIRED_NUMBER_YEARS_EXPERIENCES + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_DETAIL_ADDRESS + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_STATUS_ID + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_JOB_TITLE_ID + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
-                                            commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + ") " +
-                                       "values(" +
-                                            userIdNumber + ", " +
-                                            "'" + companyName + "', " +
-                                            "'" + jobShortDescriptionText + "', " +
-                                            salaryInVndNumber + ", " +
-                                            "'" + jobDescriptionText + "', " +
-                                            "'" + addressSubdistrictIdText + "', " +
-                                            typeOfWorkIdNumber + ", " +
-                                            requiredNumberYearsOfExperiences + ", " +
-                                            "'" + detailAddressText + "', " + 
-                                            commonResources.JOB_NEWS_STATUS_VALUE_UNAPPROVED + ", " +
-                                            jobTitleIdNumber + ", " +
-                                            companySizeByNumberEmployees + ", " +
-                                            "'" + companyWebsiteText + "', " +
-                                            "'" + companyEmail + "', " +
-                                            "'" + companyPhoneNumberText + "'" +
-                                       ");";
-                                   dbConnect.query(
-                                       addNewJobNewsToDbSql,
-                                       function (createJobNewsErr,
-                                                 createJobNewResult) {
-                                           if (createJobNewsErr) {
-                                               console.trace(); // Print error stack trace
+                                   let jobTitleIdText =
+                                                    req.body.jobTitleId.trim();
+                                   if (jobTitleIdText.length === 0) {
+                                       res.json({
+                                          result: false,
+                                          message: "jobTitleId không được để trống."
+                                       });
+                                       return;
+                                   }
+
+                                   if (isNaN(jobTitleIdText)) {
+                                       res.json({
+                                          result: false,
+                                          message: "jobTitleId phải là một số."
+                                       });
+                                       return;
+                                   }
+
+                                   let jobTitleIdNumber = Number(jobTitleIdText);
+                                   if (!Number.isInteger(jobTitleIdNumber)) {
+                                       res.json({
+                                          result: false,
+                                          message: "jobTitleId phải là số nguyên."
+                                       });
+                                       return;
+                                   }
+
+                                   jobTitlesModule.checkIfJobTitleIdExists(
+                                       jobTitleIdNumber,
+                                       function (checkJobTitleIdErr,
+                                                 isJobTitleIdExist) {
+                                           if (checkJobTitleIdErr) {
+                                               console.trace(); // Print error
+                                                                // stack trace
                                                res.json({
                                                    result: false,
-                                                   message: "Có lỗi xảy ra khi lưu tin tuyển dụng.",
-                                                   err: createJobNewsErr
+                                                   message: "Có lỗi xảy ra " +
+                                                       "khi truy vấn " +
+                                                       "ID cấp bậc công việc" +
+                                                       " nhận vào.",
+                                                   err: checkJobTitleIdErr
                                                });
                                                return;
                                            }
 
-                                           res.json({
-                                              result: true,
-                                              message: "Thêm tin tuyển dụng thành công."
-                                           });
+                                           if (isJobTitleIdExist === false) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "ID cấp bậc công việc" +
+                                                       " nhận vào không tồn tại."
+                                               });
+                                               return;
+                                           }
+
+                                           // Validate companySizeByNumberEmployees
+                                           if (req.body
+                                               .companySizeByNumberEmployees
+                                               === undefined) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Thiếu trường " +
+                                                       "companySizeByNumberEmployees."
+                                               });
+                                               return;
+                                           }
+
+                                           let companySizeByNumberEmployeesText =
+                                               req.body
+                                                   .companySizeByNumberEmployees
+                                                   .trim();
+                                           if (companySizeByNumberEmployeesText
+                                               .length === 0) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Quy mô công ty" +
+                                                           " tính bằng " +
+                                                           "số lương nhân viên" +
+                                                           " không được để trống."
+                                               });
+                                               return;
+                                           }
+
+                                           if (isNaN(companySizeByNumberEmployeesText)) {
+                                               res.json({
+                                                  result: false,
+                                                  message: "Quy mô công ty" +
+                                                      " tính bằng " +
+                                                      "số lương nhân viên" +
+                                                      " phải là một số."
+                                               });
+                                               return;
+                                           }
+
+                                           let companySizeByNumberEmployees =
+                                               Number(
+                                                   companySizeByNumberEmployeesText
+                                               );
+                                           if (!Number.isInteger(
+                                               companySizeByNumberEmployees)) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Quy mô công ty" +
+                                                       " tính bằng " +
+                                                       "số lương nhân viên" +
+                                                       " phải là số nguyên."
+                                               });
+                                               return;
+                                           }
+
+                                           if (companySizeByNumberEmployees <= 0) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Quy mô công ty" +
+                                                       " tính bằng " +
+                                                       "số lương nhân viên" +
+                                                       " phải là số nguyên " +
+                                                       "lớn hơn 0."
+                                               });
+                                               return;
+                                           }
+
+                                           // Validate companyWebsite
+                                           if (req.body.companyWebsite
+                                                                === undefined) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Thiếu trường " +
+                                                       "companyWebsite."
+                                               });
+                                               return;
+                                           }
+
+                                           let companyWebsiteText =
+                                               req.body.companyWebsite.trim();
+                                           if (companyWebsiteText.length === 0) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Website công ty " +
+                                                       "không được để trống."
+                                               });
+                                               return;
+                                           }
+
+                                           try {
+                                               new URL(companyWebsiteText);
+                                           } catch (err) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Nhập website công ty" +
+                                                       " là URL hợp lệ," +
+                                                       " có cả " +
+                                                       "http/https."
+                                               });
+                                               return;
+                                           }
+
+                                           // Validate companyEmail
+                                           if (req.body.companyEmail === undefined) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Thiếu trường " +
+                                                       "companyEmail."
+                                               });
+                                               return;
+                                           }
+
+                                           let companyEmail =
+                                               req.body.companyEmail.trim();
+                                           if (companyEmail.length === 0) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Email công ty" +
+                                                       " không được để trống."
+                                               });
+                                               return;
+                                           }
+
+                                           if (!companyEmail.match(
+                                                commonResources.REGEX_EMAIL)) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Hãy nhập " +
+                                                       "email công ty " +
+                                                       "đúng định dạng."
+                                               });
+                                               return;
+                                           }
+
+                                           // Validate companyPhoneNumber
+                                           if (req.body.companyPhoneNumber
+                                                === undefined) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Thiếu trường " +
+                                                       "companyPhoneNumber."
+                                               });
+                                               return;
+                                           }
+
+                                           let companyPhoneNumberText =
+                                               req.body.companyPhoneNumber.trim();
+                                           if (companyPhoneNumberText.length === 0) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Số điện thoại " +
+                                                       "của công ty " +
+                                                       "không được để trống."
+                                               });
+                                               return;
+                                           }
+
+                                           if (!companyPhoneNumberText.match(
+                                               commonResources
+                                                   .REGEX_COMPANY_PHONE)) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Hãy nhập " +
+                                                       "số điện thoại công ty " +
+                                                       "đúng định dạng " +
+                                                       "(10-12 chữ số)."
+                                               });
+                                               return;
+                                           }
+
+                                           // Pass validate
+                                           let addNewJobNewsToDbSql =
+                                               "insert into " + commonResources.JOB_NEWS_TABLE_NAME + "(" +
+                                                    commonResources.JOB_NEWS_COLUMN_OWNER_ID + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_COMPANY_NAME + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_SALARY_VND + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_JOB_DESCRIPTION + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_ADDRESS_SUBDISTRICT_ID + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_TYPE_OF_WORD_ID + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_REQUIRED_NUMBER_YEARS_EXPERIENCES + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_DETAIL_ADDRESS + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_STATUS_ID + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_JOB_TITLE_ID + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + ") " +
+                                               "values(" +
+                                                    userIdNumber + ", " +
+                                                    "'" + companyName + "', " +
+                                                    "'" + jobShortDescriptionText + "', " +
+                                                    salaryInVndNumber + ", " +
+                                                    "'" + jobDescriptionText + "', " +
+                                                    "'" + addressSubdistrictIdText + "', " +
+                                                    typeOfWorkIdNumber + ", " +
+                                                    requiredNumberYearsOfExperiences + ", " +
+                                                    "'" + detailAddressText + "', " +
+                                                    commonResources.JOB_NEWS_STATUS_VALUE_UNAPPROVED + ", " +
+                                                    jobTitleIdNumber + ", " +
+                                                    companySizeByNumberEmployees + ", " +
+                                                    "'" + companyWebsiteText + "', " +
+                                                    "'" + companyEmail + "', " +
+                                                    "'" + companyPhoneNumberText + "'" +
+                                               ");";
+                                           dbConnect.query(
+                                               addNewJobNewsToDbSql,
+                                               function (createJobNewsErr,
+                                                         createJobNewResult) {
+                                                   if (createJobNewsErr) {
+                                                       console.trace(); // Print error stack trace
+                                                       res.json({
+                                                           result: false,
+                                                           message: "Có lỗi xảy ra khi lưu tin tuyển dụng.",
+                                                           err: createJobNewsErr
+                                                       });
+                                                       return;
+                                                   }
+
+                                                   res.json({
+                                                      result: true,
+                                                      message: "Thêm tin tuyển dụng thành công."
+                                                   });
+                                               }
+                                           );
                                        }
                                    );
                                }
