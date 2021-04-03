@@ -7679,7 +7679,8 @@ router.post('/job-news/get-list-job-news-and-job-applications-of-an-owner', (req
                     commonResources.JOB_NEWS_COLUMN_ID + " as jobNewsId"
                     + ", " +
                     commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION
-                    + " " +
+                    + ", " +
+                    commonResources.JOB_NEWS_COLUMN_COMPANY_NAME + " " +
                 "from " + commonResources.JOB_NEWS_TABLE_NAME + " " +
                 "where " +
                     commonResources.JOB_NEWS_COLUMN_OWNER_ID + " = ? " +
@@ -7713,32 +7714,76 @@ router.post('/job-news/get-list-job-news-and-job-applications-of-an-owner', (req
                             function (myResolve, myReject) {
                                 let getCandidatesOfThisJobNewsSql =
                                     "select " +
-                                        commonResources.USERS_COLUMN_ID +
+                                        commonResources
+                                            .USERS_TABLE_NAME +
+                                        "." +
+                                        commonResources
+                                            .USERS_COLUMN_ID +
                                         " as candidateUserId, " +
                                         commonResources
                                             .USERS_COLUMN_FULL_NAME
-                                        + " " +
-                                    "from " +
-                                        commonResources.USERS_TABLE_NAME
                                         + ", " +
                                         commonResources
-                                            .JOB_APPLICATIONS_TABLE_NAME
-                                        + " " +
-                                    "where " +
+                                            .USERS_COLUMN_AVATAR_URL +
+                                        ", " +
+                                        commonResources.GENDERS_COLUMN_NAME
+                                        + " as gender " +
+                                    "from " +
                                         commonResources
-                                            .JOB_APPLICATIONS_TABLE_NAME
-                                        + "." +
-                                        commonResources
-                                            .JOB_APPLICATIONS_COL_USER_ID
-                                        + " = " +
-                                        commonResources.USERS_TABLE_NAME
-                                        + "." +
-                                        commonResources.USERS_COLUMN_ID
+                                            .USERS_TABLE_NAME
 
-                                        + " and " +
+                                        + " left join " +
+                                        commonResources
+                                            .GENDERS_TABLE_NAME + " " +
+                                        "on " +
+                                        commonResources
+                                            .GENDERS_TABLE_NAME + "." +
+                                        commonResources
+                                            .GENDERS_COLUMN_ID + " = " +
+                                        commonResources
+                                            .USERS_TABLE_NAME
+                                        + "." +
+                                        commonResources
+                                            .USERS_COLUMN_GENDER_ID
+                                        + " " +
+
+                                        "left join " +
+                                            commonResources
+                                                .JOB_APPLICATIONS_TABLE_NAME
+                                            + " on " +
+                                            commonResources
+                                                .JOB_APPLICATIONS_TABLE_NAME
+                                            + "." +
+                                            commonResources
+                                                .JOB_APPLICATIONS_COL_USER_ID
+                                            + " = " +
+                                            commonResources
+                                                .USERS_TABLE_NAME
+                                            + "." +
+                                            commonResources.USERS_COLUMN_ID
+                                            + " " +
+
+                                        "left join " +
+                                            commonResources
+                                                .JOB_NEWS_TABLE_NAME
+                                            + " on " +
+                                            commonResources
+                                                .JOB_NEWS_TABLE_NAME +
+                                            "." +
+                                            commonResources
+                                                .JOB_NEWS_COLUMN_ID +
+                                            " = " +
+                                            commonResources
+                                                .JOB_APPLICATIONS_TABLE_NAME
+                                            + "." +
+                                            commonResources
+                                                .JOB_APPLICATIONS_COL_JOB_NEWS_ID
+                                            + " " +
+                                        "where " +
                                             commonResources
                                                 .JOB_APPLICATIONS_COL_JOB_NEWS_ID
                                         + " = ?;";
+                                console.log(getCandidatesOfThisJobNewsSql);
                                 dbConnect.query(
                                     getCandidatesOfThisJobNewsSql,
                                     [currentJobNewsId],
