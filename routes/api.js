@@ -7623,4 +7623,159 @@ router.post('/job-applications/delete-candidate-from-job-news',
     }
 );
 
+router.post('/job-news/get-list-job-news-and-job-applications-of-an-owner', (req, res) => {
+    // Validate
+    if (req.body.jobNewsOwnerUserId === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường jobNewsOwnerUserId."
+        });
+        return;
+    }
+
+    let jobNewsOwnerUserIdText = req.body.jobNewsOwnerUserId.trim();
+    if (jobNewsOwnerUserIdText.length === 0) {
+        res.json({
+            result: false,
+            message: "jobNewsOwnerUserId không được để trống."
+        });
+        return;
+    }
+
+    if (isNaN(jobNewsOwnerUserIdText)) {
+        res.json({
+            result: false,
+            message: "jobNewsOwnerUserId phải là một số."
+        })
+        return;
+    }
+
+    let jobNewsOwnerUserIdNumber = Number(jobNewsOwnerUserIdText);
+    if (!Number.isInteger(jobNewsOwnerUserIdNumber)) {
+        res.json({
+            result: false,
+            message: "jobNewsOwnerUserId phải là số nguyên."
+        });
+        return;
+    }
+
+    // The owner ID is also the user ID,
+    // so checking for the existence of the owner ID
+    // is to check for the existence of the user ID
+    userModule.checkIfUserIdExists(
+        jobNewsOwnerUserIdNumber,
+        function (isUserIdExist) {
+            if (!isUserIdExist) {
+                res.json({
+                    result: false,
+                    message: "ID người đăng " +
+                        "không tồn tại."
+                });
+                return;
+            }
+
+            let selectJobNewsOfThisOwnerSql =
+                "select " +
+                    commonResources.JOB_NEWS_COLUMN_ID + " as jobNewsId"
+                    + ", " +
+                    commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION
+                    + " " +
+                "from " + commonResources.JOB_NEWS_TABLE_NAME + " " +
+                "where " +
+                    commonResources.JOB_NEWS_COLUMN_OWNER_ID + " = ? " +
+                "order by " +
+                    commonResources.JOB_NEWS_COLUMN_ID + " desc;";
+            dbConnect.query(
+                selectJobNewsOfThisOwnerSql,
+                [jobNewsOwnerUserIdNumber],
+                async function (
+                    selectJobNewsOfThisOwnerErr,
+                    selectJobNewsOfThisOwnerResult
+                ) {
+                    if (selectJobNewsOfThisOwnerErr) {
+                        console.trace();
+                        res.json({
+                            result: false,
+                            message: "Có lỗi xảy ra khi truy vấn " +
+                                "danh sách tin tuyển dụng.",
+                            err: selectJobNewsOfThisOwnerErr
+                        });
+                        return;
+                    }
+
+                    let jobNewsArr = selectJobNewsOfThisOwnerResult;
+
+                    for (let i = 0; i < jobNewsArr.length; i++) {
+                        let currentJobNewsId = jobNewsArr[i].jobNewsId;
+
+                        // Get candidate list
+                        let getCandidatesOfThisJobNewsPromise = new Promise(
+                            function (myResolve, myReject) {
+                                let getCandidatesOfThisJobNewsSql =
+                                    "select " +
+                                        commonResources.USERS_COLUMN_ID +
+                                        " as candidateUserId, " +
+                                        commonResources
+                                            .USERS_COLUMN_FULL_NAME
+                                        + " " +
+                                    "from " +
+                                        commonResources.USERS_TABLE_NAME
+                                        + ", " +
+                                        commonResources
+                                            .JOB_APPLICATIONS_TABLE_NAME
+                                        + " " +
+                                    "where " +
+                                        commonResources
+                                            .JOB_APPLICATIONS_TABLE_NAME
+                                        + "." +
+                                        commonResources
+                                            .JOB_APPLICATIONS_COL_USER_ID
+                                        + " = " +
+                                        commonResources.USERS_TABLE_NAME
+                                        + "." +
+                                        commonResources.USERS_COLUMN_ID
+
+                                        + " and " +
+                                            commonResources
+                                                .JOB_APPLICATIONS_COL_JOB_NEWS_ID
+                                        + " = ?;";
+                                dbConnect.query(
+                                    getCandidatesOfThisJobNewsSql,
+                                    [currentJobNewsId],
+                                    function (
+                                        getCandidatesOfThisJobNewsErr,
+                                        getCandidatesOfThisJobNewsResult
+                                    ) {
+                                        if (getCandidatesOfThisJobNewsErr) {
+                                            console.trace();
+                                            res.json({
+                                                result: false,
+                                                message: "Lỗi truy vấn danh sách ứng viên.",
+                                                err: getCandidatesOfThisJobNewsErr
+                                            });
+                                            throw getCandidatesOfThisJobNewsErr;
+                                        } else {
+                                            myResolve(getCandidatesOfThisJobNewsResult);
+                                        }
+                                    }
+                                );
+                            }
+                        );
+
+                        let getCandidatesOfThisJobNewsResult =
+                            await getCandidatesOfThisJobNewsPromise;
+                        jobNewsArr[i].candidateArr =
+                            getCandidatesOfThisJobNewsResult;
+                    }
+
+                    res.json({
+                        result: true,
+                        jobNewsArr
+                    });
+                }
+            );
+        }
+    );
+});
+
 module.exports = router;

@@ -431,7 +431,14 @@ Xóa ứng viên đã ứng tuyển của một tin tuyển dụng
 (người đăng tin xóa ứng viên)
 POST /api/job-applications/delete-candidate-from-job-news
 Tham số:
-- jobNewsOwnerUserId (là ID người dùng của người đăng tin)
+- jobNewsOwnerUserId (là ID người dùng của người đăng tin, bắt buộc, không trống, int, phải tồn tại)
 - jobNewsId (bắt buộc, int, không trống, phải tồn tại)
-- candidateUserId (là ID người dùng của người ứng tuyển, bắt buộc, int,
+- candidateUserId (là ID người dùng của ứng tuyển, bắt buộc, int,
 không trống, phải tồn tại)
+
+--------------------------------
+
+Xem danh sách các công việc mình đã đăng và danh sách những người ứng tuyển
+POST /api/job-news/get-list-job-news-and-job-applications-of-an-owner
+Tham số:
+- jobNewsOwnerUserId (là ID người dùng của người đăng tin, bắt buộc, không trống, int, phải tồn tại)
