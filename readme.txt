@@ -439,6 +439,7 @@ không trống, phải tồn tại)
 --------------------------------
 
 Xem danh sách các công việc mình đã đăng và danh sách những người ứng tuyển
+ (chỉ những tin đã được phê duyệt)
 POST /api/job-news/get-list-job-news-and-job-applications-of-an-owner
 Tham số:
 - jobNewsOwnerUserId (là ID người dùng của người đăng tin, bắt buộc, không trống, int, phải tồn tại)

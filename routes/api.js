@@ -7684,6 +7684,10 @@ router.post('/job-news/get-list-job-news-and-job-applications-of-an-owner', (req
                 "from " + commonResources.JOB_NEWS_TABLE_NAME + " " +
                 "where " +
                     commonResources.JOB_NEWS_COLUMN_OWNER_ID + " = ? " +
+                    "and " + commonResources.JOB_NEWS_COLUMN_STATUS_ID
+                    + " = " +
+                    commonResources.JOB_NEWS_STATUS_VALUE_APPROVED
+                    + " " +
                 "order by " +
                     commonResources.JOB_NEWS_COLUMN_ID + " desc;";
             dbConnect.query(
