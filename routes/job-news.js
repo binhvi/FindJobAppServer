@@ -758,7 +758,7 @@ router.post('/cancel-approval-job-news', (req, res) => {
     );
 });
 
-router.post('/remove', (req, res) => {
+router.post('/remove-general-job-news', (req, res) => {
     let jobNewsId = req.body.jobNewsId;
    let deleteJobNewsByIdSql =
        "delete from " +
@@ -776,6 +776,46 @@ router.post('/remove', (req, res) => {
             res.redirect('/job-news');
        }
    );
+});
+
+router.post('/remove-unapproved-job-news', (req, res) => {
+    let jobNewsId = req.body.jobNewsId;
+    let deleteJobNewsByIdSql =
+        "delete from " +
+        commonResources.JOB_NEWS_TABLE_NAME + " " +
+        "where " +
+        commonResources.JOB_NEWS_COLUMN_ID + " = ?;";
+    dbConnect.query(
+        deleteJobNewsByIdSql,
+        [jobNewsId],
+        function (err, result) {
+            if (err) {
+                throw err;
+            }
+
+            res.redirect('/job-news/unapproved-job-news');
+        }
+    );
+});
+
+router.post('/remove-approved-job-news', (req, res) => {
+    let jobNewsId = req.body.jobNewsId;
+    let deleteJobNewsByIdSql =
+        "delete from " +
+        commonResources.JOB_NEWS_TABLE_NAME + " " +
+        "where " +
+        commonResources.JOB_NEWS_COLUMN_ID + " = ?;";
+    dbConnect.query(
+        deleteJobNewsByIdSql,
+        [jobNewsId],
+        function (err, result) {
+            if (err) {
+                throw err;
+            }
+
+            res.redirect('/job-news/approved-job-news');
+        }
+    );
 });
 
 function checkIfJobNewsIdExists(jobNewsId, callback) {
