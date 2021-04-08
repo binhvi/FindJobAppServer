@@ -5092,10 +5092,11 @@ router.post('/job-news/details', (req, res) => {
                         function(selectJobSkillErr, selectJobSkillResult) {
                             if (selectJobSkillErr) {
                                 res.json({
-                                   result: false,
-                                   message: "Có lỗi xảy ra " +
+                                    result: false,
+                                    message: "Có lỗi xảy ra " +
                                            "khi truy vấn " +
-                                           "kỹ năng chuyên môn yêu cầu."
+                                           "kỹ năng chuyên môn yêu cầu.",
+                                    err: selectJobSkillErr
                                 });
                                 return;
                             }
@@ -5875,7 +5876,10 @@ router.post('/job-news/get-unapproved-job-news-of-an-owner', (req, res) => {
                     .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
                 commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
                 commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
-                commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + " " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER
+                + ", " +
+                commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS
+                + " " +
 
                 "from " +
                 commonResources.JOB_NEWS_TABLE_NAME + " " +
@@ -5936,8 +5940,8 @@ router.post('/job-news/get-unapproved-job-news-of-an-owner', (req, res) => {
             dbConnect.query(
                 selectUnapprovedJobNewsListOfThisOwnerSql,
                 [ownerIdNumber],
-                function (getUnapprovedJobNewsErr,
-                          getUnapprovedJobNewsResult) {
+                async function (getUnapprovedJobNewsErr,
+                                getUnapprovedJobNewsResult) {
                     if (getUnapprovedJobNewsErr) {
                         console.trace();
                         res.json({
@@ -5951,10 +5955,73 @@ router.post('/job-news/get-unapproved-job-news-of-an-owner', (req, res) => {
                         return;
                     }
 
+                    let unapprovedJobNewsOfThisOwnerArr =
+                        getUnapprovedJobNewsResult;
+
+                    // Get list required skills of each job news
+                    for (let i = 0;
+                         i < unapprovedJobNewsOfThisOwnerArr.length;
+                         i++) {
+                        let currentJobNewsId =
+                            unapprovedJobNewsOfThisOwnerArr[i]
+                                .jobNewsId;
+                        let selectJobNewsRequiredSkillsPromise =
+                            new Promise(
+                                function (myResolve, myReject) {
+                                    let selectJobNewsRequiredSkillsSql =
+                                        "select " +
+                                        commonResources.JOB_SKILLS_COLUMN_ID + ", " +
+                                        commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
+                                        "from " +
+                                        commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                                        "inner join " +
+                                        commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME +
+                                        " on " +
+                                        commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                                        + "." +
+                                        commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                                        + " = " +
+                                        commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                                        commonResources.JOB_SKILLS_COLUMN_ID + " " +
+
+                                        "where " +
+                                        commonResources
+                                            .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                                        + " = ?;";
+                                    dbConnect.query(
+                                        selectJobNewsRequiredSkillsSql,
+                                        [currentJobNewsId],
+                                        function (
+                                            selectJobSkillsErr,
+                                            selectJobSkillsResult
+                                        ) {
+                                            if (selectJobSkillsErr) {
+                                                console.trace();
+                                                res.json({
+                                                    result: false,
+                                                    message: "Có lỗi xảy ra " +
+                                                        "khi truy vấn " +
+                                                        "kỹ năng chuyên môn yêu cầu.",
+                                                    err: selectJobSkillsErr
+                                                });
+                                                throw selectJobSkillsErr;
+                                            } else {
+                                                myResolve(selectJobSkillsResult);
+                                            }
+                                        }
+                                    );
+                                }
+                            );
+
+                        unapprovedJobNewsOfThisOwnerArr[i]
+                            .requiredJobSkills =
+                            await selectJobNewsRequiredSkillsPromise;
+                    }
+
                     res.json({
                         result: true,
-                        unapprovedJobNewsOfThisOwnerArr:
-                                    getUnapprovedJobNewsResult
+                        unapprovedJobNewsOfThisOwnerArr
                     });
                 }
             );
@@ -7801,7 +7868,6 @@ router.post('/job-news/get-list-job-news-and-job-applications-of-an-owner', (req
                                             commonResources
                                                 .JOB_APPLICATIONS_COL_JOB_NEWS_ID
                                         + " = ?;";
-                                console.log(getCandidatesOfThisJobNewsSql);
                                 dbConnect.query(
                                     getCandidatesOfThisJobNewsSql,
                                     [currentJobNewsId],
