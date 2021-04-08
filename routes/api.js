@@ -4989,7 +4989,10 @@ router.post('/job-news/details', (req, res) => {
                     .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
                 commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
                 commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
-                commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + " " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER
+                + ", " +
+                commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS
+                + " " +
 
                 "from " +
                 commonResources.JOB_NEWS_TABLE_NAME + " " +
