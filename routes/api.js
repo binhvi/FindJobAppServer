@@ -5750,8 +5750,9 @@ router.post('/job-news/create', (req, res) => {
                                                    }
 
                                                    res.json({
-                                                      result: true,
-                                                      message: "Thêm tin tuyển dụng thành công."
+                                                       result: true,
+                                                       message: "Thêm tin tuyển dụng thành công.",
+                                                       jobNewsId: createJobNewResult.insertId
                                                    });
                                                }
                                            );
