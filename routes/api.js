@@ -5701,6 +5701,9 @@ router.post('/job-news/create', (req, res) => {
                                            }
 
                                            // Pass validate
+                                           let currentTime = new Date();
+                                           let timeCreatedNewMillis = currentTime.getTime();
+
                                            let addNewJobNewsToDbSql =
                                                "insert into " + commonResources.JOB_NEWS_TABLE_NAME + "(" +
                                                     commonResources.JOB_NEWS_COLUMN_OWNER_ID + ", " +
@@ -5717,7 +5720,9 @@ router.post('/job-news/create', (req, res) => {
                                                     commonResources.JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
                                                     commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
                                                     commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
-                                                    commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + ") " +
+                                                    commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS +
+                                               ") " +
                                                "values(" +
                                                     userIdNumber + ", " +
                                                     "'" + companyName + "', " +
@@ -5733,7 +5738,8 @@ router.post('/job-news/create', (req, res) => {
                                                     companySizeByNumberEmployees + ", " +
                                                     "'" + companyWebsiteText + "', " +
                                                     "'" + companyEmail + "', " +
-                                                    "'" + companyPhoneNumberText + "'" +
+                                                    "'" + companyPhoneNumberText + "', " +
+                                                    timeCreatedNewMillis +
                                                ");";
                                            dbConnect.query(
                                                addNewJobNewsToDbSql,
