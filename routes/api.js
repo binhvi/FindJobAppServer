@@ -6123,7 +6123,10 @@ router.post('/job-news/get-approved-job-news-of-an-owner', (req, res) => {
                     .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
                 commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
                 commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
-                commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + " " +
+                commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER
+                + ", " +
+                commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS
+                + " " +
 
                 "from " +
                 commonResources.JOB_NEWS_TABLE_NAME + " " +
@@ -6186,7 +6189,7 @@ router.post('/job-news/get-approved-job-news-of-an-owner', (req, res) => {
             dbConnect.query(
                 selectApprovedJobNewsListOfThisOwnerSql,
                 [ownerIdNumber],
-                function (getApprovedJobNewsErr,
+                async function (getApprovedJobNewsErr,
                           getApprovedJobNewsResult) {
                     if (getApprovedJobNewsErr) {
                         console.trace();
@@ -6201,10 +6204,73 @@ router.post('/job-news/get-approved-job-news-of-an-owner', (req, res) => {
                         return;
                     }
 
+                    let approvedJobNewsOfThisOwnerArr =
+                                            getApprovedJobNewsResult;
+
+                    // Get list required skills of each job news
+                    for (let i = 0;
+                        i < approvedJobNewsOfThisOwnerArr.length;
+                        i++) {
+                        let currentJobNewsId =
+                            approvedJobNewsOfThisOwnerArr[i]
+                                .jobNewsId;
+                        let selectJobNewsRequiredSkillsPromise =
+                            new Promise(
+                                function (myResolve, myReject) {
+                                    let selectJobNewsRequiredSkillsSql =
+                                        "select " +
+                                        commonResources.JOB_SKILLS_COLUMN_ID + ", " +
+                                        commonResources.JOB_SKILLS_COLUMN_NAME + " " +
+
+                                        "from " +
+                                        commonResources.JOB_SKILLS_TABLE_NAME + " " +
+                                        "inner join " +
+                                        commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME +
+                                        " on " +
+                                        commonResources.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME
+                                        + "." +
+                                        commonResources.JOB_NEWS_REQUIRED_SKILLS_COL_JOB_SKILL_ID
+                                        + " = " +
+                                        commonResources.JOB_SKILLS_TABLE_NAME + "." +
+                                        commonResources.JOB_SKILLS_COLUMN_ID + " " +
+
+                                        "where " +
+                                        commonResources
+                                            .JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID
+                                        + " = ?;";
+                                    dbConnect.query(
+                                        selectJobNewsRequiredSkillsSql,
+                                        [currentJobNewsId],
+                                        function (
+                                            selectJobSkillsErr,
+                                            selectJobSkillsResult
+                                        ) {
+                                            if (selectJobSkillsErr) {
+                                                console.trace();
+                                                res.json({
+                                                    result: false,
+                                                    message: "Có lỗi xảy ra " +
+                                                        "khi truy vấn " +
+                                                        "kỹ năng chuyên môn yêu cầu.",
+                                                    err: selectJobSkillsErr
+                                                });
+                                                throw selectJobSkillsErr;
+                                            } else {
+                                                myResolve(selectJobSkillsResult);
+                                            }
+                                        }
+                                    );
+                                }
+                            );
+
+                        approvedJobNewsOfThisOwnerArr[i]
+                            .requiredJobSkills =
+                            await selectJobNewsRequiredSkillsPromise;
+                    }
+
                     res.json({
                         result: true,
-                        approvedJobNewsOfThisOwnerArr:
-                                    getApprovedJobNewsResult
+                        approvedJobNewsOfThisOwnerArr
                     });
                 }
             );
