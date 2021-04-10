@@ -3503,7 +3503,7 @@ router.post('/experiences/create', (req, res) => {
                     res.json({
                         result: false,
                         message: "Ngày kết thúc công việc phải sau " +
-                            "ngày bắt bắt đầu công việc."
+                            "ngày bắt đầu công việc."
                     });
                     return;
                 }
@@ -3789,7 +3789,7 @@ router.post('/experiences/update', (req, res) => {
                            res.json({
                                result: false,
                                message: "Ngày kết thúc công việc phải sau " +
-                                   "ngày bắt bắt đầu công việc."
+                                   "ngày bắt đầu công việc."
                            });
                            return;
                        }
