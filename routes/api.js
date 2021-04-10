@@ -2672,7 +2672,7 @@ router.post('/education/create', (req, res) => {
 
                         endDateInMilliseconds =
                                         endDateInMillisecondsNumber;
-                        if (endDateInMilliseconds <
+                        if (endDateInMilliseconds <=
                                 startDateInMilliseconds) {
                             res.json({
                                result: false,
@@ -3045,7 +3045,7 @@ router.post('/education/update', (req, res) => {
 
                                 endDateInMilliseconds =
                                     endDateInMillisecondsNumber;
-                                if (endDateInMilliseconds <
+                                if (endDateInMilliseconds <=
                                     startDateInMilliseconds) {
                                     res.json({
                                         result: false,
@@ -3499,7 +3499,7 @@ router.post('/experiences/create', (req, res) => {
                 }
 
                 dateOutMilliseconds = dateOutMillisecondsNumber;
-                if (dateOutMilliseconds < dateInMillisecondsNumber) {
+                if (dateOutMilliseconds <= dateInMillisecondsNumber) {
                     res.json({
                         result: false,
                         message: "Ngày kết thúc công việc phải sau " +
@@ -3785,7 +3785,7 @@ router.post('/experiences/update', (req, res) => {
                        }
 
                        dateOutMilliseconds = dateOutMillisecondsNumber;
-                       if (dateOutMilliseconds < dateInMillisecondsNumber) {
+                       if (dateOutMilliseconds <= dateInMillisecondsNumber) {
                            res.json({
                                result: false,
                                message: "Ngày kết thúc công việc phải sau " +

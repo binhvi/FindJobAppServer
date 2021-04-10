@@ -139,6 +139,14 @@
                 <strong>Người đăng: </strong>
                 <%= jobNewsDetails.ownerName %>
             </p>
+
+            <p id="job-news-time-created">
+                <strong>Ngày đăng: </strong>
+                <%=
+                    moment(jobNewsDetails.timeCreatedNewsMillis)
+                            .format('DD-MMM-YYYY')
+                %>
+            </p>
         </div>
 
         <form action="/job-news/remove-general-job-news"

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const commonResources = require('../public/javascripts/common');
 const dbConnect = require('../public/javascripts/db');
+const moment = require('moment');
 
 router.get('/', (req, res) => {
     // Search
@@ -304,7 +305,8 @@ router.post('/general-job-news-details', (req, res) => {
                 .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
             commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
             commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
-            commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + " " +
+            commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + ", " +
+            commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS + " " +
 
        "from " +
             commonResources.JOB_NEWS_TABLE_NAME + " " +
@@ -402,7 +404,11 @@ router.post('/general-job-news-details', (req, res) => {
                    let jobNewsRequiredSkills = selectJobSkillResult;
                    res.render(
                        'job-news/general-job-news-details',
-                       {jobNewsDetails, jobNewsRequiredSkills}
+                       {
+                           jobNewsDetails,
+                           jobNewsRequiredSkills,
+                           moment // Time library
+                       }
                    );
                }
            );
@@ -455,7 +461,8 @@ router.post('/unapproved-job-news-details', (req, res) => {
             .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
         commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
         commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
-        commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + " " +
+        commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + ", " +
+        commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS + " " +
 
         "from " +
         commonResources.JOB_NEWS_TABLE_NAME + " " +
@@ -553,7 +560,11 @@ router.post('/unapproved-job-news-details', (req, res) => {
                     let jobNewsRequiredSkills = selectJobSkillResult;
                     res.render(
                         'job-news/unapproved-job-news-details',
-                        {jobNewsDetails, jobNewsRequiredSkills}
+                        {
+                            jobNewsDetails,
+                            jobNewsRequiredSkills,
+                            moment // Time library
+                        }
                     );
                 }
             );
@@ -606,7 +617,8 @@ router.post('/approved-job-news-details', (req, res) => {
             .JOB_NEWS_COLUMN_COMPANY_SIZE_BY_NUMBER_EMPLOYEES + ", " +
         commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
         commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
-        commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + " " +
+        commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + ", " +
+        commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS + " " +
 
         "from " +
         commonResources.JOB_NEWS_TABLE_NAME + " " +
@@ -704,7 +716,11 @@ router.post('/approved-job-news-details', (req, res) => {
                     let jobNewsRequiredSkills = selectJobSkillResult;
                     res.render(
                         'job-news/approved-job-news-details',
-                        {jobNewsDetails, jobNewsRequiredSkills}
+                        {
+                            jobNewsDetails,
+                            jobNewsRequiredSkills,
+                            moment // Time module
+                        }
                     );
                 }
             );
