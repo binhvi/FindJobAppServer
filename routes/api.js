@@ -2121,7 +2121,11 @@ router.get('/users', (req, res) => {
             commonResources.USERS_COLUMN_AVATAR_URL + ", " +
 
             commonResources.LEVELS_OF_EDUCATION_COLUMN_NAME + ", " +
-            commonResources.USERS_COLUMN_EXPECTED_SALARY_VND + " " +
+            commonResources.USERS_COLUMN_EXPECTED_SALARY_VND + ", " +
+
+            commonResources.STATE_PROVINCES_TABLE_NAME + "." +
+            commonResources.STATE_PROVINCES_COLUMN_NAME + " as " +
+            "addressStateProvince " +
 
         "from " +
             commonResources.USERS_TABLE_NAME + " " +
@@ -2139,13 +2143,31 @@ router.get('/users', (req, res) => {
             commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + "." +
             commonResources.LEVELS_OF_EDUCATION_COLUMN_ID + " " +
 
+            "left join " +
+            commonResources.SUBDISTRICTS_TABLE_NAME + " " + "on " +
+            commonResources.USERS_COLUMN_ADDRESS_SUBDISTRICT_ID +
+            " = " + commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+            commonResources.SUBDISTRICTS_COLUMN_ID + " " +
+
+            "left join " + commonResources.DISTRICTS_TABLE_NAME +
+            " on " + commonResources.SUBDISTRICTS_TABLE_NAME + "." +
+            commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID + " = " +
+            commonResources.DISTRICTS_TABLE_NAME + "." +
+            commonResources.DISTRICTS_COLUMN_ID + " " +
+
+            "left join " + commonResources.STATE_PROVINCES_TABLE_NAME +
+            " on " + commonResources.DISTRICTS_TABLE_NAME + "." +
+            commonResources.DISTRICTS_COLUMN_STATE_PROVINCE_ID +
+            " = " + commonResources.STATE_PROVINCES_TABLE_NAME +
+            "." + commonResources.STATE_PROVINCES_COLUMN_ID + " " +
+
         "order by " +
         commonResources.USERS_TABLE_NAME + "." +
         commonResources.USERS_COLUMN_ID + " desc";
 
     dbConnect.query(
         selectAllUsersSql,
-        async function (err, result) {
+        function (err, result) {
             if (err) {
                 res.json({
                     result: false,
@@ -2154,154 +2176,6 @@ router.get('/users', (req, res) => {
                 });
             } else {
                 let users = result;
-                for (let i = 0; i < users.length; i++) {
-                    let currentUserId = users[i].id;
-
-                    // Get skill list
-                    let getCurrentUserSkillsPromise = new Promise(
-                        function (myResolve, myReject) {
-                            let selectJobSkillsOfUserByUserIdSql =
-                                "select " +
-                                commonResources
-                                    .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
-                                + ", " +
-                                commonResources.JOB_SKILLS_COLUMN_NAME + " " +
-
-                                "from " +
-                                commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
-                                + ", " +
-                                commonResources.JOB_SKILLS_TABLE_NAME + " " +
-                                "where " +
-
-                                commonResources.JOB_SKILLS_OF_CANDIDATE_TABLE_NAME
-                                + "." +
-                                commonResources
-                                    .JOB_SKILLS_OF_CANDIDATE_COLUMN_JOB_SKILLS_ID
-                                + " = " +
-                                commonResources.JOB_SKILLS_TABLE_NAME
-                                + "."
-                                + commonResources.JOB_SKILLS_COLUMN_ID
-                                + " " +
-
-                                "and " +
-                                commonResources
-                                    .JOB_SKILLS_OF_CANDIDATE_COLUMN_USER_ID +
-                                " = ?;";
-                            dbConnect.query(
-                                selectJobSkillsOfUserByUserIdSql,
-                                [currentUserId],
-                                function (selectSkillsErr, selectSkillsResult) {
-                                    if (selectSkillsErr) {
-                                        res.json({
-                                            result: false,
-                                            message: "Lỗi truy vấn JobSkills",
-                                            err: selectSkillsErr
-                                        });
-                                        throw selectSkillsErr;
-                                    } else {
-                                        myResolve(selectSkillsResult);
-                                    }
-                                }
-                            );
-                        }
-                    );
-
-                    let currentUserJobSkillsResult =
-                        await getCurrentUserSkillsPromise;
-                    users[i].skills = currentUserJobSkillsResult;
-
-                    // Get address
-                    let getCurrentUserAddressPromise = new Promise(
-                        function(myResolve, myReject) {
-                            let selectAddressOfCurrentUserSql =
-                                "select " +
-                                commonResources.STATE_PROVINCES_TABLE_NAME + "." +
-                                commonResources.STATE_PROVINCES_COLUMN_NAME + " as " +
-                                commonResources.COLUMN_ALIAS_STATE_PROVINCE_NAME + ", " +
-
-                                commonResources.DISTRICTS_TABLE_NAME + "." +
-                                commonResources.DISTRICTS_COLUMN_NAME + " as " +
-                                commonResources.COLUMN_ALIAS_DISTRICT_NAME + ", " +
-
-                                commonResources.SUBDISTRICTS_TABLE_NAME + "." +
-                                commonResources.SUBDISTRICTS_COLUMN_NAME + " as " +
-                                commonResources.COLUMN_ALIAS_SUBDISTRICT_NAME + " " +
-                                "from " +
-                                commonResources.USERS_TABLE_NAME + " " +
-
-                                "left join " +
-                                commonResources.SUBDISTRICTS_TABLE_NAME + " " + "on " +
-                                commonResources.USERS_COLUMN_ADDRESS_SUBDISTRICT_ID +
-                                " = " + commonResources.SUBDISTRICTS_TABLE_NAME + "." +
-                                commonResources.SUBDISTRICTS_COLUMN_ID + " " +
-
-                                "left join " + commonResources.DISTRICTS_TABLE_NAME +
-                                " on " + commonResources.SUBDISTRICTS_TABLE_NAME + "." +
-                                commonResources.SUBDISTRICTS_COLUMN_DISTRICT_ID + " = " +
-                                commonResources.DISTRICTS_TABLE_NAME + "." +
-                                commonResources.DISTRICTS_COLUMN_ID + " " +
-
-                                "left join " + commonResources.STATE_PROVINCES_TABLE_NAME +
-                                " on " + commonResources.DISTRICTS_TABLE_NAME + "." +
-                                commonResources.DISTRICTS_COLUMN_STATE_PROVINCE_ID +
-                                " = " + commonResources.STATE_PROVINCES_TABLE_NAME +
-                                "." + commonResources.STATE_PROVINCES_COLUMN_ID + " " +
-
-                                "where " +
-                                commonResources.USERS_COLUMN_ID + " = ?;";
-                            dbConnect.query(
-                                selectAddressOfCurrentUserSql,
-                                [currentUserId],
-                                function (selectAddressErr, selectAddressResult) {
-                                    if (selectAddressErr) {
-                                        console.trace(); // Print err stack trace
-                                        res.json({
-                                            result: false,
-                                            message: "Lỗi truy vấn " +
-                                                "địa chỉ người dùng.",
-                                            err: selectAddressErr
-                                        });
-                                        throw selectAddressErr;
-                                    } else {
-                                        myResolve(selectAddressResult);
-                                    }
-                                }
-                            );
-                        }
-                    );
-
-                    let currentUserAddressQueryResult =
-                        await getCurrentUserAddressPromise;
-                //    [
-                    //   {
-                    //     stateProvinceName: null,
-                    //     districtName: null,
-                    //     subdistrictName: null
-                    //   }
-                    // ]
-                    // or
-                    // [
-                    //    {
-                    //     stateProvinceName: 'Thành phố Hà Nội',
-                    //     districtName: 'Quận Cầu Giấy',
-                    //     subdistrictName: 'Phường Quan Hoa'
-                    //   }
-                    // ]
-                    if (currentUserAddressQueryResult[0].subdistrictName
-                            === null) {
-                        console.log(currentUserId + ", " + null);
-                        users[i].addressText = null;
-                    } else {
-                        users[i].addressText =
-                            currentUserAddressQueryResult[0]
-                                .subdistrictName + " - " +
-                            currentUserAddressQueryResult[0]
-                                .districtName + " - " +
-                            currentUserAddressQueryResult[0]
-                                .stateProvinceName;
-                    }
-                }
-
                 res.json({
                     result: true,
                     users
