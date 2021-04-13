@@ -30,6 +30,11 @@ const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
 // const MY_SQL_PASSWORD = "tiger";
 // const MY_SQL_DATABASE_NAME = "FindJobApp";
 
+// Admin server page login info
+const SESSION_SECRET = "fds342fldsk";
+const LOGIN_ADMIN_SERVER_PAGE_USERNAME = "admin";
+const LOGIN_ADMIN_SERVER_PAGE_PASSWORD = "220313";
+
 const MY_SQL_ERR_DUPLICATE_CODE = "ER_DUP_ENTRY";
 
 // Table and column names
@@ -246,6 +251,12 @@ module.exports.MY_SQL_HOST = MY_SQL_HOST;
 module.exports.MY_SQL_USER = MY_SQL_USER;
 module.exports.MY_SQL_PASSWORD = MY_SQL_PASSWORD;
 module.exports.MY_SQL_DATABASE_NAME = MY_SQL_DATABASE_NAME;
+
+module.exports.SESSION_SECRET = SESSION_SECRET;
+module.exports.LOGIN_ADMIN_SERVER_PAGE_USERNAME =
+                                    LOGIN_ADMIN_SERVER_PAGE_USERNAME;
+module.exports.LOGIN_ADMIN_SERVER_PAGE_PASSWORD =
+                                    LOGIN_ADMIN_SERVER_PAGE_PASSWORD;
 
 module.exports.NEWS_CATEGORIES_TABLE_NAME = NEWS_CATEGORIES_TABLE_NAME;
 module.exports.NEWS_CATEGORIES_COLUMN_ID = NEWS_CATEGORIES_COLUMN_ID;

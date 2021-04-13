@@ -5,6 +5,12 @@ const dbConnect = require('../public/javascripts/db');
 const moment = require('moment');
 
 router.get('/', (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     // Search
     let keyword =
         req.query.keyword == undefined
@@ -89,6 +95,12 @@ router.get('/', (req, res) => {
 });
 
 router.get('/unapproved-job-news', (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     // Search
     let keyword =
         req.query.keyword == undefined
@@ -175,6 +187,12 @@ router.get('/unapproved-job-news', (req, res) => {
 });
 
 router.get('/approved-job-news', (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     // Search
     let keyword =
         req.query.keyword == undefined

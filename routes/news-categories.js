@@ -5,6 +5,12 @@ var commonResources = require('../public/javascripts/common');
 var dbConnect = require('../public/javascripts/db');
 
 router.get('/', async (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     // Search
     let keyword = req.query.keyword ==
     undefined ? "" : req.query.keyword.trim();
@@ -26,6 +32,12 @@ router.get('/', async (req, res) => {
 
 // Render form create new news's category
 router.get('/create', async (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     res.render('news-categories/create');
 });
 
@@ -147,6 +159,12 @@ router.post('/remove', async (req, res) => {
 });
 
 router.get('/details/:categoryId', async (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
    let categoryId = req.params.categoryId;
    let selectCategoryByIdSql =
        "select * " +

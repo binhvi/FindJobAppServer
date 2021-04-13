@@ -4,6 +4,11 @@ var commonResources = require('../public/javascripts/common');
 var dbConnect = require('../public/javascripts/db');
 
 router.get('/', async (req, res) => {
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     let selectAllAcademicDegreeLevelsSql =
         "select * " +
         "from " + commonResources.ACADEMIC_DEGREE_LEVELS_TABLE_NAME + " " +

@@ -6,6 +6,12 @@ const moment = require('moment');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     // Search
     let keyword = req.query.keyword ==
         undefined ? "" : req.query.keyword.trim();

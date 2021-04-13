@@ -5,6 +5,12 @@ var uniqid = require('uniqid');
 var dbConnect = require('../public/javascripts/db');
 
 router.get('/', async (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     // Search
     let keyword = req.query.keyword ==
     undefined ? "" : req.query.keyword.trim();
@@ -50,6 +56,12 @@ router.get('/', async (req, res) => {
  * and authors object to view news/create.ejs
  */
 router.get('/create', async (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     let getCategoriesSql =
         "select * " +
         "from " + commonResources.NEWS_CATEGORIES_TABLE_NAME + ";";

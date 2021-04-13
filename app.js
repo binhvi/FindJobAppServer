@@ -2,7 +2,9 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const session = require('express-session');
+const commonResources = require('./public/javascripts/common');
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -18,6 +20,7 @@ const jobNewsStatus = require('./routes/job-news-status');
 const jobSkills = require('./routes/job-skills');
 const jobTitles = require('./routes/job-titles');
 const jobNews = require('./routes/job-news');
+const login = require('./routes/login');
 
 var logger = require('morgan');
 
@@ -30,6 +33,12 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use(session({
+  secret: commonResources.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true
+}));
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -59,6 +68,7 @@ app.use('/job-news-status', jobNewsStatus);
 app.use('/job-skills', jobSkills);
 app.use('/job-titles', jobTitles);
 app.use('/job-news', jobNews);
+app.use('/login', login);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

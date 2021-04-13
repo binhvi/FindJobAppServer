@@ -4,6 +4,12 @@ var commonResources = require('../public/javascripts/common');
 var dbConnect = require('../public/javascripts/db');
 
 router.get('/', async (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     let selectAllLevelsOfEducationSql =
         "select * " +
         "from " + commonResources.LEVELS_OF_EDUCATION_TABLE_NAME + ";";

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container">
+    <header class="container-fluid" style="padding: 0px;">
+        <div class="row">
+            <div class="col-12" style="text-align: center;">
+                <img src="https://i.pinimg.com/originals/1e/0f/f9/1e0ff9536bde438a25153aafad029df8.png"
+                     class="img-fluid" style="height: 200px;">
+            </div>
+        </div>
+    </header>
+
+    <hr>
+
+    <main class="container-fluid"
+            style="display: flex;
+                    align-items: center;"> <!-- Align center vertical -->
+        <div id="login-form"
+             class="col-md-4 offset-md-4">
+            <h4 class="text-center">Đăng nhập</h4>
+            <form action="auth"
+                  method="post"
+                  onsubmit="return validateForm()">
+
+                <div >
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="username">Tên đăng nhập</label>
+                        <input type="text" name="username"
+                               id="username"
+                               class="form-control"
+                               placeholder="Nhập tên đăng nhập"
+                               required>
+                        <span id="username-err"
+                              class="validate-err text-danger">
+                    </span>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label for="password">Mật khẩu</label>
+                        <input type="text" name="password"
+                               id="password"
+                               class="form-control"
+                               placeholder="Nhập mật khẩu"
+                                required>
+                        <span id="password-err"
+                              class="validate-err text-danger">
+                    </span>
+                    </div>
+
+                    <div class="text-center">
+                        <button class="btn btn-primary btn-sm"
+                                type="submit"
+                                style="width: 100%;">
+                            Đăng nhập
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+    </main>
+    <%- include('../_share/footer'); %>
+</div>
+
+<%- include('../_share/script'); %>
+<script>
+    function validateForm() {
+        // Initial error message of category name is empty
+        $('.validate-err').text("");
+
+        // Get value of element has attribute "id" is "username"
+        let username = $('[id="username"]').val().trim();
+        if (username.length === 0) {
+            $('#username-err').text("Hãy nhập tên đăng nhập");
+            return false;
+        }
+
+        let password = $('[id="password"]').val().trim();
+        if (password.length === 0) {
+            $('#password-err').text("Hãy nhập mật khẩu");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+</body>
+</html>
