@@ -4924,6 +4924,8 @@ router.post('/job-news/details', (req, res) => {
                 commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER
                 + ", " +
                 commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS
+                + ", " +
+                commonResources.JOB_NEWS_COLUMN_REQUIRED_TECHNOLOGY_TEXT
                 + " " +
 
                 "from " +
