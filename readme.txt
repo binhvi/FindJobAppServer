@@ -340,6 +340,7 @@ Tham số:
  /\w{1,}@\w{1,}.\w{1,}/ (anyword@anyword.anyword)
 - companyPhoneNumber (bắt buộc, String, phải đúng định dạng
  (chuỗi 10-12 chữ số)
+- requiredTechnologyText (các ngôn ngữ lập trình, công nghệ yêu cầu; bắt buộc, String, không trống).
 
  (Một người dùng chỉ có thể đăng tối đa 5 tin)
 ------------------
