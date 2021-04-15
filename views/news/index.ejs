@@ -11,20 +11,28 @@
         <%- include('../_share/header'); %>
         <main class="container-fluid">
             <h4 class="text-center">Bài viết</h4>
+
             <div class="row">
-                <div class="col-4">
+                <div class="col-6">
                     <form action="" method="GET">
-                        <div class="form-group">
+                        <div class="form-group"
+                             style="display: inline-block; width: 60%;">
                             <label for="">Tìm kiếm</label>
-                            <input type="text" name="keyword"  class="form-control" value="<%= keyword %>">
+                            <input type="text" name="keyword"
+                                   class="form-control"
+                                   value="<%= keyword %>">
                         </div>
-                        <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
+                        <button type="submit"
+                                class="btn btn-sm btn-primary">
+                            Tìm kiếm
+                        </button>
                     </form>
                 </div>
             </div>
 
-            <table class="table table-striped">
-                <thead>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
                     <th>Tiêu đề</th>
                     <th>Hình ảnh</th>
                     <th>Thể loại</th>
@@ -37,64 +45,65 @@
                             Tạo mới
                         </a>
                     </th>
-                </thead>
+                    </thead>
 
-                <tbody>
-                <% for(let i = 0; i < news.length; i++) {%>
-                    <tr>
-                        <td><strong><%= news[i].title %></strong></td>
-                        <td>
-                            <img src="<%= news[i].imageUrl %>" width="100px"/>
-                        </td>
-                        <td><%= news[i].category %></td>
-                        <td><%= news[i].author %></td>
+                    <tbody>
+                    <% for(let i = 0; i < news.length; i++) {%>
+                        <tr>
+                            <td><strong><%= news[i].title %></strong></td>
+                            <td>
+                                <img src="<%= news[i].imageUrl %>" width="100px"/>
+                            </td>
+                            <td><%= news[i].category %></td>
+                            <td><%= news[i].author %></td>
 
 
 
-                        <td>
-                            <form action="/news/details" method="post"
-                                  style="display: inline-block">
-                                <input name="newsId"
-                                       value="<%= news[i].id %>"
-                                       style="display:none;"
-                                />
-                                <button type="submit"
-                                        class="btn btn-info btn-sm">
-                                    Chi tiết
-                                </button>
-                            </form>
-                            &nbsp;
-                            <form action="/news/update" method="post"
-                                  style="display: inline-block">
-                                <input name="newsId"
-                                       value="<%= news[i].id %>"
-                                       style="display:none;"
-                                />
-                                <button type="submit" class="btn btn-warning btn-sm">
-                                    Cập nhật
-                                </button>
-                            </form>
+                            <td>
+                                <form action="/news/details" method="post"
+                                      style="display: inline-block">
+                                    <input name="newsId"
+                                           value="<%= news[i].id %>"
+                                           style="display:none;"
+                                    />
+                                    <button type="submit"
+                                            class="btn btn-info btn-sm">
+                                        Chi tiết
+                                    </button>
+                                </form>
+                                &nbsp;
+                                <form action="/news/update" method="post"
+                                      style="display: inline-block">
+                                    <input name="newsId"
+                                           value="<%= news[i].id %>"
+                                           style="display:none;"
+                                    />
+                                    <button type="submit" class="btn btn-warning btn-sm">
+                                        Cập nhật
+                                    </button>
+                                </form>
 
-                            &nbsp;
+                                &nbsp;
 
-                            <form action="/news/remove" method="post"
-                                  style="display: inline-block">
-                                <input name="newsId"
-                                       value="<%= news[i].id %>"
-                                       style="display:none;" />
-                                <button type="submit"
-                                        onclick="return confirm('Bạn có ' +
+                                <form action="/news/remove" method="post"
+                                      style="display: inline-block">
+                                    <input name="newsId"
+                                           value="<%= news[i].id %>"
+                                           style="display:none;" />
+                                    <button type="submit"
+                                            onclick="return confirm('Bạn có ' +
                                          'chắc chắn muốn xóa bài viết này?')"
-                                        class="btn btn-danger btn-sm">
-                                    Xóa
-                                </button>
-                            </form>
+                                            class="btn btn-danger btn-sm">
+                                        Xóa
+                                    </button>
+                                </form>
 
-                        </td>
-                    </tr>
-                <% } %>
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
         </main>
         <%- include('../_share/footer'); %>
     </div>

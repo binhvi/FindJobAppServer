@@ -46,6 +46,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// To display image in folder public in ejs
+app.use(express.static("public"));
+
 //giúp các request truy cập được các file trong thư mục upload
 app.use(express.static(path.join(__dirname, 'uploads')));
 

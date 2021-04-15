@@ -79,7 +79,6 @@
             <p style="text-transform: uppercase">
                 <strong>KỸ NĂNG YÊU CẦU</strong>
             </p>
-
             <% if (jobNewsRequiredSkills.length === 0) { %>
                 <p>Chưa cập nhật kỹ năng yêu cầu</p>
             <% } else { %>
@@ -93,6 +92,10 @@
                     <% } %>
                 </table>
             <% } %>
+
+            <p><strong>Công nghệ yêu cầu: </strong>
+                <%= jobNewsDetails.requiredTechnologyText %>
+            </p>
         </div>
 
         <div id="company-info" style="margin-bottom: 36px;">

@@ -5,12 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ</title>
     <%- include('_share/style'); %>
+
+    <link rel="stylesheet"
+          href=
+          "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+          integrity=
+          "sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
+          crossorigin="anonymous" />
+    <script src=
+            "https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity=
+            "sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous">
+    </script>
+    <script src=
+            "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+            integrity=
+            "sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+            crossorigin="anonymous">
+    </script>
 </head>
 <body>
 <div class="container">
     <%- include('_share/header'); %>
     <main class="container-fluid">
-        <h4 class="text-center">Trang chủ</h4>
+        <h4 class="text-center" style="margin-top: 24px;">
+            Chào mừng đến trang quản trị của FindJob!
+        </h4>
+        <h6 class="text-center">
+            Tại đây bạn có thể tạo tin tức, xem danh sách, xem chi tiết,
+            xóa người dùng; xem danh sách, phê duyệt/hủy phê duyệt
+            hoặc xóa các tin tuyển dụng.</h6>
+
+        <div class="container mt-3" style="text-align: center;">
+            <div id="slide-show"
+                 class="carousel slide"
+                 data-ride="carousel">
+                <!-- Indicators -->
+                <ul class="carousel-indicators">
+                    <li data-target="#GFG"
+                        data-slide-to="0"
+                        class="active"></li>
+                    <li data-target="#GFG"
+                        data-slide-to="1"></li>
+                    <li data-target="#GFG"
+                        data-slide-to="2"></li>
+                </ul>
+
+                <!-- The slideshow -->
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src=
+                             "/images/ic_news.webp"
+                             alt="GFG" />
+                    </div>
+
+                    <div class="carousel-item">
+                        <img src=
+                             "/images/ic_users.webp"
+                             alt="GFG" />
+                    </div>
+
+                    <div class="carousel-item">
+                        <img src=
+                             "/images/ic_job.webp"
+                             alt="GFG" />
+                    </div>
+                </div>
+
+                <a class="carousel-control-prev"
+                   href="#GFG"
+                   data-slide="prev">
+                    <span class="carousel-control-prev-icon">
+                  </span>
+                </a>
+                <a class="carousel-control-next"
+                   href="#GFG"
+                   data-slide="next">
+                    <span class="carousel-control-next-icon">
+                  </span>
+                </a>
+            </div>
+        </div>
     </main>
     <%- include('_share/footer'); %>
 </div>

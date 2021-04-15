@@ -11,11 +11,13 @@
     <%- include('../_share/header'); %>
     <main class="container-fluid">
         <h4 class="text-center">Danh sách người dùng</h4>
+        <p class="text-center">Tổng số người dùng: <%= users.length %></p>
 
-        <div class="row">
-            <div class="col-4">
+        <div class="row" id="search-box" style="margin-bottom: 20px;">
+            <div class="col-6">
                 <form action="" method="GET">
-                    <div class="form-group">
+                    <div class="form-group"
+                         style="display: inline-block; width: 60%;">
                         <label for="">Tìm kiếm</label>
                         <input type="text" name="keyword"
                                class="form-control"
@@ -29,83 +31,86 @@
             </div>
         </div>
 
-        <table class="table table-striped">
-            <thead>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
                 <th>Ảnh đại diện</th>
                 <th>Họ tên</th>
                 <th>SĐT</th>
                 <th>Email</th>
                 <th>Địa chỉ</th>
-            </thead>
+                <th>Hành động</th>
+                </thead>
 
-            <tbody>
-            <% for(let i = 0; i < users.length; i++) {%>
-                <tr>
-                    <td>
-                        <% if(!users[i].avatarUrl){ %>
-                            <img src="https://vectorified.com/images/no-image-icon-3.png"
-                                 width="100px"
-                                 class="userAvatar"
-                            />
-                        <% } else { %>
+                <tbody>
+                <% for(let i = 0; i < users.length; i++) {%>
+                    <tr>
+                        <td>
+                            <% if(!users[i].avatarUrl){ %>
+                                <img src="https://vectorified.com/images/no-image-icon-3.png"
+                                     width="100px"
+                                     class="userAvatar"
+                                />
+                            <% } else { %>
                                 <img src="<%= users[i].avatarUrl %>"
                                      width="100px"
                                      class="userAvatar"
                                 />
-                        <% } %>
-                    </td>
+                            <% } %>
+                        </td>
 
 
-                    <td><%= users[i].fullName %></td>
-                    <td><%= users[i].phone %></td>
-                    <td><%= users[i].email %></td>
+                        <td><%= users[i].fullName %></td>
+                        <td><%= users[i].phone %></td>
+                        <td><%= users[i].email %></td>
 
-                    <td>
-                        <% if(!users[i].subdistrictName){ %>
-                            <span>Chưa cập nhật</span>
-                        <% } else { %>
-                            <span>
+                        <td>
+                            <% if(!users[i].subdistrictName){ %>
+                                <span>Chưa cập nhật</span>
+                            <% } else { %>
+                                <span>
                                 <%= users[i].subdistrictName %>,
                                 <%= users[i].districtName%>,
                                 <%= users[i].stateProvinceName %>
                             </span>
-                        <% } %>
-                    </td>
+                            <% } %>
+                        </td>
 
-                    <td>
+                        <td>
 
-                        <form action="/users/details" method="post"
-                              style="display: inline-block">
-                            <input name="userId"
-                                   value="<%= users[i].id %>"
-                                   style="display:none;"
-                            />
-                            <button type="submit"
-                                    class="btn btn-info btn-sm">
-                                Chi tiết
-                            </button>
-                        </form>
-                        &nbsp;
-                        <form action="/users/remove" method="post"
-                              style="display: inline-block">
-                            <input name="userId"
-                                   value="<%= users[i].id %>"
-                                   style="display:none;" />
-                            <button type="submit"
-                                    onclick="return confirm('Bạn có ' +
+                            <form action="/users/details" method="post"
+                                  style="display: inline-block">
+                                <input name="userId"
+                                       value="<%= users[i].id %>"
+                                       style="display:none;"
+                                />
+                                <button type="submit"
+                                        class="btn btn-info btn-sm">
+                                    Chi tiết
+                                </button>
+                            </form>
+                            &nbsp;
+                            <form action="/users/remove" method="post"
+                                  style="display: inline-block">
+                                <input name="userId"
+                                       value="<%= users[i].id %>"
+                                       style="display:none;" />
+                                <button type="submit"
+                                        onclick="return confirm('Bạn có ' +
                                          'chắc chắn muốn xóa tất cả ' +
                                           'thông tin của ' +
                                           'người dùng này?')"
-                                    class="btn btn-danger btn-sm">
-                                Xóa
-                            </button>
-                        </form>
+                                        class="btn btn-danger btn-sm">
+                                    Xóa
+                                </button>
+                            </form>
 
-                    </td>
-                </tr>
-            <% } %>
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        </div>
     </main>
     <%- include('../_share/footer'); %>
 </div>

@@ -14,73 +14,78 @@
                 <h4 class="text-center">Tác giả bài viết</h4>
 
                 <div class="row">
-                    <div class="col-4">
+                    <div class="col-6">
                         <form action="" method="GET">
-                            <div class="form-group">
+                            <div class="form-group"
+                                 style="display: inline-block; width: 60%;">
                                 <label for="">Tìm kiếm</label>
-                                <input type="text" name="keyword"  class="form-control" value="<%= keyword %>">
+                                <input type="text" name="keyword"
+                                       class="form-control"
+                                       value="<%= keyword %>">
                             </div>
                             <button type="submit" class="btn btn-sm btn-primary">Tìm kiếm</button>
                         </form>
                     </div>
                 </div>
 
-                <table class="table table-striped">
-                    <thead>
-                    <th>Tên tác giả bài viết</th>
-                    <th>
-                        <a
-                                href="/news-authors/create"
-                                class="btn btn-sm btn-success">
-                            Tạo mới
-                        </a>
-                    </th>
-                    </thead>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                        <th>Tên tác giả bài viết</th>
+                        <th>
+                            <a
+                                    href="/news-authors/create"
+                                    class="btn btn-sm btn-success">
+                                Tạo mới
+                            </a>
+                        </th>
+                        </thead>
 
-                    <tbody>
-                    <% for(let i = 0; i < newsAuthors.length; i++) {%>
-                        <tr>
-                            <td><%= newsAuthors[i].name %></td>
-                            <td>
-                                <a
-                                        href="/news-authors/details/<%= newsAuthors[i].id %>"
-                                        class="btn btn-info btn-sm">
-                                    Chi tiết
-                                </a>
-                                &nbsp;
-                                <form action="/news-authors/update" method="post"
-                                      style="display: inline-block">
-                                    <input name="newsAuthorId"
-                                           value="<%= newsAuthors[i].id %>"
-                                           style="display:none;"
-                                    />
-                                    <button type="submit" class="btn btn-warning btn-sm">
-                                        Cập nhật
-                                    </button>
-                                </form>
+                        <tbody>
+                        <% for(let i = 0; i < newsAuthors.length; i++) {%>
+                            <tr>
+                                <td><%= newsAuthors[i].name %></td>
+                                <td>
+                                    <a
+                                            href="/news-authors/details/<%= newsAuthors[i].id %>"
+                                            class="btn btn-info btn-sm">
+                                        Chi tiết
+                                    </a>
+                                    &nbsp;
+                                    <form action="/news-authors/update" method="post"
+                                          style="display: inline-block">
+                                        <input name="newsAuthorId"
+                                               value="<%= newsAuthors[i].id %>"
+                                               style="display:none;"
+                                        />
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            Cập nhật
+                                        </button>
+                                    </form>
 
-                                &nbsp;
+                                    &nbsp;
 
-                                <form action="/news-authors/remove" method="post"
-                                      style="display: inline-block">
-                                    <input name="newsAuthorId"
-                                           value="<%= newsAuthors[i].id %>"
-                                           style="display:none;" />
-                                    <button type="submit"
-                                            onclick="return confirm('Việc xóa ' +
+                                    <form action="/news-authors/remove" method="post"
+                                          style="display: inline-block">
+                                        <input name="newsAuthorId"
+                                               value="<%= newsAuthors[i].id %>"
+                                               style="display:none;" />
+                                        <button type="submit"
+                                                onclick="return confirm('Việc xóa ' +
                                          'tác giả bài viết sẽ xóa cả ' +
                                           'dữ liệu các bài viết (nếu có) ' +
                                            'của tác giả này. Vẫn xóa?')"
-                                            class="btn btn-danger btn-sm">
-                                        Xóa
-                                    </button>
-                                </form>
+                                                class="btn btn-danger btn-sm">
+                                            Xóa
+                                        </button>
+                                    </form>
 
-                            </td>
-                        </tr>
-                    <% } %>
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                        <% } %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
         <%- include('../_share/footer'); %>
