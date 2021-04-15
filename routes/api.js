@@ -5640,6 +5640,24 @@ router.post('/job-news/create', (req, res) => {
                                                return;
                                            }
 
+                                           // Validate requiredTechnologyText
+                                           if (req.body.requiredTechnologyText === undefined) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Thiếu trường requiredTechnologyText."
+                                               });
+                                               return;
+                                           }
+
+                                           let requiredTechnologyText = req.body.requiredTechnologyText.trim();
+                                           if (requiredTechnologyText.length === 0) {
+                                               res.json({
+                                                   result: false,
+                                                   message: "Ngôn ngữ/công nghệ yêu cầu không được để trống."
+                                               });
+                                               return;
+                                           }
+
                                            // Pass validate
                                            let currentTime = new Date();
                                            let timeCreatedNewMillis = currentTime.getTime();
@@ -5661,7 +5679,8 @@ router.post('/job-news/create', (req, res) => {
                                                     commonResources.JOB_NEWS_COLUMN_COMPANY_WEBSITE + ", " +
                                                     commonResources.JOB_NEWS_COLUMN_COMPANY_EMAIL + ", " +
                                                     commonResources.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER + ", " +
-                                                    commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS +
+                                                    commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS + ", " +
+                                                    commonResources.JOB_NEWS_COLUMN_REQUIRED_TECHNOLOGY_TEXT +
                                                ") " +
                                                "values(" +
                                                     userIdNumber + ", " +
@@ -5679,7 +5698,8 @@ router.post('/job-news/create', (req, res) => {
                                                     "'" + companyWebsiteText + "', " +
                                                     "'" + companyEmail + "', " +
                                                     "'" + companyPhoneNumberText + "', " +
-                                                    timeCreatedNewMillis +
+                                                    timeCreatedNewMillis + ", " +
+                                                    "'" + requiredTechnologyText + "'" +
                                                ");";
                                            dbConnect.query(
                                                addNewJobNewsToDbSql,

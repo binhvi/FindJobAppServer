@@ -7,16 +7,16 @@ const SERVER_HOST = "find-job-app.herokuapp.com";
 // const SERVER_HOST = "localhost:3000";
 
 // Host database deploy (Main)
-const MY_SQL_HOST = "johnny.heliohost.org";
-const MY_SQL_USER = "findjob_scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
+// const MY_SQL_HOST = "johnny.heliohost.org";
+// const MY_SQL_USER = "findjob_scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database deploy alternative 1 if main host got error
-// const MY_SQL_HOST = "freedb.tech";
-// const MY_SQL_USER = "freedbtech_scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
+const MY_SQL_HOST = "freedb.tech";
+const MY_SQL_USER = "freedbtech_scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
 
 // Host database deploy alternative 2 if main host got error
 // const MY_SQL_HOST = "85.10.205.173"; // db4free.net
@@ -175,6 +175,7 @@ const JOB_NEWS_COLUMN_COMPANY_WEBSITE = "companyWebsite";
 const JOB_NEWS_COLUMN_COMPANY_EMAIL = "companyEmail";
 const JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER = "companyPhoneNumber";
 const JOB_NEWS_COLUMN_TIME_CREATE_MILLIS = "timeCreatedNewsMillis";
+const JOB_NEWS_COLUMN_REQUIRED_TECHNOLOGY_TEXT = "requiredTechnologyText";
 
 const JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME = "JobNewsRequiredSkills";
 const JOB_NEWS_REQUIRED_SKILLS_COL_JOB_NEWS_ID = "jobNewsId";
@@ -435,6 +436,8 @@ module.exports.JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER =
                                     JOB_NEWS_COLUMN_COMPANY_PHONE_NUMBER;
 module.exports.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS =
                                         JOB_NEWS_COLUMN_TIME_CREATE_MILLIS;
+module.exports.JOB_NEWS_COLUMN_REQUIRED_TECHNOLOGY_TEXT =
+                                JOB_NEWS_COLUMN_REQUIRED_TECHNOLOGY_TEXT;
 
 module.exports.JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME =
                                     JOB_NEWS_REQUIRED_SKILLS_TABLE_NAME;
