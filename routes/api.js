@@ -2411,7 +2411,7 @@ router.post('/users/send-email-reset-password', async(req, res) => {
     let userFullName = getUserFullNameResult[0].fullName;
 
     // Send email
-    let mailSubject = "[FindJobApp] Yêu cầu đặt lại mật khẩu";
+    let mailSubject = "[FindJobApp] Đặt lại mật khẩu FindJob";
     let mailContent =
         "Xin chào " + userFullName + ", \n" +
         "\n" +
