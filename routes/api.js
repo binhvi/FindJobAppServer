@@ -2377,8 +2377,6 @@ router.post('/users/send-email-reset-password', async(req, res) => {
         });
     });
 
-
-
     let getUserFullNamePromise = new Promise((resolve, reject) => {
         let getUserFullNameSql =
             "select " +
@@ -2423,6 +2421,7 @@ router.post('/users/send-email-reset-password', async(req, res) => {
         "\n" +
         tokenString +
         "\n\n" +
+        "Mã xác minh sẽ hết hạn sau tối đa 10 phút. \n" +
         "Nếu bạn không gửi yêu cầu đặt lại mật khẩu, " +
         "xin vui lòng bỏ qua email này. \n" +
         "\n" +
@@ -2449,9 +2448,57 @@ router.post('/users/send-email-reset-password', async(req, res) => {
                 message: "Gửi mail thành công.",
                 info: result
             });
+
+            setTimeout(function () {
+                removeUserResetPasswordToken(
+                    emailText,
+                    tokenString,
+                    function (err, result) {
+                        if (err) {
+                            console.trace();
+                            res.json({
+                               result: false,
+                               message: "Có lỗi xảy ra khi lên lịch " +
+                                   "xóa token.",
+                               err
+                            });
+                            return;
+                        }
+
+                        res.end();
+                    }
+                );
+            }, 10 * 60 * 1000); // 10 mins
         }
     );
 });
+
+function removeUserResetPasswordToken(userEmail, token, callback) {
+    let setResetPasswordTokenForUserSql =
+        "update " +
+            commonResources.USERS_TABLE_NAME + " " +
+        "set " +
+            commonResources
+                .USERS_COLUMN_RESET_PASSWORD_TOKEN_STRING +
+            " = null " +
+        "where " +
+            commonResources.USERS_COLUMN_EMAIL + " = ?" +
+            "and " +
+            commonResources.USERS_COLUMN_RESET_PASSWORD_TOKEN_STRING
+            + " = ?;";
+    dbConnect.query(
+        setResetPasswordTokenForUserSql,
+        [userEmail, token],
+        function (err, result) {
+            // callback function has 2 params: err, result
+            if (err) {
+                callback(err, null); // result is null
+            }
+
+            callback(null, err); // err is null
+        }
+    );
+}
 
 function sendEmail(senderGmailAddress, senderGmailPassword,
                    receiverEmailAddress,

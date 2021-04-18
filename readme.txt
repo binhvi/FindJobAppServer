@@ -44,6 +44,7 @@ Tham số:
     + String
     + Tên không được để trống
     + Tên từ 2 ký tự trở lên
+    + Không chứa dấu “‘“
 - phone
     + String
     + Phone không trống
@@ -55,11 +56,13 @@ Tham số:
     + Email đúng định dạng a@b.c
         /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
     + Email không trùng với người khác
+    + Không chứa dấu “‘“
 -	password
     + String
     + Mật khẩu không trống
     + Mật khẩu tối thiểu 6 ký tự
     + Mật khẩu không chứa khoảng trắng
+    + Không chứa dấu “‘“
 ----
 POST /api/users/login
 Tham số:
@@ -150,10 +153,12 @@ Tham số:
 ----------------------------------
 
 Gửi email cho người dùng để đặt lại mật khẩu (chức năng quên mật khẩu).
-Nhận một email của người dùng, tạo một chuỗi token và gửi vào mail của người dùng.
+Nhận một email của người dùng, tạo một chuỗi token và gửi vào mail
+của người dùng. Token sẽ bị xóa sau tối đa 10 phút.
 POST /api/users/send-email-reset-password
 Tham số:
-email (bắt buộc, không trống, phải đúng định dạng, phải thuộc về một người dùng nào đó).
+email (bắt buộc, không trống, phải đúng định dạng, không chứa dấu "'",
+phải thuộc về một người dùng nào đó).
 
 ----------------------------------
 
