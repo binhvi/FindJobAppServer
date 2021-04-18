@@ -19,6 +19,7 @@ const jobApplicationsModule =
                     require('../public/javascripts/job-applications');
 const jobNewsRequiredSkillsModule =
     require('../public/javascripts/job-news-required-skills');
+const nodemailer = require('nodemailer');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -465,6 +466,16 @@ router.post('/users/create', async (req, res) => {
         return;
     }
 
+    // Must not allow "'" character to avoid MySQL error
+    // when we use "'" to surround the strings
+    if (fullName.includes("'")) {
+        res.json({
+            result: false,
+            message: "Nhập họ tên không chứa dấu nháy (')."
+        });
+        return;
+    }
+
     if (req.body.phone === undefined) {
         res.json({
             result: false,
@@ -524,6 +535,14 @@ router.post('/users/create', async (req, res) => {
                 return;
             }
 
+            if (email.includes("'")) {
+                res.json({
+                    result: false,
+                    message: "Nhập email không chứa dấu nháy (')."
+                });
+                return;
+            }
+
             userModule.checkIfEmailExistsWhenCreateUser(email, function (isEmailExists) {
                 if (isEmailExists) {
                     res.json({
@@ -567,6 +586,17 @@ router.post('/users/create', async (req, res) => {
                         return;
                     }
 
+                    // Must not allow "'" character to avoid MySQL error
+                    // when we use "'" to surround the strings
+                    if (password.includes("'")) {
+                        res.json({
+                            result: false,
+                            message: "Nhập mật khẩu không chứa " +
+                                "dấu nháy (')."
+                        });
+                        return;
+                    }
+
                     // Pass validate, save to database
                     let saveUserToDbSql =
                         "insert into " + commonResources.USERS_TABLE_NAME + "(" +
@@ -575,12 +605,14 @@ router.post('/users/create', async (req, res) => {
                         commonResources.USERS_COLUMN_EMAIL + ", " +
                         commonResources.USERS_COLUMN_PHONE + ") " +
                         "values(" +
-                        "'" + fullName + "', " +
-                        "'" + password + "', " +
-                        "'" + email + "', " +
-                        "'" + phone + "');"
+                        "?, " +
+                        "?, " +
+                        "?, " +
+                        "?);";
+
                     dbConnect.query(
                         saveUserToDbSql,
+                        [fullName, password, email, phone],
                         function (err, result) {
                             if (err) {
                                 res.json({
@@ -2242,6 +2274,212 @@ router.get('/users', (req, res) => {
         }
     );
 });
+
+router.post('/users/send-email-reset-password', async(req, res) => {
+    // Validate
+    if (req.body.email === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường email."
+        });
+        return;
+    }
+
+    let emailText = req.body.email.trim();
+    if (emailText.length === 0) {
+        res.json({
+            result: false,
+            message: "Email không được để trống."
+        });
+        return;
+    }
+
+    if (!emailText.match(commonResources.REGEX_EMAIL)) {
+        res.json({
+            result: false,
+            message: "Hãy nhập email đúng định dạng."
+        });
+        return;
+    }
+
+    // Must not allow "'" character to avoid MySQL error
+    // when we use "'" to surround the strings
+    if (emailText.includes("'")) {
+        res.json({
+            result: false,
+            message: "Nhập email không chứa dấu nháy (')."
+        });
+        return;
+    }
+
+    let checkIfEmailExistsWhenCreateUserPromise =
+        new Promise((resolve, reject) => {
+            userModule.checkIfEmailExistsWhenCreateUser(
+                emailText,
+                function (isAnyAccountHaveThisEmail) {
+                    resolve(isAnyAccountHaveThisEmail);
+                }
+            );
+    });
+
+    let isAnyAccountHaveThisEmail =
+                await checkIfEmailExistsWhenCreateUserPromise;
+    if (!isAnyAccountHaveThisEmail) {
+        res.json({
+            result: false,
+            message: "Email bạn nhập " +
+                "không kết nối với tài khoản nào."
+        });
+        return;
+    }
+
+    // Generate token string
+    let generateTokenPromise = new Promise( (resolve, reject) => {
+        require('crypto').randomBytes(64, function(err, buffer) {
+            let token = buffer.toString('hex');
+            resolve(token);
+        });
+    });
+
+    let tokenString = await generateTokenPromise;
+
+    // Set token string to user's token string field
+    let setResetPasswordTokenForUserPromise =
+        new Promise((resolve, reject) => {
+            let setResetPasswordTokenForUserSql =
+                "update " +
+                    commonResources.USERS_TABLE_NAME + " " +
+                "set " +
+                    commonResources
+                        .USERS_COLUMN_RESET_PASSWORD_TOKEN_STRING +
+                    " = ? " +
+                "where " +
+                    commonResources.USERS_COLUMN_EMAIL + " = ?;"
+            dbConnect.query(
+                setResetPasswordTokenForUserSql,
+                [tokenString, emailText],
+                function (err, result) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    resolve(result);
+                }
+            );
+    });
+
+    await setResetPasswordTokenForUserPromise.catch(err => {
+        res.json({
+            result: false,
+            message: "Có lỗi xảy ra khi tạo token cho người dùng.",
+            err
+        });
+    });
+
+
+
+    let getUserFullNamePromise = new Promise((resolve, reject) => {
+        let getUserFullNameSql =
+            "select " +
+                commonResources.USERS_COLUMN_FULL_NAME + " " +
+            "from " +
+                commonResources.USERS_TABLE_NAME + " " +
+            "where " +
+                commonResources.USERS_COLUMN_EMAIL + " = ?;";
+        dbConnect.query(
+            getUserFullNameSql,
+            [emailText],
+            function (err, result) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(result);
+            }
+        );
+    });
+
+    let getUserFullNameResult =
+        await getUserFullNamePromise.catch(err => {
+            res.json({
+                result: false,
+                message: "Có lỗi xảy ra khi lấy thông tin người dùng.",
+                err
+            });
+        });
+    // [{"fullName":"John Doe"}]
+    let userFullName = getUserFullNameResult[0].fullName;
+
+    // Send email
+    let mailSubject = "[FindJobApp] Yêu cầu đặt lại mật khẩu";
+    let mailContent =
+        "Xin chào " + userFullName + ", \n" +
+        "\n" +
+        "Chúng tôi vừa nhận được yêu cầu đặt lại mật khẩu " +
+        "cho tài khoản FindJob của bạn. Mã xác minh để đặt lại " +
+        "mật khẩu của bạn là: \n" +
+        "\n" +
+        tokenString +
+        "\n\n" +
+        "Nếu bạn không gửi yêu cầu đặt lại mật khẩu, " +
+        "xin vui lòng bỏ qua email này. \n" +
+        "\n" +
+        "Trân trọng, \n" +
+        "Các thành viên nhóm FindJob";
+    sendEmail(
+        commonResources.FIND_JOB_APP_GMAIL_ADDRESS,
+        commonResources.FIND_JOB_APP_GMAIL_PASSWORD,
+        emailText,
+        mailSubject,
+        mailContent,
+        function (err, result) {
+            if (err) {
+                res.json({
+                   result: false,
+                   message: "Có lỗi trong quá trình gửi mail.",
+                   err
+                });
+                return;
+            }
+
+            res.json({
+                result: true,
+                message: "Gửi mail thành công.",
+                info: result
+            });
+        }
+    );
+});
+
+function sendEmail(senderGmailAddress, senderGmailPassword,
+                   receiverEmailAddress,
+                   mailSubject, mailContent, callback) {
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: senderGmailAddress,
+            pass: senderGmailPassword
+        }
+    });
+
+    let mailOptions = {
+        from: senderGmailAddress,
+        to: receiverEmailAddress,
+        subject: mailSubject,
+        text: mailContent
+    };
+
+    transporter.sendMail(mailOptions, function(error, info) {
+        // callback function has 2 params: error, result
+        if (error) {
+            callback(error, null); // result is null
+        } else {
+           callback(null, info.response); // error is null
+        }
+    });
+}
 
 // Education info of user
 /**

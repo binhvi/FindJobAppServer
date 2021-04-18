@@ -147,6 +147,19 @@ Tham số:
     + Mật khẩu phải >= 6 ký tự
             + Không được chứa khoảng trắng
 
+----------------------------------
+
+Gửi email cho người dùng để đặt lại mật khẩu (chức năng quên mật khẩu).
+Nhận một email của người dùng, tạo một chuỗi token và gửi vào mail của người dùng.
+POST /api/users/send-email-reset-password
+Tham số:
+email (bắt buộc, không trống, phải đúng định dạng, phải thuộc về một người dùng nào đó).
+
+----------------------------------
+
+Đặt lại mật khẩu (chức năng quên mật khẩu)
+POST /api/users/reset-password
+
 ============================
 Education
 

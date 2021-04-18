@@ -103,6 +103,7 @@ const USERS_COLUMN_GENDER_ID = "genderId";
 const USERS_COLUMN_AVATAR_URL = "avatarUrl";
 const USERS_COLUMN_TYPE_OF_WORK_ID = "typeOfWorkId";
 const USERS_COLUMN_RESUME_SUMMARY = "resumeSummary";
+const USERS_COLUMN_RESET_PASSWORD_TOKEN_STRING = "resetPasswordToken";
 
 const COLUMN_ALIAS_GENDER = "gender";
 const COLUMN_ALIAS_TYPE_OF_WORK = "typeOfWork";
@@ -215,6 +216,9 @@ const ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
                                 "Mật khẩu không được chứa khoảng trắng.";
 
 const USER_BIRTHDAY_DATE_FORMAT = "YYYY-MM-DD";
+
+const FIND_JOB_APP_GMAIL_ADDRESS = "findjobappteam@gmail.com";
+const FIND_JOB_APP_GMAIL_PASSWORD = "FSQzmPuBF6P5nUd";
 
 function checkFileImageType(selector) {
     var val = $(selector).val();
@@ -334,6 +338,8 @@ module.exports.USERS_COLUMN_AVATAR_URL = USERS_COLUMN_AVATAR_URL;
 module.exports.USERS_COLUMN_TYPE_OF_WORK_ID =
     USERS_COLUMN_TYPE_OF_WORK_ID;
 module.exports.USERS_COLUMN_RESUME_SUMMARY = USERS_COLUMN_RESUME_SUMMARY;
+module.exports.USERS_COLUMN_RESET_PASSWORD_TOKEN_STRING =
+                                USERS_COLUMN_RESET_PASSWORD_TOKEN_STRING;
 
 module.exports.COLUMN_ALIAS_GENDER = COLUMN_ALIAS_GENDER;
 module.exports.COLUMN_ALIAS_TYPE_OF_WORK = COLUMN_ALIAS_TYPE_OF_WORK;
@@ -476,7 +482,8 @@ module.exports.ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
 
 module.exports.USER_BIRTHDAY_DATE_FORMAT = USER_BIRTHDAY_DATE_FORMAT;
 
-
+module.exports.FIND_JOB_APP_GMAIL_ADDRESS = FIND_JOB_APP_GMAIL_ADDRESS;
+module.exports.FIND_JOB_APP_GMAIL_PASSWORD = FIND_JOB_APP_GMAIL_PASSWORD;
 
 
 
