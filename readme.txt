@@ -162,8 +162,23 @@ phải thuộc về một người dùng nào đó).
 
 ----------------------------------
 
-Đặt lại mật khẩu (chức năng quên mật khẩu)
+Đặt lại mật khẩu (chức năng quên mật khẩu):
+Nhận email, chuỗi token và password mới, nếu email và token khớp với
+dữ liệu của người dùng thì cập nhật lại mật khẩu mới cho người dùng.
 POST /api/users/reset-password
+Tham số:
+- email
+    + String, bắt buộc, không trống, phải đúng định dạng,
+không chứa dấu nháy đơn "'".
+    + Phải thuộc về một người dùng nào đó.
+- tokenStringFromRequest
+    + Bắt buộc, không null, không trống.
+    + Là chuỗi 128 chữ cái và chữ số (quy ước trong project).
+    + Phải khớp với token của người dùng. Chú ý là bắt đầu từ khi tạo
+thì một token của người dùng chỉ tồn tại tối đa 10 phút.
+- newPassword:
+    + String, bắt buộc, không trống
+    + >= 6 ký tự, không chứa dấu cách, không chứa dấu nháy ("'")
 
 ============================
 Education

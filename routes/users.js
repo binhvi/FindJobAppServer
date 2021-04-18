@@ -326,7 +326,6 @@ function checkIfPhoneExistsWhenUpdateUser(phone, userId, callback) {
     );
 }
 
-
 function checkIfEmailExistsWhenCreateUser(email, callback) {
     var selectNumberOfRecordsHasThisEmailSql =
         "select count(" + commonResources.USERS_COLUMN_EMAIL + ") " +
@@ -465,6 +464,31 @@ function checkIfUserIdExists(userId, callback) {
     );
 }
 
+function getResetPasswordTokenByUserEmail(userEmail, callback) {
+    let getResetPasswordTokenByUserEmailSql =
+        "select " +
+        commonResources.USERS_COLUMN_RESET_PASSWORD_TOKEN_STRING
+        + " " +
+        "from " +
+        commonResources.USERS_TABLE_NAME + " " +
+        "where " +
+        commonResources.USERS_COLUMN_EMAIL + " = ?;";
+    dbConnect.query(
+        getResetPasswordTokenByUserEmailSql,
+        [userEmail],
+        function (err, result) {
+            // callback function has 2 params: err, tokenString
+            if (err) {
+                callback(err, null); // If error occurs,
+                                // result is tokenString is null
+            } else {
+                let tokenString = result[0].resetPasswordToken;
+                callback(null, tokenString); // err is null
+            }
+        }
+    );
+}
+
 module.exports = router;
 module.exports.checkIfPhoneExistsWhenCreateUser = checkIfPhoneExistsWhenCreateUser;
 module.exports.checkIfEmailExistsWhenCreateUser = checkIfEmailExistsWhenCreateUser;
@@ -473,3 +497,5 @@ module.exports.checkIfPhoneExistsWhenUpdateUser =
 module.exports.checkIfEmailExistsWhenUpdateUser =
                                         checkIfEmailExistsWhenUpdateUser;
 module.exports.checkIfUserIdExists = checkIfUserIdExists;
+module.exports.getResetPasswordTokenByUserEmail =
+                                        getResetPasswordTokenByUserEmail;

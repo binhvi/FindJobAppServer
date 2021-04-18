@@ -2528,6 +2528,267 @@ function sendEmail(senderGmailAddress, senderGmailPassword,
     });
 }
 
+router.post('/users/reset-password', async (req, res) => {
+    // Validate email
+    if (req.body.email === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường email."
+        });
+        return;
+    }
+
+    let emailText = req.body.email.trim();
+    if (emailText.length === 0) {
+        res.json({
+            result: false,
+            message: "Email không được để trống."
+        });
+        return;
+    }
+
+    if (!emailText.match(commonResources.REGEX_EMAIL)) {
+        res.json({
+            result: false,
+            message: "Hãy nhập email đúng định dạng."
+        });
+        return;
+    }
+
+
+    // Must not allow "'" character to avoid MySQL error
+    // when we use "'" to surround the strings
+    if (emailText.includes("'")) {
+        res.json({
+            result: false,
+            message: "Nhập email không chứa dấu nháy (')."
+        });
+        return;
+    }
+
+    if (!emailText.match(/^\S*$/)) { // email contains white space
+        res.json({
+            result: false,
+            message: "Nhập email không chứa khoảng trắng."
+        });
+        return;
+    }
+
+    let checkIfEmailExistsWhenCreateUserPromise =
+        new Promise((resolve, reject) => {
+            userModule.checkIfEmailExistsWhenCreateUser(
+                emailText,
+                function (isAnyAccountHaveThisEmail) {
+                    resolve(isAnyAccountHaveThisEmail);
+                }
+            );
+        });
+
+    let isAnyAccountHaveThisEmail =
+        await checkIfEmailExistsWhenCreateUserPromise;
+    if (!isAnyAccountHaveThisEmail) {
+        res.json({
+            result: false,
+            message: "Email bạn nhập " +
+                "không kết nối với tài khoản nào."
+        });
+        return;
+    }
+
+    // If user reset password token is null, return
+    let getUserResetPasswordTokenPromise =
+        new Promise((resolve, reject) => {
+            userModule.getResetPasswordTokenByUserEmail(
+                emailText,
+                function (err, tokenString) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    resolve(tokenString);
+                }
+            );
+        });
+
+    let userResetPasswordTokenStringFromDb =
+        await getUserResetPasswordTokenPromise.catch(err => {
+            console.trace();
+            res.json({
+               result: false,
+               message: "Có lỗi xảy ra khi truy vấn token.",
+               err
+            });
+        });
+
+    if (userResetPasswordTokenStringFromDb === null ||
+        userResetPasswordTokenStringFromDb === undefined) {
+        res.json({
+            result: false,
+            message: "Mã xác minh chưa được tạo hoặc đã hết hạn."
+        });
+        return;
+    }
+
+    // Validate tokenStringFromRequest
+    if (req.body.tokenStringFromRequest === undefined) {
+        res.json({
+           result: false,
+           message: "Thiếu trường tokenStringFromRequest."
+        });
+        return;
+    }
+
+    if (req.body.tokenStringFromRequest === null) {
+        res.json({
+            result: false,
+            message: "tokenStringFromRequest phải khác null."
+        });
+        return;
+    }
+
+    let tokenStringFromRequest = req.body.tokenStringFromRequest.trim();
+    if (tokenStringFromRequest.length === 0) {
+        res.json({
+            result: false,
+            message: "Mã xác minh không được để trống."
+        });
+        return;
+    }
+
+    if (tokenStringFromRequest === "null") {
+        res.json({
+            result: false,
+            message: "Hãy nhập mã xác minh hợp lệ."
+        });
+        return;
+    }
+
+    if (!tokenStringFromRequest.match(
+        commonResources.REGEX_PROJECT_TOKEN)) {
+        res.json({
+            result: false,
+            message: "Hãy nhập mã xác minh hợp lệ."
+        });
+        return;
+    }
+
+    if (tokenStringFromRequest !== userResetPasswordTokenStringFromDb) {
+        res.json({
+            result: false,
+            message: "Mã xác minh không đúng."
+        });
+        return;
+    }
+
+    // Validate newPassword
+    if (req.body.newPassword === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường newPassword."
+        });
+        return;
+    }
+
+    let newPassword = req.body.newPassword.trim();
+    if (newPassword.length === 0) {
+        res.json({
+            result: false,
+            message: "Hãy nhập mật khẩu mới."
+        });
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        res.json({
+            result: false,
+            message: "Nhập mật khẩu từ 6 ký tự trở lên."
+        });
+        return;
+    }
+
+    if (!newPassword.match(commonResources.REGEX_PASSWORD)) {
+        res.json({
+            result: false,
+            message: commonResources
+                .ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX
+        });
+        return;
+    }
+
+    // Must not allow "'" character to avoid MySQL error
+    // when we use "'" to surround the strings
+    if (newPassword.includes("'")) {
+        res.json({
+            result: false,
+            message: "Nhập mật khẩu không chứa " +
+                "dấu nháy (')."
+        });
+        return;
+    }
+
+    // Pass validate: Update password
+    let updateUserPasswordPromise = new Promise((resolve, reject) => {
+        let updateUserPasswordSql =
+            "update " +
+            commonResources.USERS_TABLE_NAME + " " +
+            "set " +
+            commonResources.USERS_COLUMN_PASSWORD + " = ? " +
+            "where " +
+            commonResources.USERS_COLUMN_EMAIL + " = ? " +
+            "and " +
+            commonResources.USERS_COLUMN_RESET_PASSWORD_TOKEN_STRING
+            + " = ?;";
+        dbConnect.query(
+            updateUserPasswordSql,
+            [newPassword, emailText, tokenStringFromRequest],
+            function (err, result) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(result);
+            }
+        );
+    });
+
+    let updateUserPasswordResult =
+        await updateUserPasswordPromise.catch(err => {
+            console.trace();
+            res.json({
+                result: false,
+                message: "Có lỗi khi cập nhật mật khẩu.",
+                err
+            });
+        });
+    res.json({
+        result: true,
+        message: "Cập nhật thành công " +
+            updateUserPasswordResult.affectedRows +
+            " bản ghi."
+    });
+
+    // Remove token
+    removeUserResetPasswordToken(
+        emailText,
+        userResetPasswordTokenStringFromDb,
+        function (err, result) {
+            if (err) {
+                console.trace();
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi xóa token.",
+                    err
+                });
+                return;
+            }
+
+            res.end();
+        }
+    );
+});
+
 // Education info of user
 /**
  * API read education info of one user.

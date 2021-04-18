@@ -211,6 +211,7 @@ const REGEX_COMPANY_PHONE = /^\d{10,12}$/; // 10-12 digits (regex of JobNews)
 // Because phone number of a company can be landline phone number
 // so phone number can be 12 digits, so I have to create new const
 // regex to validate company phone number.
+const REGEX_PROJECT_TOKEN = /^([a-zA-Z0-9]){128}$/;
 
 const ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
                                 "Mật khẩu không được chứa khoảng trắng.";
@@ -476,6 +477,7 @@ module.exports.REGEX_PHONE = REGEX_PHONE;
 module.exports.REGEX_EMAIL = REGEX_EMAIL;
 module.exports.REGEX_PASSWORD = REGEX_PASSWORD;
 module.exports.REGEX_COMPANY_PHONE = REGEX_COMPANY_PHONE;
+module.exports.REGEX_PROJECT_TOKEN = REGEX_PROJECT_TOKEN;
 
 module.exports.ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
                             ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX;
