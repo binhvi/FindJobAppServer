@@ -157,8 +157,8 @@ Nhận một email của người dùng, tạo một chuỗi token và gửi và
 của người dùng. Token sẽ bị xóa sau tối đa 10 phút.
 POST /api/users/send-email-reset-password
 Tham số:
-email (bắt buộc, không trống, phải đúng định dạng, không chứa dấu "'",
-phải thuộc về một người dùng nào đó).
+email (bắt buộc, không trống, phải đúng định dạng, không chứa dấu nháy đơn
+"'", phải thuộc về một người dùng nào đó).
 
 ----------------------------------
 
@@ -178,7 +178,7 @@ không chứa dấu nháy đơn "'".
 thì một token của người dùng chỉ tồn tại tối đa 10 phút.
 - newPassword:
     + String, bắt buộc, không trống
-    + >= 6 ký tự, không chứa dấu cách, không chứa dấu nháy ("'")
+    + >= 6 ký tự, không chứa dấu cách, không chứa dấu nháy đơn("'")
 
 ============================
 Education

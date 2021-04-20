@@ -2327,8 +2327,7 @@ router.post('/users/send-email-reset-password', async(req, res) => {
     if (!isAnyAccountHaveThisEmail) {
         res.json({
             result: false,
-            message: "Email bạn nhập " +
-                "không kết nối với tài khoản nào."
+            message: "Tài khoản không tồn tại."
         });
         return;
     }

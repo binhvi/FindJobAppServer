@@ -50,6 +50,9 @@ router.post('/create-save', async (req, res) => {
         return;
     }
 
+    // Escape character "'" to avoid sql error
+    categoryName = categoryName.replace(/'/g, "\\'");
+
     // Pass validate
     let sql = "insert into " + commonResources.NEWS_CATEGORIES_TABLE_NAME
         + " (" + commonResources.NEWS_CATEGORIES_COLUMN_NAME + ") "
@@ -86,7 +89,7 @@ router.post('/update', async (req, res) => {
 
 });
 
-router.post('/update-save', async (req, res) => {
+router.post('/update-save',  (req, res) => {
     // Find if news category exists
     let categoryId = req.body.id;
     let selectCategoryByIdSql =
@@ -95,7 +98,7 @@ router.post('/update-save', async (req, res) => {
                 + categoryId;
     dbConnect.query(selectCategoryByIdSql, function (err, result, fields) {
         if (err) throw err;
-        if (result.length == 0) {
+        if (result.length === 0) {
             res.send("Không tìm thấy thông tin thể loại");
         } else {
             // Validate
@@ -105,6 +108,8 @@ router.post('/update-save', async (req, res) => {
                 res.send("Hãy nhập tên thể loại bài viết");
                 return;
             }
+
+            categoryName = categoryName.replace(/'/g, "\\'");
 
             // Pass validate
             let sql = "update " + commonResources.NEWS_CATEGORIES_TABLE_NAME + " " +

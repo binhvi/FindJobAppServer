@@ -39,7 +39,13 @@ router.get('/create', async (req, res) => {
     res.render('news-authors/create');
 });
 
-router.post('/create-save', async (req, res) => {
+router.post('/create-save',  (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     // Validate
     // Validate empty name
     let authorName = req.body.name.trim();
@@ -47,6 +53,8 @@ router.post('/create-save', async (req, res) => {
         res.send("Hãy nhập tên tác giả bài viết");
         return;
     }
+
+    authorName = authorName.replace(/'/g, "\\'");
 
     // Pass validate
     let sql = "insert into " + commonResources.NEWS_AUTHORS_TABLE_NAME
@@ -98,6 +106,9 @@ router.post('/update-save', async (req, res) => {
                 res.send("Hãy nhập tên tác giả bài viết");
                 return;
             }
+
+            // Escape character "'" to avoid sql error
+            authorName = authorName.replace(/'/g, "\\'");
 
             // Pass validate
             let sql = "update " + commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
