@@ -81,7 +81,13 @@ router.get('/create', async (req, res) => {
     });
 });
 
-router.post('/create-save', async (req, res) => {
+router.post('/create-save', (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     // Validate
     // Validate empty title
     let title = req.body.title.trim();
@@ -109,7 +115,7 @@ router.post('/create-save', async (req, res) => {
         return;
     }
 
-    // Validate empty short description
+    // Validate empty content
     let content = req.body.content.trim();
     if (content.length === 0) {
         res.send("Hãy nhập nội dung bài viết");
@@ -129,59 +135,65 @@ router.post('/create-save', async (req, res) => {
             res.send("Thể loại không tồn tại");
             return;
         }
-    });
 
-    let authorId = req.body.authorId;
-    let sqlSelectAuthorById =
-        "select * " +
-        "from " + commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
-        "where " + commonResources.NEWS_AUTHORS_COLUMN_ID + " = "
-                 + authorId;
-    dbConnect.query(sqlSelectAuthorById, function (err, result, field) {
-        if (err) throw err;
-        if (!result.length) {
-            res.send("Tác giả không tồn tại");
-            return;
-        }
-    });
+        let authorId = req.body.authorId;
+        let sqlSelectAuthorById =
+            "select * " +
+            "from " + commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
+            "where " + commonResources.NEWS_AUTHORS_COLUMN_ID + " = "
+            + authorId;
+        dbConnect.query(sqlSelectAuthorById, async function (err, result, field) {
+            if (err) throw err;
+            if (!result.length) {
+                res.send("Tác giả không tồn tại");
+                return;
+            }
 
-    // Pass validate
-    // Upload file
-    var imgUrl;
-    if(req.files) { // If file is not empty, null
-        let image = req.files.image;
-        //image.name: Original name of upload file
-        const filename = uniqid() + "-" + image.name;
-        //mv: move
-        await image.mv(`./uploads/news/${filename}`);
-        // Save image url to database, not save file
-        imgUrl = commonResources.PROTOCOL + "://"
-                + commonResources.SERVER_HOST + "/news/" + filename;
-    }
+            // Pass validate
+            // Upload file
+            var imgUrl;
+            if(req.files) { // If file is not empty, null
+                let image = req.files.image;
+                //image.name: Original name of upload file
+                const filename = uniqid() + "-" + image.name;
+                //mv: move
+                await image.mv(`./uploads/news/${filename}`);
+                // Save image url to database, not save file
+                imgUrl = commonResources.PROTOCOL + "://"
+                    + commonResources.SERVER_HOST + "/news/" + filename;
+            }
 
-    let insertNewsSql =
-        "insert into " + commonResources.NEWS_TABLE_NAME
-        + " (" + commonResources.NEWS_COLUMN_TITLE + ", " +
+            // Escape character "'" to avoid sql error
+            title = title.replace(/'/g, "\\'");
+            shortDescription = shortDescription.replace(/'/g, "\\'");
+            content = content.replace(/'/g, "\\'");
+            imgUrl = imgUrl.replace(/'/g, "\\'");
+
+            let insertNewsSql =
+                "insert into " + commonResources.NEWS_TABLE_NAME
+                + " (" + commonResources.NEWS_COLUMN_TITLE + ", " +
                 commonResources.NEWS_COLUMN_IMAGE_URL + ", " +
                 commonResources.NEWS_COLUMN_SHORT_DESCRIPTION + ", " +
                 commonResources.NEWS_COLUMN_CONTENT + ", " +
                 commonResources.NEWS_COLUMN_CATEGORY_ID + ", " +
                 commonResources.NEWS_COLUMN_AUTHOR_ID
-        + ") " +
-        "values (" +
-            "'" + title + "', " +
-            "'" + imgUrl + "', " +
-            "'" + shortDescription + "', " +
-            "'" + content + "', " +
-            categoryId + ", " +
-            authorId +
-        ");";
-    dbConnect.query(insertNewsSql, function (err, result) {
-        if (err) {
-            throw err;
-        }
+                + ") " +
+                "values (" +
+                "'" + title + "', " +
+                "'" + imgUrl + "', " +
+                "'" + shortDescription + "', " +
+                "'" + content + "', " +
+                categoryId + ", " +
+                authorId +
+                ");";
+            dbConnect.query(insertNewsSql, function (err, result) {
+                if (err) {
+                    throw err;
+                }
 
-        res.redirect('/news/');
+                res.redirect('/news/');
+            });
+        });
     });
 });
 
@@ -230,7 +242,13 @@ router.post('/details', async (req, res) => {
     );
 });
 
-router.post('/update', async (req, res) => {
+router.post('/update', (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
     let newsId = req.body.newsId;
     // Get news from database
     let selectNewsByIdSql = "select * " +
@@ -268,7 +286,7 @@ router.post('/update', async (req, res) => {
     );
 });
 
-router.post('/update-save', async (req, res) => {
+router.post('/update-save', (req, res) => {
     // Find if news exists
     let newsId = req.body.id;
     let selectNewsByIdSql =
@@ -277,9 +295,9 @@ router.post('/update-save', async (req, res) => {
     dbConnect.query(
         selectNewsByIdSql,
         [newsId],
-        async function (err, result, fields) {
+        function (err, result, fields) {
         if (err) throw err;
-        if (result.length == 0) {
+        if (result.length === 0) {
             res.send("Không tìm thấy thông tin bài viết");
         } else {
             // Validate
@@ -328,86 +346,96 @@ router.post('/update-save', async (req, res) => {
                     res.send("Thể loại không tồn tại");
                     return;
                 }
-            });
 
-            let authorId = req.body.authorId;
-            let sqlSelectAuthorById =
-                "select * " +
-                "from " + commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
-                "where " + commonResources.NEWS_AUTHORS_COLUMN_ID + " = "
-                + authorId;
-            dbConnect.query(sqlSelectAuthorById, function (err, result, field) {
-                if (err) throw err;
-                if (!result.length) {
-                    res.send("Tác giả không tồn tại");
-                    return;
-                }
-            });
-
-            // Pass validate
-            if(req.files) {
-                // Upload file
-                var imgUrl;
-                if(req.files) { // If file is not empty, null
-                    let image = req.files.image;
-                    //image.name: Original name of upload file
-                    const filename = uniqid() + "-" + image.name;
-                    //mv: move
-                    await image.mv(`./uploads/news/${filename}`);
-                    // Save image url to database, not save file
-                    imgUrl = commonResources.PROTOCOL + "://"
-                        + commonResources.SERVER_HOST + "/news/" + filename;
-                }
-
-                let updateNewsByIdSql =
-                    "update " + commonResources.NEWS_TABLE_NAME + " " +
-                    "set " + commonResources.NEWS_COLUMN_TITLE + " = '" +
-                    title + "', " +
-                    commonResources.NEWS_COLUMN_IMAGE_URL + " = '" +
-                    imgUrl + "', " +
-                    commonResources.NEWS_COLUMN_SHORT_DESCRIPTION +
-                    " = '" + shortDescription + "', " +
-                    commonResources.NEWS_COLUMN_CONTENT + " = '" +
-                    content + "', " +
-                    commonResources.NEWS_COLUMN_CATEGORY_ID + " = " +
-                    categoryId + ", " +
-                    commonResources.NEWS_COLUMN_AUTHOR_ID + " = " +
-                    authorId + " " +
-                    "where " + commonResources.NEWS_COLUMN_ID + " = ?";
-
-                dbConnect.query(
-                    updateNewsByIdSql,
-                    [newsId], // Escaping value to avoid sql injection
-                    function (err, result) {
-                        if (err) throw err;
-                        res.redirect('/news/');
+                let authorId = req.body.authorId;
+                let sqlSelectAuthorById =
+                    "select * " +
+                    "from " + commonResources.NEWS_AUTHORS_TABLE_NAME + " " +
+                    "where " + commonResources.NEWS_AUTHORS_COLUMN_ID + " = "
+                    + authorId;
+                dbConnect.query(sqlSelectAuthorById, async function (err, result, field) {
+                    if (err) throw err;
+                    if (!result.length) {
+                        res.send("Tác giả không tồn tại");
+                        return;
                     }
-                );
-            } else {
-                let updateNewsByIdSql =
-                    "update " + commonResources.NEWS_TABLE_NAME + " " +
-                    "set " + commonResources.NEWS_COLUMN_TITLE + " = '" +
-                    title + "', " +
-                    commonResources.NEWS_COLUMN_SHORT_DESCRIPTION +
-                    " = '" + shortDescription + "', " +
-                    commonResources.NEWS_COLUMN_CONTENT + " = '" +
-                    content + "', " +
-                    commonResources.NEWS_COLUMN_CATEGORY_ID + " = " +
-                    categoryId + ", " +
-                    commonResources.NEWS_COLUMN_AUTHOR_ID + " = " +
-                    authorId + " " +
-                    "where " + commonResources.NEWS_COLUMN_ID + " = ?";
 
-                dbConnect.query(
-                    updateNewsByIdSql,
-                    [newsId], // Escaping value to avoid sql injection
-                    function (err, result) {
-                        if (err) throw err;
-                        res.redirect('/news/');
+                    // Pass validate
+                    // Escape character "'" to avoid sql error
+                    title = title.replace(/'/g, "\\'");
+                    shortDescription = shortDescription.replace(/'/g, "\\'");
+                    content = content.replace(/'/g, "\\'");
+
+                    if(req.files) {
+                        // Upload file
+                        var imgUrl;
+                        if(req.files) { // If file is not empty, null
+                            let image = req.files.image;
+                            //image.name: Original name of upload file
+                            const filename = uniqid() + "-" + image.name;
+                            //mv: move
+                            await image.mv(`./uploads/news/${filename}`);
+                            // Save image url to database, not save file
+                            imgUrl = commonResources.PROTOCOL + "://"
+                                + commonResources.SERVER_HOST + "/news/" + filename;
+                        }
+
+                        // Escape character "'" to avoid sql error
+                        imgUrl =
+                            imgUrl.replace(
+                                /'/g, "\\'"
+                            );
+
+                        let updateNewsByIdSql =
+                            "update " + commonResources.NEWS_TABLE_NAME + " " +
+                            "set " + commonResources.NEWS_COLUMN_TITLE + " = '" +
+                            title + "', " +
+                            commonResources.NEWS_COLUMN_IMAGE_URL + " = '" +
+                            imgUrl + "', " +
+                            commonResources.NEWS_COLUMN_SHORT_DESCRIPTION +
+                            " = '" + shortDescription + "', " +
+                            commonResources.NEWS_COLUMN_CONTENT + " = '" +
+                            content + "', " +
+                            commonResources.NEWS_COLUMN_CATEGORY_ID + " = " +
+                            categoryId + ", " +
+                            commonResources.NEWS_COLUMN_AUTHOR_ID + " = " +
+                            authorId + " " +
+                            "where " + commonResources.NEWS_COLUMN_ID + " = ?";
+
+                        dbConnect.query(
+                            updateNewsByIdSql,
+                            [newsId], // Escaping value to avoid sql injection
+                            function (err, result) {
+                                if (err) throw err;
+                                res.redirect('/news/');
+                            }
+                        );
+                    } else {
+                        let updateNewsByIdSql =
+                            "update " + commonResources.NEWS_TABLE_NAME + " " +
+                            "set " + commonResources.NEWS_COLUMN_TITLE + " = '" +
+                            title + "', " +
+                            commonResources.NEWS_COLUMN_SHORT_DESCRIPTION +
+                            " = '" + shortDescription + "', " +
+                            commonResources.NEWS_COLUMN_CONTENT + " = '" +
+                            content + "', " +
+                            commonResources.NEWS_COLUMN_CATEGORY_ID + " = " +
+                            categoryId + ", " +
+                            commonResources.NEWS_COLUMN_AUTHOR_ID + " = " +
+                            authorId + " " +
+                            "where " + commonResources.NEWS_COLUMN_ID + " = ?";
+
+                        dbConnect.query(
+                            updateNewsByIdSql,
+                            [newsId], // Escaping value to avoid sql injection
+                            function (err, result) {
+                                if (err) throw err;
+                                res.redirect('/news/');
+                            }
+                        );
                     }
-                );
-            }
-
+                });
+            });
         }
     });
 });
