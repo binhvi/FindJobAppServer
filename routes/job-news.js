@@ -13,8 +13,48 @@ router.get('/', (req, res) => {
 
     // Search
     let keyword =
-        req.query.keyword == undefined
+        req.query.keyword === undefined
             ? "" : req.query.keyword.trim();
+    // Escape character "'" to avoid sql error
+    let keywordEscape = keyword.replace(/'/g, "\\'");
+
+    let millis0h0mOfCreatedDateUtcPlus7; // local timezone: UTC+7
+    if (req.query.createdDate && req.query.createdDate.trim()) {
+        // req.query.createdMillis not undefined, not empty
+        // and not just contain white space
+        let dateCreatedNewsText =
+            req.query.createdDate.trim();
+
+        if (!moment(
+                dateCreatedNewsText, 'YYYY-MM-DD',true)
+            .isValid()) {
+            // The third param "true": Use strict mode, which will identify
+            // the parsing error and set the Moment object as invalid
+            res.send("Nhập ngày tạo tin trong ô tìm kiếm " +
+                        "đúng định dạng YYYY-MM-DD.");
+            return;
+        }
+
+        let millis0h0mOfCreatedDateUtcPlus0 =
+                                    Date.parse(dateCreatedNewsText);
+        // We use local time to filter (UTC+7)
+        millis0h0mOfCreatedDateUtcPlus7 =
+            millis0h0mOfCreatedDateUtcPlus0 - (7 * 60 * 60 * 1000);
+    }
+
+    let criteriaTimeCreatedNewsSubStringSql;
+    if (millis0h0mOfCreatedDateUtcPlus7 === undefined) {
+        criteriaTimeCreatedNewsSubStringSql = "";
+    } else {
+        criteriaTimeCreatedNewsSubStringSql =
+            " and " +
+            commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS
+            + " between " +
+            millis0h0mOfCreatedDateUtcPlus7 +
+            " and " +
+            // millis of 23h59m of the day we get from query in local time
+            (millis0h0mOfCreatedDateUtcPlus7 + (24 * 60 * 60 * 1000 - 1))
+    }
 
     let selectAllJobNewsSql =
        "select " +
@@ -33,8 +73,10 @@ router.get('/', (req, res) => {
 
             commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
             commonResources.TYPES_OF_WORK_COLUMN_NAME + " " +
-            "as " + commonResources.COLUMN_ALIAS_TYPE_OF_WORK + " " +
-       
+            "as " + commonResources.COLUMN_ALIAS_TYPE_OF_WORK + ", " +
+
+            commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS + " " +
+
        "from " +
             commonResources.JOB_NEWS_TABLE_NAME + ", " +
             commonResources.SUBDISTRICTS_TABLE_NAME + ", " +
@@ -75,7 +117,9 @@ router.get('/', (req, res) => {
             commonResources.TYPES_OF_WORK_COLUMN_ID + " " +
 
             "and " + commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION
-            + " like '%" + keyword + "%' " + // contains keyword
+            + " like '%" + keywordEscape + "%' " + // contains keyword
+
+             " " + criteriaTimeCreatedNewsSubStringSql + " " +
 
         "order by " +
             commonResources.JOB_NEWS_TABLE_NAME + "." +
@@ -88,7 +132,7 @@ router.get('/', (req, res) => {
            let allJobNews = result;
            res.render(
                'job-news/index',
-               {allJobNews, keyword}
+               {allJobNews, keyword, moment}
            );
        }
     );
@@ -103,8 +147,55 @@ router.get('/unapproved-job-news', (req, res) => {
 
     // Search
     let keyword =
-        req.query.keyword == undefined
+        req.query.keyword === undefined
             ? "" : req.query.keyword.trim();
+    // Escape character "'" to avoid sql error
+    let keywordEscape = keyword.replace(/'/g, "\\'");
+
+    // Get date from request to filter job news by date created
+    let millis0h0mOfCreatedDateUtcPlus7; // local timezone: UTC+7
+    if (req.query.createdDate && req.query.createdDate.trim()) {
+        // req.query.createdMillis not undefined, not empty
+        // and not just contain white space
+        let dateCreatedNewsText =
+            req.query.createdDate.trim();
+
+        if (!moment(
+            dateCreatedNewsText, 'YYYY-MM-DD',true)
+            .isValid()) {
+            // The third param "true": Use strict mode, which will identify
+            // the parsing error and set the Moment object as invalid
+            res.send("Nhập ngày tạo tin trong ô tìm kiếm " +
+                "đúng định dạng YYYY-MM-DD.");
+            return;
+        }
+
+        // Millis get from date request
+        // is millis at 0h00 of UTC+0 timezone.
+        // But we want to filter at local timezone (UTC+7).
+        // Millis at 0h00 of UTC+0 is millis at 7h00 UTC+7.
+        // So we need to substract millis of 7 hours from request millis
+        // to get millis at 0h00 of UTC+7.
+        let millis0h0mOfCreatedDateUtcPlus0 =
+            Date.parse(dateCreatedNewsText);
+        // We use local time to filter (UTC+7)
+        millis0h0mOfCreatedDateUtcPlus7 =
+            millis0h0mOfCreatedDateUtcPlus0 - (7 * 60 * 60 * 1000);
+    }
+
+    let criteriaTimeCreatedNewsSubStringSql;
+    if (millis0h0mOfCreatedDateUtcPlus7 === undefined) {
+        criteriaTimeCreatedNewsSubStringSql = "";
+    } else {
+        criteriaTimeCreatedNewsSubStringSql =
+            " and " +
+            commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS
+            + " between " +
+            millis0h0mOfCreatedDateUtcPlus7 +
+            " and " +
+            // millis of 23h59m of the day we get from query in local time
+            (millis0h0mOfCreatedDateUtcPlus7 + (24 * 60 * 60 * 1000 - 1))
+    }
 
     let selectUnapprovedJobNewsSql =
         "select " +
@@ -121,7 +212,9 @@ router.get('/unapproved-job-news', (req, res) => {
 
         commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
         commonResources.TYPES_OF_WORK_COLUMN_NAME + " " +
-        "as " + commonResources.COLUMN_ALIAS_TYPE_OF_WORK + " " +
+        "as " + commonResources.COLUMN_ALIAS_TYPE_OF_WORK + ", " +
+
+        commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS + " " +
 
         "from " +
         commonResources.JOB_NEWS_TABLE_NAME + ", " +
@@ -167,7 +260,9 @@ router.get('/unapproved-job-news', (req, res) => {
         + " = 0 " + // Unapproved
 
         "and " + commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION
-        + " like '%" + keyword + "%' " + // contains keyword
+        + " like '%" + keywordEscape + "%' " + // contains keyword
+
+        " " + criteriaTimeCreatedNewsSubStringSql + " " +
 
         "order by " +
         commonResources.JOB_NEWS_TABLE_NAME + "." +
@@ -180,7 +275,7 @@ router.get('/unapproved-job-news', (req, res) => {
             let unapprovedJobNews = result;
             res.render(
                 'job-news/unapproved-job-news',
-                {unapprovedJobNews, keyword}
+                {unapprovedJobNews, keyword, moment}
             );
         }
     );
@@ -195,8 +290,55 @@ router.get('/approved-job-news', (req, res) => {
 
     // Search
     let keyword =
-        req.query.keyword == undefined
+        req.query.keyword === undefined
             ? "" : req.query.keyword.trim();
+    // Escape character "'" to avoid sql error
+    let keywordEscape = keyword.replace(/'/g, "\\'");
+
+    // Get date from request to filter job news by date created
+    let millis0h0mOfCreatedDateUtcPlus7; // local timezone: UTC+7
+    if (req.query.createdDate && req.query.createdDate.trim()) {
+        // req.query.createdMillis not undefined, not empty
+        // and not just contain white space
+        let dateCreatedNewsText =
+            req.query.createdDate.trim();
+
+        if (!moment(
+            dateCreatedNewsText, 'YYYY-MM-DD',true)
+            .isValid()) {
+            // The third param "true": Use strict mode, which will identify
+            // the parsing error and set the Moment object as invalid
+            res.send("Nhập ngày tạo tin trong ô tìm kiếm " +
+                "đúng định dạng YYYY-MM-DD.");
+            return;
+        }
+
+        // Millis get from date request
+        // is millis at 0h00 of UTC+0 timezone.
+        // But we want to filter at local timezone (UTC+7).
+        // Millis at 0h00 of UTC+0 is millis at 7h00 UTC+7.
+        // So we need to substract millis of 7 hours from request millis
+        // to get millis at 0h00 of UTC+7.
+        let millis0h0mOfCreatedDateUtcPlus0 =
+            Date.parse(dateCreatedNewsText);
+        // We use local time to filter (UTC+7)
+        millis0h0mOfCreatedDateUtcPlus7 =
+            millis0h0mOfCreatedDateUtcPlus0 - (7 * 60 * 60 * 1000);
+    }
+
+    let criteriaTimeCreatedNewsSubStringSql;
+    if (millis0h0mOfCreatedDateUtcPlus7 === undefined) {
+        criteriaTimeCreatedNewsSubStringSql = "";
+    } else {
+        criteriaTimeCreatedNewsSubStringSql =
+            " and " +
+            commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS
+            + " between " +
+            millis0h0mOfCreatedDateUtcPlus7 +
+            " and " +
+            // millis of 23h59m of the day we get from query in local time
+            (millis0h0mOfCreatedDateUtcPlus7 + (24 * 60 * 60 * 1000 - 1))
+    }
 
     let selectApprovedJobNewsSql =
         "select " +
@@ -213,7 +355,9 @@ router.get('/approved-job-news', (req, res) => {
 
         commonResources.TYPES_OF_WORK_TABLE_NAME + "." +
         commonResources.TYPES_OF_WORK_COLUMN_NAME + " " +
-        "as " + commonResources.COLUMN_ALIAS_TYPE_OF_WORK + " " +
+        "as " + commonResources.COLUMN_ALIAS_TYPE_OF_WORK + ", " +
+
+        commonResources.JOB_NEWS_COLUMN_TIME_CREATE_MILLIS + " " +
 
         "from " +
         commonResources.JOB_NEWS_TABLE_NAME + ", " +
@@ -259,7 +403,9 @@ router.get('/approved-job-news', (req, res) => {
         + " = 1 " + // Approved
 
         "and " + commonResources.JOB_NEWS_COLUMN_SHORT_DESCRIPTION
-        + " like '%" + keyword + "%' " + // contains keyword
+        + " like '%" + keywordEscape + "%' " + // contains keyword
+
+        " " + criteriaTimeCreatedNewsSubStringSql + " " +
 
         "order by " +
         commonResources.JOB_NEWS_TABLE_NAME + "." +
@@ -272,7 +418,7 @@ router.get('/approved-job-news', (req, res) => {
             let approvedJobNews = result;
             res.render(
                 'job-news/approved-job-news',
-                {approvedJobNews, keyword}
+                {approvedJobNews, keyword, moment}
             );
         }
     );

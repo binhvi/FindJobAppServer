@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
     }
 
     // Search
-    let keyword = req.query.keyword ==
+    let keyword = req.query.keyword ===
         undefined ? "" : req.query.keyword.trim();
 
     // Find users in database with full name contain keyword
