@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 const session = require('express-session');
 const commonResources = require('./public/javascripts/common');
 
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var newsCategoriesRouter = require('./routes/news-categories');
@@ -21,6 +20,7 @@ const jobSkills = require('./routes/job-skills');
 const jobTitles = require('./routes/job-titles');
 const jobNews = require('./routes/job-news');
 const login = require('./routes/login');
+const userDeviceIds = require('./routes/user-device-ids');
 
 var logger = require('morgan');
 
@@ -72,6 +72,7 @@ app.use('/job-skills', jobSkills);
 app.use('/job-titles', jobTitles);
 app.use('/job-news', jobNews);
 app.use('/login', login);
+app.use('/user-device-ids', userDeviceIds);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

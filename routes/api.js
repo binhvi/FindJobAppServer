@@ -20,6 +20,7 @@ const jobApplicationsModule =
 const jobNewsRequiredSkillsModule =
     require('../public/javascripts/job-news-required-skills');
 const nodemailer = require('nodemailer');
+const userDeviceIdsModule = require('./user-device-ids');
 
 router.post('/news', async (req, res) => {
     // Set number items per page
@@ -8470,6 +8471,92 @@ router.post('/job-news/get-list-job-news-and-job-applications-of-an-owner', (req
                     });
                 }
             );
+        }
+    );
+});
+
+// UserDeviceIds
+router.post('/user-device-ids/create', async (req, res) => {
+    if (req.body.deviceIdString === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường deviceIdString."
+        });
+        return;
+    }
+
+    let deviceIdString = req.body.deviceIdString.trim();
+    if (deviceIdString.length === 0) {
+        res.json({
+            result: false,
+            message: "Mã thiết bị không được để trống."
+        });
+        return;
+    }
+
+    let checkIfDeviceIdExistsPromise =
+        new Promise(function (myResolve, myReject) {
+            userDeviceIdsModule.checkIfDeviceIdExists(
+                deviceIdString,
+                function (err, isDeviceIdExist) {
+                    if (err) {
+                        myReject(err);
+                        return;
+                    }
+
+                    myResolve(isDeviceIdExist);
+                }
+            );
+    });
+
+    let isDeviceIdExist = await checkIfDeviceIdExistsPromise.catch(err => {
+        // Print err to console to show the admin what's wrong
+        console.log("Có lỗi xảy ra khi kiểm tra mã thiết bị");
+        console.trace();
+        res.json({
+            result: false,
+            message: "Có lỗi xảy ra khi kiểm tra mã thiết bị.",
+            err
+       });
+    });
+
+    if (isDeviceIdExist) {
+        res.json({
+            result: false,
+            message: "Thiết bị này đã được đăng ký."
+        });
+        return;
+    }
+
+    // Pass validate
+    // Escape character "'" to avoid sql error
+    // Replace ' by \'
+    let deviceIdStringEscapedSingleQuote =
+            deviceIdString.replace(/'/g, "\\'");
+    let addDeviceIdSql =
+        "insert into " +
+            commonResources.USER_DEVICE_IDS_TABLE_NAME + "(" +
+            commonResources.USER_DEVICE_IDS_COL_DEVICE_ID_STRING + ")" +
+        "values('" +
+            deviceIdStringEscapedSingleQuote + "');";
+    dbConnect.query(
+        addDeviceIdSql,
+        function (err, result) {
+            if (err) {
+                // Print err to console to show the admin what's wrong
+                console.log("Có lỗi xảy ra khi lưu mã thiết bị.");
+                console.trace();
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi lưu mã thiết bị"
+                });
+                return;
+            }
+
+            res.json({
+                result: true,
+                message: "Lưu mã thiết bị thành công."
+            });
         }
     );
 });

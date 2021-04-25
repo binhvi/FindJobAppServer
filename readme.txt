@@ -477,3 +477,18 @@ Xem danh sách các công việc mình đã đăng và danh sách những ngư�
 POST /api/job-news/get-list-job-news-and-job-applications-of-an-owner
 Tham số:
 - jobNewsOwnerUserId (là ID người dùng của người đăng tin, bắt buộc, không trống, int, phải tồn tại)
+
+=================================
+
+UserDeviceIds
+
+Thêm ID thiết bị
+POST /api/user-device-ids/create
+Tham số:
+deviceIdString (String, bắt buộc, không trống, không trùng)
+--------------------------------
+
+Xóa ID thiết bị
+POST /api/user-device-ids/remove
+Tham số:
+deviceIdString (String, bắt buộc, không trống, phải tồn tại)
