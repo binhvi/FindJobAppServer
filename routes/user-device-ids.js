@@ -3,6 +3,32 @@ const router = express.Router();
 const commonResources = require('../public/javascripts/common');
 const dbConnect = require('../public/javascripts/db');
 
+router.get('/', (req, res) => {
+    // If not logged in, go to log in page
+    if (!req.session.loggedin) {
+        res.redirect('/login');
+        return;
+    }
+
+    let selectAllUserDeviceIdSql =
+        "select " +
+            commonResources.USER_DEVICE_IDS_COL_DEVICE_ID_STRING + " " +
+        " from " +
+            commonResources.USER_DEVICE_IDS_TABLE_NAME + ";";
+    dbConnect.query(
+        selectAllUserDeviceIdSql,
+        function (err, result) {
+            if (err) {
+                res.send("Có lỗi xảy ra khi truy vấn ID thiết bị.");
+                return;
+            }
+
+            let userDeviceIds = result;
+            res.render("user-device-ids/index", {userDeviceIds});
+        }
+    );
+});
+
 function checkIfDeviceIdExists(deviceIdString, callback) {
     let selectNumberOfDeviceIdRecordsHaveThisIdSql =
         "select count(" +

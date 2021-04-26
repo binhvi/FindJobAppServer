@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mã thiết bị của người dùng</title>
+    <%- include('../_share/style'); %>
+</head>
+<body>
+<div class="container">
+    <%- include('../_share/header'); %>
+    <main class="container-fluid">
+        <h4 class="text-center">Mã thiết bị của người dùng</h4>
+        <table class="table table-striped">
+            <thead>
+                <th>Mã thiết bị</th>
+            </thead>
+
+            <tbody>
+            <% for(let i = 0; i < userDeviceIds.length; i++) {%>
+                <tr>
+                    <td><%= userDeviceIds[i].deviceIdString %></td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </main>
+    <%- include('../_share/footer'); %>
+</div>
+</body>
+</html>
+

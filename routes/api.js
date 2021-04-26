@@ -8561,4 +8561,89 @@ router.post('/user-device-ids/create', async (req, res) => {
     );
 });
 
+router.post('/user-device-ids/remove', async (req, res) => {
+    // Validate
+    if (req.body.deviceIdString === undefined) {
+        res.json({
+            result: false,
+            message: "Thiếu trường deviceIdString."
+        });
+        return;
+    }
+
+    let deviceIdString = req.body.deviceIdString.trim();
+    if (deviceIdString.length === 0) {
+        res.json({
+            result: false,
+            message: "Mã thiết bị không được để trống."
+        });
+        return;
+    }
+
+    let checkIfDeviceIdExistsPromise =
+        new Promise(function (myResolve, myReject) {
+            userDeviceIdsModule.checkIfDeviceIdExists(
+                deviceIdString,
+                function (err, isDeviceIdExist) {
+                    if (err) {
+                        myReject(err);
+                        return;
+                    }
+
+                    myResolve(isDeviceIdExist);
+                }
+            );
+        });
+
+    let isDeviceIdExist = await checkIfDeviceIdExistsPromise.catch(err => {
+        // Print err to console to show the admin what's wrong
+        console.log("Có lỗi xảy ra khi kiểm tra mã thiết bị");
+        console.trace();
+        res.json({
+            result: false,
+            message: "Có lỗi xảy ra khi kiểm tra mã thiết bị.",
+            err
+        });
+    });
+
+    if (!isDeviceIdExist) {
+        res.json({
+            result: false,
+            message: "Thiết bị này chưa được đăng ký."
+        });
+        return;
+    }
+
+    // Pass validate
+    let removeDeviceIdSql =
+        "delete from " +
+            commonResources.USER_DEVICE_IDS_TABLE_NAME + " " +
+        "where " +
+            commonResources.USER_DEVICE_IDS_COL_DEVICE_ID_STRING
+            + " = ?;";
+    dbConnect.query(
+        removeDeviceIdSql,
+        [deviceIdString],
+        function (err, result) {
+            if (err) {
+                // Print err to console to show the admin what's wrong
+                console.log("Có lỗi xảy ra khi xóa mã thiết bị.");
+                console.trace();
+                res.json({
+                    result: false,
+                    message: "Có lỗi xảy ra khi xóa mã thiết bị"
+                });
+                return;
+            }
+
+            res.json({
+                result: true,
+                message: "Xóa thành công " +
+                        result.affectedRows + " bản ghi."
+            });
+            res.end();
+        }
+    );
+});
+
 module.exports = router;
