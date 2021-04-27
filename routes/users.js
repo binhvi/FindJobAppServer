@@ -359,11 +359,11 @@ function checkIfEmailExistsWhenUpdateUser(email, userId, callback) {
         "as numbersOfEmailExists " +
         "from " + commonResources.USERS_TABLE_NAME + " " +
         "where " + commonResources.USERS_COLUMN_EMAIL + " " +
-            "like '" + email + "' " +
+            "like ? " +
             "and " + commonResources.USERS_COLUMN_ID + " != ?;";
     dbConnect.query(
         selectNumberOfRecordsHasThisEmailSql,
-        [userId],
+        [email, userId],
         function (err, results) {
             if (err) throw err;
 

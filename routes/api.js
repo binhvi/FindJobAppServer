@@ -467,16 +467,6 @@ router.post('/users/create', (req, res) => {
         return;
     }
 
-    // Must not allow "'" character to avoid MySQL error
-    // when we use "'" to surround the strings
-    // if (fullName.includes("'")) {
-    //     res.json({
-    //         result: false,
-    //         message: "Nhập họ tên không chứa dấu nháy (')."
-    //     });
-    //     return;
-    // }
-
     if (req.body.phone === undefined) {
         res.json({
             result: false,
@@ -536,14 +526,6 @@ router.post('/users/create', (req, res) => {
                 return;
             }
 
-            // if (email.includes("'")) {
-            //     res.json({
-            //         result: false,
-            //         message: "Nhập email không chứa dấu nháy (')."
-            //     });
-            //     return;
-            // }
-
             userModule.checkIfEmailExistsWhenCreateUser(email, function (isEmailExists) {
                 if (isEmailExists) {
                     res.json({
@@ -586,17 +568,6 @@ router.post('/users/create', (req, res) => {
                         });
                         return;
                     }
-
-                    // Must not allow "'" character to avoid MySQL error
-                    // when we use "'" to surround the strings
-                    // if (password.includes("'")) {
-                    //     res.json({
-                    //         result: false,
-                    //         message: "Nhập mật khẩu không chứa " +
-                    //             "dấu nháy (')."
-                    //     });
-                    //     return;
-                    // }
 
                     // Pass validate, save to database
                     let saveUserToDbSql =
@@ -1810,12 +1781,23 @@ router.post('/users/update', (req, res) => {
                                 + commonResources
                                     .USERS_TABLE_NAME +
                                 " set ";
+
+                            // Escape character "'" to avoid sql error
+                            let fullNameEscapeSingleQuote =
+                                fullName.replace(/'/g, "\\'");
                             let fullNameKeyValueSubStringSql =
                                 commonResources.USERS_COLUMN_FULL_NAME
-                                + " = '" + fullName + "'";
+                                + " = '" + fullNameEscapeSingleQuote + "'";
+
+                            // Escape character "'" to avoid sql error
+                            let emailEscapeSingleQuote =
+                                        email.replace(/'/g, "\\'");
                             let emailKeyValueSubStringSql =
                                 commonResources.USERS_COLUMN_EMAIL + " = " +
-                                "'" + email + "'";
+                                "'" + emailEscapeSingleQuote + "'";
+
+                            // Phone doesn't want to escape single quote
+                            // because of validate regex 9-10 digits
                             let phoneKeyValueSubStringSql =
                                 commonResources.USERS_COLUMN_PHONE + " = " +
                                 "'" + phone + "'";
@@ -1875,7 +1857,7 @@ router.post('/users/update', (req, res) => {
                             }
 
                             let expectedSalaryInVndKeyValueSubStringSql =
-                                !expectedSalaryInVnd ?
+                                (expectedSalaryInVnd === undefined) ?
                                     (commonResources
                                             .USERS_COLUMN_EXPECTED_SALARY_VND
                                         + " = null") :
@@ -1883,31 +1865,51 @@ router.post('/users/update', (req, res) => {
                                         + " = " + expectedSalaryInVnd);
 
                             let yearsOfExperiencesKeyValueSubStringSql =
-                                !yearsOfExperiences ?
+                                (yearsOfExperiences === undefined) ?
                                     (commonResources.USERS_COLUMN_YEARS_OF_EXPERIENCES
                                         + " = null") :
                                     (commonResources.USERS_COLUMN_YEARS_OF_EXPERIENCES
                                         + " = " + yearsOfExperiences);
 
+                            // Escape character "'" to avoid sql error
+                            let resumeSummaryEscapeSingleQuote;
+                            if (resumeSummary) {
+                                resumeSummaryEscapeSingleQuote =
+                                    resumeSummary.replace(/'/g, "\\'");
+                            }
                             let resumeSummaryKeyValueSubStringSql =
                                 !resumeSummary ?
                                     (commonResources.USERS_COLUMN_RESUME_SUMMARY
                                         + " = null") :
                                     (commonResources.USERS_COLUMN_RESUME_SUMMARY
-                                        + " = '" + resumeSummary + "'");
+                                        + " = '" + resumeSummaryEscapeSingleQuote + "'");
 
+                            // Escape character "'" to avoid sql error when
+                            // user enter single quote character in value
+                            let careerObjectiveEscapeSingleQuote;
+                            if (careerObjective) {
+                                careerObjectiveEscapeSingleQuote =
+                                    careerObjective.replace(/'/g, "\\'");
+                            }
                             let careerObjectiveKeyValueSubStringSql =
                                 !careerObjective ?
                                     (commonResources.USERS_COLUMN_CAREER_OBJECTIVE
                                         + " = null") :
                                     (commonResources.USERS_COLUMN_CAREER_OBJECTIVE
-                                        + " = '" + careerObjective + "'");
+                                        + " = '" + careerObjectiveEscapeSingleQuote + "'");
 
+                            // Escape character "'" to avoid sql error when
+                            // user enter single quote character in value
+                            let avatarUrlEscapeSingleQuote;
+                            if (avatarUrl) {
+                                avatarUrlEscapeSingleQuote =
+                                    avatarUrl.replace(/'/g, "\\'");
+                            }
                             // If user doesn't up new avatar file, don't delete old avatar
                             let avatarUrlKeyValueSubStringSql =
                                 !avatarUrl ? "" :
                                     (", " + commonResources.USERS_COLUMN_AVATAR_URL
-                                        + " = '" + avatarUrl + "'");
+                                        + " = '" + avatarUrlEscapeSingleQuote + "'");
 
                             let updateUserSql =
                                 updateUsersSetSubStringSql + " " +
@@ -1931,6 +1933,11 @@ router.post('/users/update', (req, res) => {
                                 [userId], // Escaping value to avoid sql injection
                                 function (err, result) {
                                     if (err) {
+                                        // Log error to show admin what's problem
+                                        console.log("Có lỗi xảy ra khi lưu " +
+                                            "bản cập nhật " +
+                                            "thông tin người dùng");
+                                        console.log(err);
                                         res.json({
                                             result: false,
                                             message: "Có lỗi xảy ra khi lưu " +

@@ -33,7 +33,7 @@
             <div style="margin-bottom: 25px;">
                 <p><strong>Mức lương mong muốn</strong></p>
 
-                <% if(!user.expectedSalaryInVnd){ %>
+                <% if(user.expectedSalaryInVnd === null){ %>
                     <p>Chưa cập nhật</p>
                 <% } else{ %>
                     <p><%= user.expectedSalaryInVnd %> đồng trở lên</p>
@@ -63,9 +63,11 @@
             <div style="margin-bottom: 25px;">
                 <p><strong>Kinh nghiệm làm việc</strong></p>
 
-                <% if(!user.yearsOfExperiences){ %>
+                <% if(user.yearsOfExperiences === null){ %>
                     <p>Chưa cập nhật</p>
-                <% } else{ %>
+                <% } else if(user.yearsOfExperiences === 0) { %>
+                    <p>Chưa có kinh nghiệm</p>
+                <% } else { %>
                     <p><%= user.yearsOfExperiences %> năm</p>
                 <% } %>
             </div>
