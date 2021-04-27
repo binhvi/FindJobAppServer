@@ -335,9 +335,10 @@ function checkIfEmailExistsWhenCreateUser(email, callback) {
         "as numbersOfEmailExists " +
         "from " + commonResources.USERS_TABLE_NAME + " " +
         "where " + commonResources.USERS_COLUMN_EMAIL + " " +
-        "like '" + email + "';"
+        "like ?;"
     dbConnect.query(
         selectNumberOfRecordsHasThisEmailSql,
+        [email],
         function (err, results) {
             if (err) throw err;
 

@@ -439,7 +439,7 @@ router.get('/academic-degree-levels', async (req, res) => {
 });
 
 // Users
-router.post('/users/create', async (req, res) => {
+router.post('/users/create', (req, res) => {
     // Validate
     // fullName
     if (req.body.fullName === undefined) {
@@ -469,13 +469,13 @@ router.post('/users/create', async (req, res) => {
 
     // Must not allow "'" character to avoid MySQL error
     // when we use "'" to surround the strings
-    if (fullName.includes("'")) {
-        res.json({
-            result: false,
-            message: "Nhập họ tên không chứa dấu nháy (')."
-        });
-        return;
-    }
+    // if (fullName.includes("'")) {
+    //     res.json({
+    //         result: false,
+    //         message: "Nhập họ tên không chứa dấu nháy (')."
+    //     });
+    //     return;
+    // }
 
     if (req.body.phone === undefined) {
         res.json({
@@ -536,13 +536,13 @@ router.post('/users/create', async (req, res) => {
                 return;
             }
 
-            if (email.includes("'")) {
-                res.json({
-                    result: false,
-                    message: "Nhập email không chứa dấu nháy (')."
-                });
-                return;
-            }
+            // if (email.includes("'")) {
+            //     res.json({
+            //         result: false,
+            //         message: "Nhập email không chứa dấu nháy (')."
+            //     });
+            //     return;
+            // }
 
             userModule.checkIfEmailExistsWhenCreateUser(email, function (isEmailExists) {
                 if (isEmailExists) {
@@ -589,14 +589,14 @@ router.post('/users/create', async (req, res) => {
 
                     // Must not allow "'" character to avoid MySQL error
                     // when we use "'" to surround the strings
-                    if (password.includes("'")) {
-                        res.json({
-                            result: false,
-                            message: "Nhập mật khẩu không chứa " +
-                                "dấu nháy (')."
-                        });
-                        return;
-                    }
+                    // if (password.includes("'")) {
+                    //     res.json({
+                    //         result: false,
+                    //         message: "Nhập mật khẩu không chứa " +
+                    //             "dấu nháy (')."
+                    //     });
+                    //     return;
+                    // }
 
                     // Pass validate, save to database
                     let saveUserToDbSql =
