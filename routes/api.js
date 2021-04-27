@@ -2308,7 +2308,7 @@ router.post('/users/send-email-reset-password', async(req, res) => {
     if (emailText.includes("'")) {
         res.json({
             result: false,
-            message: "Nhập email không chứa dấu nháy (')."
+            message: "Nhập email không chứa dấu nháy (')!"
         });
         return;
     }
@@ -2561,7 +2561,7 @@ router.post('/users/reset-password', async (req, res) => {
     if (emailText.includes("'")) {
         res.json({
             result: false,
-            message: "Nhập email không chứa dấu nháy (')."
+            message: "Nhập email không chứa dấu nháy (')!"
         });
         return;
     }
@@ -2722,7 +2722,7 @@ router.post('/users/reset-password', async (req, res) => {
         res.json({
             result: false,
             message: "Nhập mật khẩu không chứa " +
-                "dấu nháy (')."
+                "dấu nháy (')!"
         });
         return;
     }

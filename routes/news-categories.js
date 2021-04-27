@@ -12,14 +12,18 @@ router.get('/', async (req, res) => {
     }
 
     // Search
-    let keyword = req.query.keyword ==
-    undefined ? "" : req.query.keyword.trim();
+    let keyword = req.query.keyword ===
+        undefined ? "" : req.query.keyword.trim();
+    // Escape character "'" to avoid sql error
+    let keywordEscapeCharacterSingleQuote =
+        keyword.replace(/'/g, "\\'");
     // Find records in database with name contain keyword
     // (case-insensitive)
     let sql = "select * " +
         "from " + commonResources.NEWS_CATEGORIES_TABLE_NAME + " " +
         "where " + commonResources.NEWS_CATEGORIES_COLUMN_NAME +
-                " " + "like '%" + keyword + "%';";
+                " " + "like '%" + keywordEscapeCharacterSingleQuote
+                + "%';";
     dbConnect.query(sql, function (err, result, fields) {
         if (err) throw err;
         let newsCategories = result;

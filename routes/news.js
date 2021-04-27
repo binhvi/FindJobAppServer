@@ -4,7 +4,7 @@ var commonResources = require('../public/javascripts/common');
 var uniqid = require('uniqid');
 var dbConnect = require('../public/javascripts/db');
 
-router.get('/', async (req, res) => {
+router.get('/', (req, res) => {
     // If not logged in, go to log in page
     if (!req.session.loggedin) {
         res.redirect('/login');
@@ -12,8 +12,11 @@ router.get('/', async (req, res) => {
     }
 
     // Search
-    let keyword = req.query.keyword ==
-    undefined ? "" : req.query.keyword.trim();
+    let keyword = req.query.keyword ===
+        undefined ? "" : req.query.keyword.trim();
+    // Escape character "'" to avoid sql error
+    let keywordEscapeCharacterSingleQuote =
+        keyword.replace(/'/g, "\\'");
 
     // Find news in database with category and author,
     // and news's title contain keyword (case-insensitive)
@@ -39,7 +42,7 @@ router.get('/', async (req, res) => {
                     + commonResources.NEWS_AUTHORS_TABLE_NAME + "."
                     + commonResources.NEWS_AUTHORS_COLUMN_ID +
             " and " + commonResources.NEWS_COLUMN_TITLE +
-            " " + "like '%" + keyword + "%' " +
+            " " + "like '%" + keywordEscapeCharacterSingleQuote + "%' " +
         "order by " + commonResources.NEWS_COLUMN_ID + " desc;";
     dbConnect.query(sql, function (err, result, fields) {
         if (err) throw err;

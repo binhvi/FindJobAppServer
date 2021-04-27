@@ -15,6 +15,9 @@ router.get('/', function(req, res, next) {
     // Search
     let keyword = req.query.keyword ===
         undefined ? "" : req.query.keyword.trim();
+    // Escape character "'" to avoid sql error
+    let keywordEscapeCharacterSingleQuote =
+        keyword.replace(/'/g, "\\'");
 
     // Find users in database with full name contain keyword
     // (case-insensitive)
@@ -61,7 +64,7 @@ router.get('/', function(req, res, next) {
 
         "where " +
             commonResources.USERS_COLUMN_FULL_NAME + " " +
-                "like '%" + keyword + "%' " +
+                "like '%" + keywordEscapeCharacterSingleQuote + "%' " +
         "order by " +
             commonResources.USERS_TABLE_NAME + "." +
             commonResources.USERS_COLUMN_ID + " desc";

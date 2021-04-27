@@ -44,7 +44,7 @@ Tham số:
     + String
     + Tên không được để trống
     + Tên từ 2 ký tự trở lên
-    + Không chứa dấu “‘“
+    + Không chứa dấu “'“
 - phone
     + String
     + Phone không trống
@@ -56,13 +56,13 @@ Tham số:
     + Email đúng định dạng a@b.c
         /\w{1,}@\w{1,}.\w{1,}/; // anyword@anyword.anyword
     + Email không trùng với người khác
-    + Không chứa dấu “‘“
+    + Không chứa dấu “'“
 -	password
     + String
     + Mật khẩu không trống
     + Mật khẩu tối thiểu 6 ký tự
     + Mật khẩu không chứa khoảng trắng
-    + Không chứa dấu “‘“
+    + Không chứa dấu “'“
 ----
 POST /api/users/login
 Tham số:
@@ -486,7 +486,8 @@ Thêm ID thiết bị
 POST /api/user-device-ids/create
 Tham số:
 deviceIdString (String, bắt buộc, không trống, không trùng)
-
+(Xem danh sách ID thiết bị trên web:
+https://find-job-app.herokuapp.com/user-device-ids)
 --------------------------------
 
 Xóa ID thiết bị
