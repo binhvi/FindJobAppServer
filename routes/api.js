@@ -2008,12 +2008,15 @@ router.post('/users/change-password', (req, res) => {
         [userId],
         function (selectUserByIdErr, selectUserByIdResult) {
             if (selectUserByIdErr) {
+                // Log error to show admin what's problem
+                console.log("Lỗi truy vấn ID người dùng.");
+                console.log(selectUserByIdErr);
                 res.json({
                     result: false,
-                    message: "Lỗi truy vấn id người dùng",
+                    message: "Lỗi truy vấn ID người dùng.",
                     err: selectUserByIdErr
                 });
-                throw selectUserByIdErr;
+                return;
             }
 
             if (selectUserByIdResult.length === 0) {
@@ -2053,13 +2056,17 @@ router.post('/users/change-password', (req, res) => {
                 [userId],
                 function (selectPasswordErr, selectPasswordQueryResult) {
                     if (selectPasswordErr) {
+                        // Log error to show admin what's problem
+                        console.log("Lỗi truy vấn password.");
+                        console.log(selectPasswordErr);
                         res.json({
                             result: false,
                             message: 'Lỗi truy vấn password',
                             selectPasswordErr
                         });
-                        throw selectPasswordErr;
+                        return;
                     }
+
                     // [{"password":"000000"}]
                     let password = selectPasswordQueryResult[0].password;
                     // To compare two strings in JavaScript,
@@ -2116,12 +2123,13 @@ router.post('/users/change-password', (req, res) => {
                         commonResources.USERS_TABLE_NAME + " " +
                         "set " +
                         commonResources.USERS_COLUMN_PASSWORD +
-                        " = '" + newPasswordText + "'" +
+                        " = ? " +
                         "where " +
                         commonResources.USERS_COLUMN_ID + " = ?;";
                     dbConnect.query(
                         updatePasswordByUserId,
-                        [userId], // Escaping value to avoid sql injection
+                        [newPasswordText, userId], // Escaping value
+                                                    // to avoid sql injection
                         function (updatePasswordErr, updatePasswordResult) {
                             if (updatePasswordErr) {
                                 res.json({
@@ -2139,9 +2147,9 @@ router.post('/users/change-password', (req, res) => {
                         }
                     );
                 }
-            );
+            ); // End of block query old password
         }
-    );
+    ); // End of block find user by ID
 });
 
 router.get('/users', (req, res) => {

@@ -145,7 +145,7 @@ Tham số:
 - newPassword
     + String, bắt buộc, không trống
     + Mật khẩu phải >= 6 ký tự
-            + Không được chứa khoảng trắng
+    + Không được chứa khoảng trắng
 
 ----------------------------------
 
