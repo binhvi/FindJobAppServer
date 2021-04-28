@@ -173,6 +173,7 @@ Tham số:
     + Là chuỗi 128 chữ cái và chữ số (quy ước trong project).
     + Phải khớp với token của người dùng. Chú ý là bắt đầu từ khi tạo
 thì một token của người dùng chỉ tồn tại tối đa 10 phút.
+(Trừ khi server restart thì token sẽ không bị xóa).
 - newPassword:
     + String, bắt buộc, không trống
     + >= 6 ký tự, không chứa dấu cách
@@ -185,6 +186,7 @@ POST /api/education
 Tham số:
 - userId (int, bắt buộc, không trống, id phải tồn tại)
 ------------------------
+
 Tạo thông tin học vấn của ứng viên (người dùng)
 POST /api/education/create
 Tham số:
@@ -192,13 +194,12 @@ Tham số:
 - major (chuyên ngành) (String, bắt buộc, không rỗng)
 - schoolName (String, bắt buộc, không rỗng)
 - academicDegreeLevelId (id bằng cấp học thuật)
-(lấy json của AcademicDegreeLevels tại api GET /api/academic-degree-levels
+(lấy JSON của AcademicDegreeLevels tại api GET /api/academic-degree-levels
  hoặc xem danh sách trên web tại
  https://find-job-app.herokuapp.com/academic-degree-levels)
     + Bắt buộc
     + int
     + Phải tồn tại
-
 - startDateInMilliseconds (ngày bắt đầu, tính bằng milliseconds)
     + Bắt buộc, int
 - endDateInMilliseconds (ngày kết thúc, tính bằng milliseconds)
@@ -208,6 +209,7 @@ Tham số:
 - achievements (thành tích)
     + Tùy chọn
     + String
+
 ---------------
 Cập nhật thông tin học vấn của ứng viên (người dùng)
 POST /api/education/update

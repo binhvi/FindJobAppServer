@@ -3155,6 +3155,21 @@ router.post('/education/create', (req, res) => {
                             req.body.achievements.trim();
                     }
 
+                    // Pass validate
+                    // Escape character single quote (') to avoid
+                    // SQL error when user data contains character "'"
+                    let schoolNameEscapeSingleQuote =
+                            schoolName.replace(/'/g, "\\'");
+                    let majorTextEscapeSingleQuote =
+                            majorText.replace(/'/g, "\\'");
+                    // achievements is optional
+                    let achievementsTextEscapeSingleQuote;
+                    if (achievementsText !== undefined) {
+                        achievementsTextEscapeSingleQuote =
+                            achievementsText.replace(/'/g, "\\'");
+                    }
+
+
                     // Make SQL string to create record in database
                     let insertIntoEducationSubStringSql =
                         "insert into " +
@@ -3179,8 +3194,8 @@ router.post('/education/create', (req, res) => {
                         ") " +
                         "values(" +
                             userId + ", " +
-                            "'" + schoolName + "', " +
-                            "'" + majorText + "', " +
+                            "'" + schoolNameEscapeSingleQuote + "', " +
+                            "'" + majorTextEscapeSingleQuote + "', " +
                             academicDegreeLevelId + ", " +
                             startDateInMilliseconds + ", " +
 
@@ -3189,26 +3204,32 @@ router.post('/education/create', (req, res) => {
                             + ", " +
 
                             (achievementsText ?
-                                    "'" + achievementsText + "'" :
-                                    "null")
+                                "'" + achievementsTextEscapeSingleQuote + "'" :
+                                "null")
                         + ");";
 
                     dbConnect.query(
                         insertIntoEducationSubStringSql,
                         function (createEduErr, createEduResult) {
                             if (createEduErr) {
+                                // Log error to show admin what's problem
+                                console.log("Thêm thông tin học vấn " +
+                                            "thất bại.");
+                                console.log(createEduErr);
                                 res.json({
                                     result: false,
                                     message: "Thêm thông tin học vấn " +
-                                             "thất bại."
+                                             "thất bại.",
+                                    err: createEduErr
                                 });
-                            } else {
-                                res.json({
-                                    result: true,
-                                    message: "Thêm thông tin học vấn " +
-                                            "thành công."
-                                });
+                                return;
                             }
+
+                            res.json({
+                                result: true,
+                                message: "Thêm thông tin học vấn " +
+                                        "thành công."
+                            });
                         }
                     );
                 }
