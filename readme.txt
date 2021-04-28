@@ -135,6 +135,7 @@ Lấy danh sách người dùng (ứng viên)
 GET /api/users
 (Truy vấn sắp xếp id giảm dần (hay ứng viên đăng ký mới nhất cho lên đầu.)).
 --------------
+
 Đổi mật khẩu
 POST /api/users/change-password
 Tham số:
@@ -154,8 +155,8 @@ Nhận một email của người dùng, tạo một chuỗi token và gửi và
 của người dùng. Token sẽ bị xóa sau tối đa 10 phút.
 POST /api/users/send-email-reset-password
 Tham số:
-email (bắt buộc, không trống, phải đúng định dạng, không chứa dấu nháy đơn
-"'", phải thuộc về một người dùng nào đó).
+email (bắt buộc, không trống, phải đúng định dạng,
+phải thuộc về một người dùng nào đó).
 
 ----------------------------------
 

@@ -2318,16 +2318,6 @@ router.post('/users/send-email-reset-password', async(req, res) => {
         return;
     }
 
-    // Must not allow "'" character to avoid MySQL error
-    // when we use "'" to surround the strings
-    if (emailText.includes("'")) {
-        res.json({
-            result: false,
-            message: "Nhập email không chứa dấu nháy (')."
-        });
-        return;
-    }
-
     let checkIfEmailExistsWhenCreateUserPromise =
         new Promise((resolve, reject) => {
             userModule.checkIfEmailExistsWhenCreateUser(
