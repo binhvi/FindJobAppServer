@@ -2560,17 +2560,6 @@ router.post('/users/reset-password', async (req, res) => {
         return;
     }
 
-
-    // Must not allow "'" character to avoid MySQL error
-    // when we use "'" to surround the strings
-    if (emailText.includes("'")) {
-        res.json({
-            result: false,
-            message: "Nhập email không chứa dấu nháy (')."
-        });
-        return;
-    }
-
     if (!emailText.match(/^\S*$/)) { // email contains white space
         res.json({
             result: false,
@@ -2717,17 +2706,6 @@ router.post('/users/reset-password', async (req, res) => {
             result: false,
             message: commonResources
                 .ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX
-        });
-        return;
-    }
-
-    // Must not allow "'" character to avoid MySQL error
-    // when we use "'" to surround the strings
-    if (newPassword.includes("'")) {
-        res.json({
-            result: false,
-            message: "Nhập mật khẩu không chứa " +
-                "dấu nháy (')."
         });
         return;
     }
