@@ -3549,6 +3549,20 @@ router.post('/education/update', (req, res) => {
                                     req.body.achievements.trim();
                             }
 
+                            // Pass validate
+                            // Escape character single quote (') to avoid
+                            // SQL error when user data contains character "'"
+                            let schoolNameEscapeSingleQuote =
+                                schoolName.replace(/'/g, "\\'");
+                            let majorTextEscapeSingleQuote =
+                                majorText.replace(/'/g, "\\'");
+                            // achievements is optional
+                            let achievementsTextEscapeSingleQuote;
+                            if (achievementsText !== undefined) {
+                                achievementsTextEscapeSingleQuote =
+                                    achievementsText.replace(/'/g, "\\'");
+                            }
+
                             // Make SQL string to query update
                             let updateEducationSetSubStringSql =
                                 "update " + commonResources
@@ -3559,11 +3573,13 @@ router.post('/education/update', (req, res) => {
                                     userId;
                             let majorKeyValueSubStringSql =
                                 commonResources.EDUCATION_COLUMN_MAJOR +
-                                " = '" + majorText + "'";
+                                " = '" + majorTextEscapeSingleQuote
+                                + "'";
                             let schoolNameKeyValueSubStringSql =
                                 commonResources
                                     .EDUCATION_COLUMN_SCHOOL_NAME
-                                + " = '" + schoolName + "'";
+                                + " = '" + schoolNameEscapeSingleQuote
+                                + "'";
                             let academicDegreeLevelIdKeyValueSubStringSql =
                                 commonResources
                                     .EDUCATION_COLUMN_ACADEMIC_DEGREE_LEVEL_ID
@@ -3583,7 +3599,8 @@ router.post('/education/update', (req, res) => {
                                 " = " +
                                     (
                                         achievementsText ?
-                                        ("'" + achievementsText + "'")
+                                        ("'" + achievementsTextEscapeSingleQuote
+                                        + "'")
                                         : "null"
                                     );
 
@@ -3607,13 +3624,21 @@ router.post('/education/update', (req, res) => {
                                             // to avoid sql injection
                                 function (updateEduErr, updateEduResult) {
                                     if (updateEduErr) {
+                                        // Log error to show admin
+                                        // what's problem
+                                        console.log("Có lỗi xảy ra " +
+                                            "khi cập nhật thông tin học vấn.");
+                                        console.log(updateEduErr);
                                         res.json({
-                                           result: false,
-                                           message: "Có lỗi xảy ra " +
-                                               "khi lưu."
+                                            result: false,
+                                            message: "Có lỗi xảy ra " +
+                                               "khi cập nhật " +
+                                                "thông tin học vấn.",
+                                            err: updateEduErr
                                         });
-                                        throw updateEduErr;
+                                        return;
                                     }
+
                                     res.json({
                                         result: true,
                                         message: "Update thành công " +

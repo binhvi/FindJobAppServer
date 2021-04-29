@@ -218,14 +218,13 @@ Tham số:
 - userId (id người dùng, int, bắt buộc, phải tồn tại)
 - major (chuyên ngành) (String, bắt buộc, không rỗng)
 - schoolName (String, bắt buộc, không rỗng)
-- academicDegreeLevelId (id bằng cấp học thuật)
+- academicDegreeLevelId (ID bằng cấp học thuật)
 (lấy json của AcademicDegreeLevels tại api GET /api/academic-degree-levels
  hoặc xem danh sách trên web tại
  https://find-job-app.herokuapp.com/academic-degree-levels)
     + Bắt buộc
     + int
     + Phải tồn tại
-
 - startDateInMilliseconds (ngày bắt đầu, tính bằng milliseconds)
     + Bắt buộc, int
 - endDateInMilliseconds (ngày kết thúc, tính bằng milliseconds)
