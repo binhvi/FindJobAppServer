@@ -237,10 +237,12 @@ Tham số:
 CHÚ Ý: Các trường tùy chọn khi update mà null hay rỗng thì dữ liệu
 trường đó sẽ bị xóa.
 ----------
+
 Xóa thông tin học vấn của ứng viên (người dùng)
 POST /api/education/remove
 Tham số:
 - educationId (int, bắt buộc, không trống, id phải tồn tại)
+
 =====================
 Experiences
 
@@ -248,7 +250,9 @@ Lấy danh sách thông tin kinh nghiệm làm việc của ứng viên (ngườ
 POST /api/experiences
 Tham số:
 - userId (int, bắt buộc, không trống, id phải tồn tại)
+
 ------------------
+
 Tạo thông tin kinh nghiệm làm việc của ứng viên (người dùng)
 POST /api/experiences/create
 Tham số:
@@ -258,7 +262,9 @@ Tham số:
 - dateInMilliseconds (required, int)
 - dateOutMilliseconds (optional, int, > dateInMilliseconds)
 - jobDetails (optional, String)
+
 --------------
+
 Cập nhật thông tin kinh nghiệm làm việc của ứng viên (người dùng)
 POST /api/experiences/update
 Tham số:
@@ -269,6 +275,7 @@ Tham số:
 - dateInMilliseconds (required, int)
 - dateOutMilliseconds (optional, int, > dateInMilliseconds)
 - jobDetails (optional, String)
+
 --------------
 Xóa thông tin kinh nghiệm làm việc của ứng viên (người dùng)
 POST /api/experiences/remove

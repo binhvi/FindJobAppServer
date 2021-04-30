@@ -4024,6 +4024,20 @@ router.post('/experiences/create', (req, res) => {
                 jobDetailsText = req.body.jobDetails.trim();
             }
 
+            // Pass validate
+            // Escape character single quote (') to avoid
+            // SQL error when user data contains character "'"
+            let companyNameEscapeSingleQuote =
+                companyName.replace(/'/g, "\\'");
+            let jobTitleEscapeSingleQuote =
+                jobTitleText.replace(/'/g, "\\'");
+            // jobDetails is optional
+            let jobDetailsTextEscapeSingleQuote;
+            if (jobDetailsText !== undefined) {
+                jobDetailsTextEscapeSingleQuote =
+                    jobDetailsText.replace(/'/g, "\\'");
+            }
+
             let insertIntoExperiencesTableSql =
                 "insert into " +
                     commonResources.EXPERIENCES_TABLE_NAME + " (" +
@@ -4040,19 +4054,25 @@ router.post('/experiences/create', (req, res) => {
                     + ") " +
                 "values (" +
                     userId + ", " +
-                    "'" + companyName + "', " +
-                    "'" + jobTitleText + "', " +
+                    "'" + companyNameEscapeSingleQuote + "', " +
+                    "'" + jobTitleEscapeSingleQuote + "', " +
                     dateInMillisecondsNumber + ", " +
                     (dateOutMilliseconds ?
                         dateOutMilliseconds : "null") + ", " +
                     (jobDetailsText ?
-                        ("'" + jobDetailsText + "'") : "null") +
+                        ("'" + jobDetailsTextEscapeSingleQuote + "'")
+                        : "null") +
                 ");";
 
             dbConnect.query(
                 insertIntoExperiencesTableSql,
                 function (createExperienceErr, createExperienceResult) {
                     if (createExperienceErr) {
+                        // Log error to show admin what's problem
+                        console.log("Thêm thông tin " +
+                            "kinh nghiệm làm việc " +
+                            "thất bại.");
+                        console.log(createExperienceErr);
                         res.json({
                             result: false,
                             message: "Thêm thông tin " +
