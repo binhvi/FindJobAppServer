@@ -277,19 +277,24 @@ Tham số:
 - jobDetails (optional, String)
 
 --------------
+
 Xóa thông tin kinh nghiệm làm việc của ứng viên (người dùng)
 POST /api/experiences/remove
 Tham số:
 - experienceId (int, bắt buộc, không trống, id phải tồn tại)
+
 ====================
+
 JobNewsStatus
 GET /api/job-news-status
 Web: /job-news-status
+
 =========================
 StateProvinces
 
 Lấy danh sách các tỉnh/thành phố
 GET /api/states-provinces
+
 =========================
 Districts
 

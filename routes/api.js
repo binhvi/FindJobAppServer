@@ -4330,6 +4330,20 @@ router.post('/experiences/update', (req, res) => {
                        jobDetailsText = req.body.jobDetails.trim();
                    }
 
+                   // Pass validate
+                   // Escape character single quote (') to avoid
+                   // SQL error when user data contains character "'"
+                   let companyNameEscapeSingleQuote =
+                       companyName.replace(/'/g, "\\'");
+                   let jobTitleEscapeSingleQuote =
+                       jobTitleText.replace(/'/g, "\\'");
+                   // jobDetails is optional
+                   let jobDetailsTextEscapeSingleQuote;
+                   if (jobDetailsText !== undefined) {
+                       jobDetailsTextEscapeSingleQuote =
+                           jobDetailsText.replace(/'/g, "\\'");
+                   }
+
                    // Make SQL string to query update
                    let updateExperiencesSetSubStringSql =
                         "update " +
@@ -4340,10 +4354,10 @@ router.post('/experiences/update', (req, res) => {
                        " = " + userId;
                    let companyNameKeyValueSubStringSql =
                        commonResources.EXPERIENCES_COLUMN_COMPANY_NAME
-                        + " = '" + companyName + "'";
+                        + " = '" + companyNameEscapeSingleQuote + "'";
                    let jobTitleKeyValueSubStringSql =
                        commonResources.EXPERIENCES_COLUMN_JOB_TITLE
-                        + " = '" + jobTitleText + "'";
+                        + " = '" + jobTitleEscapeSingleQuote + "'";
                    let dateInMillisKeyValueSubStringSql =
                        commonResources.EXPERIENCES_COLUMN_DATE_IN_MILLIS
                         + " = " + dateInMillisecondsNumber;
@@ -4356,7 +4370,8 @@ router.post('/experiences/update', (req, res) => {
                         commonResources.EXPERIENCES_COLUMN_JOB_DETAILS
                          + " = " +
                        (jobDetailsText ?
-                           ("'" + jobDetailsText + "'") : "null");
+                           ("'" + jobDetailsTextEscapeSingleQuote + "'")
+                           : "null");
 
                    let updateExperienceTotalSql =
                        updateExperiencesSetSubStringSql +
