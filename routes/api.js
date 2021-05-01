@@ -6276,6 +6276,23 @@ router.post('/job-news/create', (req, res) => {
                                            let currentTime = new Date();
                                            let timeCreatedNewMillis = currentTime.getTime();
 
+                                           // Escape character single quote
+                                           // of text fields to avoid sql error
+                                           let companyNameEscapeSingleQuoteChar =
+                                                    companyName.replace(/'/g, "\\'");
+                                           let jobShortDescriptionEscapeSingleQuoteChar =
+                                                    jobShortDescriptionText.replace(/'/g, "\\'");
+                                           let jobDescriptionEscapeSingleQuoteChar =
+                                                    jobDescriptionText.replace(/'/g, "\\'");
+                                           let detailAddressEscapeSingleQuoteChar =
+                                               detailAddressText.replace(/'/g, "\\'");
+                                           let companyWebsiteTextEscapeSingleQuoteChar =
+                                               companyWebsiteText.replace(/'/g, "\\'");
+                                           let companyEmailEscapeSingleQuoteChar =
+                                               companyEmail.replace(/'/g, "\\'");
+                                           let requiredTechnologyTextEscapeSingleQuoteChar =
+                                               requiredTechnologyText.replace(/'/g, "\\'");
+
                                            let addNewJobNewsToDbSql =
                                                "insert into " + commonResources.JOB_NEWS_TABLE_NAME + "(" +
                                                     commonResources.JOB_NEWS_COLUMN_OWNER_ID + ", " +
@@ -6298,29 +6315,31 @@ router.post('/job-news/create', (req, res) => {
                                                ") " +
                                                "values(" +
                                                     userIdNumber + ", " +
-                                                    "'" + companyName + "', " +
-                                                    "'" + jobShortDescriptionText + "', " +
+                                                    "'" + companyNameEscapeSingleQuoteChar + "', " +
+                                                    "'" + jobShortDescriptionEscapeSingleQuoteChar + "', " +
                                                     salaryInVndNumber + ", " +
-                                                    "'" + jobDescriptionText + "', " +
+                                                    "'" + jobDescriptionEscapeSingleQuoteChar + "', " +
                                                     "'" + addressSubdistrictIdText + "', " +
                                                     typeOfWorkIdNumber + ", " +
                                                     requiredNumberYearsOfExperiences + ", " +
-                                                    "'" + detailAddressText + "', " +
+                                                    "'" + detailAddressEscapeSingleQuoteChar + "', " +
                                                     commonResources.JOB_NEWS_STATUS_VALUE_UNAPPROVED + ", " +
                                                     jobTitleIdNumber + ", " +
                                                     companySizeByNumberEmployees + ", " +
-                                                    "'" + companyWebsiteText + "', " +
-                                                    "'" + companyEmail + "', " +
+                                                    "'" + companyWebsiteTextEscapeSingleQuoteChar + "', " +
+                                                    "'" + companyEmailEscapeSingleQuoteChar + "', " +
                                                     "'" + companyPhoneNumberText + "', " +
                                                     timeCreatedNewMillis + ", " +
-                                                    "'" + requiredTechnologyText + "'" +
+                                                    "'" + requiredTechnologyTextEscapeSingleQuoteChar + "'" +
                                                ");";
                                            dbConnect.query(
                                                addNewJobNewsToDbSql,
                                                function (createJobNewsErr,
                                                          createJobNewResult) {
                                                    if (createJobNewsErr) {
-                                                       console.trace(); // Print error stack trace
+                                                       // Show admin details of the error
+                                                       console.log("Có lỗi xảy ra khi lưu tin tuyển dụng.");
+                                                       console.log(createJobNewsErr);
                                                        res.json({
                                                            result: false,
                                                            message: "Có lỗi xảy ra khi lưu tin tuyển dụng.",
