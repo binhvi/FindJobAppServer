@@ -14,14 +14,30 @@
         <table class="table table-striped">
             <thead>
                 <th>Mã thiết bị</th>
+                <th>Hành động</th>
             </thead>
 
             <tbody>
-            <% for(let i = 0; i < userDeviceIds.length; i++) {%>
-                <tr>
-                    <td><%= userDeviceIds[i].deviceIdString %></td>
-                </tr>
-            <% } %>
+                <% for(let i = 0; i < userDeviceIds.length; i++) {%>
+                    <tr>
+                        <td><%= userDeviceIds[i].deviceIdString %></td>
+                        <td>
+                            <form action="/user-device-ids/remove"
+                                  method="post"
+                                  style="display: inline-block">
+                                <input name="deviceIdString"
+                                       value="<%= userDeviceIds[i].deviceIdString %>"
+                                       style="display:none;" />
+                                <button type="submit"
+                                        onclick="return confirm('Bạn có ' +
+                                         'chắc chắn muốn xóa mã thiết bị?')"
+                                        class="btn btn-danger btn-sm">
+                                    Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <% } %>
             </tbody>
         </table>
     </main>
