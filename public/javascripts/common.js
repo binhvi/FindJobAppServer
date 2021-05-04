@@ -1,10 +1,10 @@
 // Host deploy
-const PROTOCOL = "https";
-const SERVER_HOST = "find-job-app.herokuapp.com";
+// const PROTOCOL = "https";
+// const SERVER_HOST = "find-job-app.herokuapp.com";
 
 // Host development
-// const PROTOCOL = "http";
-// const SERVER_HOST = "localhost:3000";
+const PROTOCOL = "http";
+const SERVER_HOST = "localhost:3000";
 
 // Host database deploy (Main)
 // const MY_SQL_HOST = "johnny.heliohost.org";
@@ -13,10 +13,10 @@ const SERVER_HOST = "find-job-app.herokuapp.com";
 // const MY_SQL_DATABASE_NAME = "findjob_FindJobApp";
 
 // Host database deploy alternative 1 if main host got error
-const MY_SQL_HOST = "freedb.tech";
-const MY_SQL_USER = "freedbtech_scott";
-const MY_SQL_PASSWORD = "tiger";
-const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
+// const MY_SQL_HOST = "freedb.tech";
+// const MY_SQL_USER = "freedbtech_scott";
+// const MY_SQL_PASSWORD = "tiger";
+// const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
 
 // Host database deploy alternative 2 if main host got error
 // const MY_SQL_HOST = "85.10.205.173"; // db4free.net
@@ -25,10 +25,10 @@ const MY_SQL_DATABASE_NAME = "freedbtech_FindJobApp";
 // const MY_SQL_DATABASE_NAME = "findjobapp";
 
 // Host database development
-// const MY_SQL_HOST = "localhost";
-// const MY_SQL_USER = "scott";
-// const MY_SQL_PASSWORD = "tiger";
-// const MY_SQL_DATABASE_NAME = "FindJobApp";
+const MY_SQL_HOST = "localhost";
+const MY_SQL_USER = "scott";
+const MY_SQL_PASSWORD = "tiger";
+const MY_SQL_DATABASE_NAME = "FindJobApp";
 
 // Admin server page login info
 const SESSION_SECRET = "fds342fldsk";
