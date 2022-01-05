@@ -222,7 +222,7 @@ const ERR_MSG_PASSWORD_NOT_MATCH_PASSWORD_REGEX =
 const USER_BIRTHDAY_DATE_FORMAT = "YYYY-MM-DD";
 
 const FIND_JOB_APP_GMAIL_ADDRESS = "findjobappteam@gmail.com";
-const FIND_JOB_APP_GMAIL_PASSWORD = "FSQzmPuBF6P5nUd";
+const FIND_JOB_APP_GMAIL_PASSWORD = "810%Ufr#NVgp";
 
 function checkFileImageType(selector) {
     var val = $(selector).val();
