@@ -1,4 +1,4 @@
 # Project exclude paths
 /node_modules/
 
-/public/javascripts/common.js
+/javascripts/common.js
